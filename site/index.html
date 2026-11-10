@@ -1618,9 +1618,6 @@
             <h1 class="bl-title" id="batchesTitle">Uganda OD 月度调额</h1>
             <p class="bl-subtitle" id="batchesSubtitle">TRF_101 · 风控调额 / UG-OD-Monthly v4.2</p>
           </div>
-          <div>
-            <button class="bl-primary" id="openBatchRequest"><svg class="icon icon-sm"><use href="#i-plus"/></svg>创建 Batch</button>
-          </div>
         </div>
 
         <div class="bl-bar">
@@ -3501,6 +3498,7 @@
 
     function routeFromHash() {
       const hash = location.hash.replace(/^#\/?/, '');
+      if (['monitor','alerts','health-calendar','run-sop','reports-center','types'].includes(hash)) { navigate('batchList', null, true); return; }
       if (hash.startsWith('batch/')) {
         const [, id, page, phase] = hash.split('/');
         state.currentBatchId = id || 'B20260624001';
@@ -4283,7 +4281,7 @@
     $('#openTaskDrawer').addEventListener('click', openTaskDrawer);
     $('#taskGroupSearch')?.addEventListener('input',()=>renderGroupPicker('taskGroupPicker','runGroupSelect'));
     $('#typeCreateTask').addEventListener('click', openTaskDrawer);
-    $('#openBatchRequest').addEventListener('click', openBatchRequest);
+    document.getElementById('openBatchRequest')?.addEventListener('click', openBatchRequest);
     $('#taskDrawerBackdrop').addEventListener('click', e => { if (e.target === $('#taskDrawerBackdrop')) closeTaskDrawer(); });
     $('#batchRequestBackdrop').addEventListener('click', e => { if (e.target === $('#batchRequestBackdrop')) closeBatchRequest(); });
     $('#batchDeleteBackdrop').addEventListener('click', e => { if (e.target === $('#batchDeleteBackdrop')) closeDeleteBatch(); });
