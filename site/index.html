@@ -3298,7 +3298,7 @@
         const actPause=isRunning?ic('i-pause','暂停',`data-batch-act="pause" data-batch-id="${b.id}"`)
           :isPaused?ic('i-play','恢复',`data-batch-act="resume" data-batch-id="${b.id}"`)
           :isInterrupted?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
-        const actStop=(isRunning||isPaused||isInterrupted)?ic('i-stop','终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
+        const actStop=(isRunning||isPaused||isInterrupted||preRun)?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const actReport=ic('i-report',finished?'查看报告':'跑批完成后可生成报告',`data-report-action="${b.id}"`,!finished);
         const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isInterrupted ? `<span class="badge amber">批处理中断</span><div class="cell-sub">checkpoint ${fmtCount(b.checkpointShards||6327)} / 9,887</div>` : isPaused ? '<span class="badge amber">已暂停</span><div class="cell-sub">停止派发新分片，可恢复</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
         const taskName = (tasks.find(t=>t.id===b.taskId)||{}).name || b.taskId || '—';
@@ -3366,12 +3366,16 @@
     }
     function stopBatch(id) {
       const b = batches.find(x => x.id === id);
-      if (!b || !['运行中','已暂停','中断待续跑'].includes(b.run)) return;
+      if (!b) return;
+      const preRun = ['待启动','检查中','已就绪','待风险确认','门禁阻断','已排期'].includes(b.run);
+      if (!preRun && !['运行中','已暂停','中断待续跑'].includes(b.run)) return;
       b.run = '已停止';
       b.runClass = 'amber';
       renderBatches();
       if (state.currentBatchId === id) applyBatchView(id);
-      toast('Batch 已停止', `${id} 已停止后续分片调度；已完成分片和处理结果保留。`);
+      toast(preRun ? 'Batch 已终止' : 'Batch 已停止',
+        preRun ? `${id} 本次跑批已终止，不会进入跑批；记录与检查证据保留。`
+               : `${id} 已停止后续分片调度；已完成分片和处理结果保留。`);
     }
 
     function retryFailedShard(id) {
@@ -4679,7 +4683,7 @@
     const CONF={
       pause:{t:'暂停跑批',m:'暂停后立即停止派发新分片，已运行分片完成后保留 checkpoint，可随时恢复。',ok:'确认暂停',danger:false},
       resume:{t:'恢复跑批',m:'将从最近一次 checkpoint 继续执行，不重跑已完成分片。',ok:'确认恢复',danger:false},
-      stop:{t:'终止跑批',m:'终止后该批次不可恢复，未完成的分片不再执行。请确认。',ok:'确认终止',danger:true}
+      stop:{t:'终止跑批',m:'终止后该批次不可恢复：未启动的不再进入跑批，运行中的未完成分片不再执行，已完成结果保留。请确认。',ok:'确认终止',danger:true}
     }[act];
     if(!CONF) return;
     openConfirm(CONF, function(){
