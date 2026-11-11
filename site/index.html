@@ -1403,6 +1403,15 @@
 .bd-log .m{color:#33415C;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .bd-log .r{color:#0E9F6E;font-size:10.5px;white-space:nowrap;}
 </style>
+<style id="bdStatusStyle">.bd-title-row{display:flex;align-items:center;gap:12px;}
+.bd-status{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid transparent;}
+.bd-status::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;}
+.bd-status.gray{background:#F3F6FA;color:#5A6A80;border-color:#E6EBF2;}
+.bd-status.blue{background:#EEF4FF;color:#2458C5;border-color:#DBE7FB;}
+.bd-status.amber{background:#FFF7EA;color:#9A5B00;border-color:#F3DFB4;}
+.bd-status.green{background:#EDF9F3;color:#0E9F6E;border-color:#CDEEDD;}
+.bd-status.red{background:#FDEEEE;color:#C0392B;border-color:#F5CFCB;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4531,7 +4540,7 @@
   <div class="bd-panel">
     <div class="bd-head">
       <div>
-        <div class="bd-title" id="bdTitle">—</div>
+        <div class="bd-title-row"><div class="bd-title" id="bdTitle">—</div><span class="bd-status" id="bdStatus"></span></div>
         <div class="bd-meta" id="bdMeta"></div>
       </div>
       <div class="bd-actions">
@@ -4697,6 +4706,9 @@
     const b=batches.find(x=>x.id===id); if(!b) return;
     curId=id;
     el('bdTitle').textContent=b.id;
+    {const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'};
+     const cls={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
+     const st=el('bdStatus'); if(st){ st.textContent=C[b.run]||b.run; st.className='bd-status '+(cls[st.textContent]||'gray'); }}
     el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(b.run,b.runClass||'gray');}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
