@@ -4770,6 +4770,9 @@
       const k=el.dataset.bcol;
       if(BCOL_DEFS.some(([kk])=>kk===k)) el.classList.toggle('col-off',!bcolState[k]);
     });
+    const on=BCOL_DEFS.filter(([k])=>bcolState[k]).length;
+    const table=document.querySelector('.bl-table table');
+    if(table) table.style.minWidth = (2+on)>=10 ? '1240px' : ((2+on)===9 ? '1140px' : '0');
   }
   function buildBatchColPanel(){
     const panel=document.getElementById('batchColPanel'); if(!panel) return;
