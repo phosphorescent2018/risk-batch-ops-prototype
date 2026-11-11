@@ -1268,18 +1268,20 @@
 .td-form.readonly .form-field .select{appearance:none;}
 .td-form.readonly .form-field textarea{resize:none;}
 .td-modal{width:min(760px,100%);max-height:94vh;}
-.td-modal .modal-body{padding:12px 20px 16px;}
+.td-modal .modal-body{padding:12px 20px 8px;}
 .td-modal .td-card{box-shadow:none;}
 .td-modal .td-card + .td-card{margin-top:8px;}
 .td-modal .td-card .card-head{padding:8px 13px 6px;}
 .td-modal .td-card .card-head h2{font-size:13px;margin-bottom:0;}
-.td-modal .td-card .card-body{padding:9px 13px 11px;}
+.td-modal .td-card .card-body{padding:7px 13px 8px;}
 .td-modal .form-grid{gap:8px;}
 .td-modal .form-field{gap:3px;}
 .td-modal .form-field .input,.td-modal .form-field .select{height:32px;}
 .td-modal .form-field textarea{min-height:44px;}
 .dt-notify{margin-top:2px;}
 .dt-notify .cohort-pill{cursor:pointer;}
+.td-modal .cohort-list{gap:6px;}
+.td-modal .td-card + .td-card{margin-top:6px;}
 .dt-notify .cohort-pill:disabled{opacity:1;cursor:default;}
 .task-table{min-width:0;table-layout:auto;}
 .task-table th,.task-table td{padding-left:8px;padding-right:8px;}
@@ -1354,6 +1356,8 @@
 .bl-pop-btn.primary:hover{background:#245be0;}
 .bl-pop-btn.danger{background:#d64545;border-color:#d64545;color:#fff;}
 .bl-pop-btn.danger:hover{background:#c03a3a;}
+</style>
+<style id="colPanelFix">#view-tasks .table-card{overflow:visible;}
 </style>
 </head>
 <body>
@@ -4912,6 +4916,8 @@
     if(!name){ toast('Task 名称不能为空','请填写 Task name 后再保存。'); document.getElementById('dtName')?.focus(); return; }
     t.name=name;
     t.businessId=document.getElementById('dtBusinessId')?.value||t.businessId;
+    const OPCO_MAP={MTN_Uganda:'MTN Uganda',MTN_Ghana:'MTN Ghana',MTN_CDI:'MTN CDI'};
+    if(OPCO_MAP[t.businessId]) t.opco=OPCO_MAP[t.businessId];
     t.product=document.getElementById('dtProduct')?.value||t.product;
     t.description=document.getElementById('dtDesc')?.value||'';
     t.strategy=document.getElementById('dtStrategy')?.value||t.strategy;
@@ -5004,6 +5010,10 @@
     const t=tasks.find(x=>x.id===runTaskId); if(!t) return;
     const slice=document.getElementById('runSliceDate')?.value||'';
     if(!slice){ toast('请选择切片日期','发起跑批前必须指定使用哪一天的切片。'); return; }
+    if(runExecMode==='scheduled'){
+      const at=document.getElementById('runScheduleAt')?.value||'';
+      if(!at){ toast('请选择计划启动时间','预约执行必须指定计划启动时间。'); document.getElementById('runScheduleAt')?.focus(); return; }
+    }
     if(!cmpSelectedId){
       document.getElementById('cmpError')?.classList.add('show');
       document.getElementById('cmpResults')?.classList.remove('show');
