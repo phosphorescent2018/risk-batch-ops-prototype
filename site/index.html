@@ -1459,7 +1459,7 @@
             <table class="task-table">
               <thead>
                 <tr>
-                  <th data-col="name">Task name</th><th data-col="id">Task ID</th><th data-col="strategy">策略</th><th data-col="version">策略版本</th><th data-col="versionType">版本类型</th><th data-col="reportScene">报告场景</th><th data-col="reportGen">报告生成</th><th data-col="createdBy">创建人</th><th data-col="createdAt">创建时间</th><th data-col="updatedAt">最近更新时间</th><th data-col="actions">操作项</th>
+                  <th data-col="name">任务名称</th><th data-col="id">Task ID</th><th data-col="strategy">策略</th><th data-col="version">策略版本</th><th data-col="versionType">版本类型</th><th data-col="reportScene">报告场景</th><th data-col="reportGen">报告生成</th><th data-col="createdBy">创建人</th><th data-col="createdAt">创建时间</th><th data-col="updatedAt">最近更新时间</th><th data-col="actions">操作项</th>
                 </tr>
               </thead>
               <tbody id="taskTableBody"></tbody>
@@ -4517,6 +4517,7 @@
   }
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/4000));
+    const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const fail=b.run==='部分失败'?Math.max(1,Math.round(shards*0.02)):0;
     const retried=Math.max(1,Math.round(shards*0.03));
     const done=Math.max(0,Math.min(shards-fail,Math.round(shards*p/100)));
@@ -4556,7 +4557,7 @@
       
       '<div class="bd-sec bd-split">'+
         '<div><div class="bd-sh"><b>异常与重试</b></div><div class="bd-rows">'+
-          '<div class="bd-row"><span>分片重试</span><b>'+(fail?fail*3:12)+' 次 · 已执行</b></div>'+
+          '<div class="bd-row"><span>分片重试</span><b>'+retried+' 片 · 共 '+(retried*3)+' 次</b></div>'+
           '<div class="bd-row"><span>整体重试</span><b>'+(fail?'失败分片 '+fail+'，已自动执行':'未触发')+'</b></div>'+
           '<div class="bd-row"><span>跑批中断</span><b>'+(b.run==='中断待续跑'?'02:41 · 已续跑':'无')+'</b></div>'+
           '<div class="bd-row"><span>其他异常</span><b>'+(fail?'结果写入失败 '+fail+' 片，已转人工':'调度器心跳丢失 1 次 · BE 内存超限 1 次')+'</b></div>'+
@@ -4632,10 +4633,11 @@
     el('bdTitle').textContent=b.id;
     el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(b.run,b.runClass||'gray');}
-    demoP = tab==='run' ? 0 : null;
+    const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
+    demoP = (tab==='run' && !preRunNow) ? 0 : null;
     el('bdBody').innerHTML=bodyFor(b);
     el('bdTabs').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.dataset.bdTab===tab));
-    if(tab==='run') startDemo(b); else stopDemo();
+    if(tab==='run' && !preRunNow) startDemo(b); else stopDemo();
   }
   function open(id){ tab='run'; render(id); el('bdBackdrop').classList.remove('hidden'); document.body.style.overflow='hidden'; }
   function close(){ stopDemo(); el('bdBackdrop').classList.add('hidden'); document.body.style.overflow=''; }
