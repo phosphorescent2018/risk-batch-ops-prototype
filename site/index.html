@@ -1307,6 +1307,18 @@
 .task-modal .wizard-step .form-grid{gap:14px;}
 .task-modal .wizard-step > .form-section{margin-top:0;border:0;padding:0;}
 </style>
+<style id="taskDrawerStyle">.task-drawer{width:min(760px,100vw);}
+.task-drawer .drawer-head{padding:18px 22px 14px;}
+.task-drawer .drawer-head h2{font-size:18px;letter-spacing:-.2px;}
+.task-drawer .drawer-body{padding:16px 22px 24px;background:#fbfcfe;}
+.task-drawer .step-nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:14px;}
+.task-drawer .step-chip{background:#fff;padding:9px 10px;border-radius:9px;font-size:10px;}
+.task-drawer .step-chip strong{font-size:11px;display:block;margin-bottom:2px;}
+.task-drawer .wizard-step{background:#fff;border:1px solid var(--line-soft);border-radius:12px;padding:14px 16px;}
+.task-drawer .wizard-step + .wizard-step{margin-top:12px;}
+.task-drawer .wizard-step .form-grid{gap:12px;}
+.task-drawer .wizard-step > .form-section{margin-top:0;border:0;padding:0;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1805,17 +1817,10 @@
     </main>
   </div>
 
-  <div id="taskDrawerBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="taskDrawerTitle">
-    <div class="modal task-modal">
-      <div class="modal-head"><div><h2 id="taskDrawerTitle">新建 Task 模板</h2><p>配置 Task 的默认数据、策略和执行参数。</p></div><button class="icon-button" data-close-task aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
-      <div class="modal-body">
-        <div class="step-nav" id="wizardNav">
-          <button class="step-chip active" data-step="0"><strong>01 基础信息</strong>名称 / 归属 / 负责人</button>
-          <button class="step-chip" data-step="1"><strong>02 运行输入</strong>人群组 / 数据源</button>
-          <button class="step-chip" data-step="2"><strong>03 策略</strong>目的 / DAG / 二次干预</button>
-          <button class="step-chip" data-step="3"><strong>04 执行与输出</strong>调度 / 推送 / Report</button>
-        </div>
-
+  <div id="taskDrawerBackdrop" class="drawer-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="taskDrawerTitle">
+    <div class="drawer task-drawer">
+      <div class="drawer-head"><div><h2 id="taskDrawerTitle">新建 Task 模板</h2><p>配置 Task 的默认数据、策略和执行参数。</p></div><button class="icon-button" data-close-task aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
+      <div class="drawer-body">
         <div class="wizard-step" data-wizard="0">
           <div class="form-grid">
             <div class="form-field"><label>BusinessID</label><select class="select mono" id="taskBusinessId"><option value="MTN_Uganda">MTN_Uganda</option><option value="MTN_Ghana">MTN_Ghana</option><option value="MTN_CDI">MTN_CDI</option></select></div>
@@ -1853,25 +1858,7 @@
             </div>
           </div>
 
-          <div class="form-section task-slice-section">
-            <div class="section-title-row"><div><div class="eyebrow">INPUT · 01</div><h3>运行数据来源</h3><p>直接选择使用的切片日期，或复用某次历史跑批结果。</p></div><span class="badge blue">二选一</span></div>
-            <div class="start-mode-grid" id="taskInputSourceCards">
-              <button class="start-mode-card active" data-task-input-source="latest">
-                <div class="start-mode-head"><div><strong>使用指定切片</strong><div class="tiny muted">推荐 · 默认</div></div><span class="start-mode-icon"><svg class="icon icon-sm"><use href="#i-database"/></svg></span></div>
-                <p>创建 Batch 时直接选择使用哪一天的切片；系统只校验所选切片的分区、数据量和质量，不自动取物理最新分区。</p>
-              </button>
-              <button class="start-mode-card" data-task-input-source="batch">
-                <div class="start-mode-head"><div><strong>复用历史跑批结果</strong><div class="tiny muted">使用已完成 Batch 的最终结果</div></div><span class="start-mode-icon"><svg class="icon icon-sm"><use href="#i-file"/></svg></span></div>
-                <p>选择一个已完成 Batch，系统自动引用它的最终结果，再与上面选择的人群组核对兼容性。</p>
-              </button>
-            </div>
-            <div class="input-source-panel" id="taskLatestSourcePanel">
-              <div class="form-field"><label>使用切片日期</label><input class="input mono" type="date" id="taskSliceDate" value="2026-10-21" /><small>精确到天；可选择任意已就绪切片，Manifest 校验该日分区、数据量和质量。</small></div>
-            </div>
-            <div class="input-source-panel" id="taskBatchSourcePanel" hidden>
-              <div class="form-field"><label>选择历史 Batch</label><select class="select" id="taskSourceBatchSelect"></select><small>只展示已完成且最终结果已冻结的 Batch。</small></div>
-            </div>
-          </div>
+          
         </div>
 
         <div class="wizard-step" data-wizard="2">
@@ -1953,7 +1940,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-foot"><span class="tiny muted">四个区块一次填完，保存后立即生效</span><div class="right"><button class="btn" data-close-task>取消</button><button class="btn primary" id="nextStepBtn">保存并启用 Task</button></div></div>
+      <div class="drawer-foot"><span class="tiny muted">四个区块一次填完，保存后立即生效</span><div class="right"><button class="btn" data-close-task>取消</button><button class="btn primary" id="nextStepBtn">保存并启用 Task</button></div></div>
     </div>
   </div>
 
@@ -4014,11 +4001,11 @@
 
     function openTaskDrawer() {
       const t=tasks.find(x=>x.id===state.currentTaskId)||tasks[0];
-      if($('#taskSliceDate')) $('#taskSliceDate').value=t?.sliceDate || '2026-10-21';
+      
       $('#taskDrawerBackdrop').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
       state.wizardStep=3;
-      if($('#wizardNav')) $('#wizardNav').style.display='';
+      
       $$('.wizard-step').forEach(el=>el.classList.remove('hidden'));
       if($('#prevStepBtn')) $('#prevStepBtn').style.display='none';
       if($('#nextStepBtn')) $('#nextStepBtn').textContent='保存并启用 Task';
