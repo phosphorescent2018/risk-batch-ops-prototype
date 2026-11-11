@@ -1134,20 +1134,30 @@
 .bl-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
 #view-batches .bl-acts{display:flex;align-items:center;justify-content:flex-start;gap:5px;}
 #view-batches .bl-acts>*{flex:0 0 26px;}
-#view-batches .bl-table th:nth-child(1){width:140px;}
+#view-batches .bl-table th:nth-child(1){width:118px;}
 #view-batches .bl-table th:nth-child(2){width:auto;}
-#view-batches .bl-table th:nth-child(3){width:160px;}
-#view-batches .bl-table th:nth-child(4){width:116px;}
-#view-batches .bl-table th:nth-child(5){width:118px;}
-#view-batches .bl-table th:nth-child(6){width:142px;}
-#view-batches .bl-table th:nth-child(7){width:170px;}
+#view-batches .bl-table th:nth-child(3){width:132px;}
+#view-batches .bl-table th:nth-child(4){width:132px;}
+#view-batches .bl-table th:nth-child(5){width:132px;}
+#view-batches .bl-table th:nth-child(6){width:92px;}
+#view-batches .bl-table th:nth-child(7){width:104px;}
+#view-batches .bl-table th:nth-child(8){width:112px;}
+#view-batches .bl-table th:nth-child(9){width:170px;}
+#view-batches .bl-table td,#view-batches .bl-table th{padding-left:8px;padding-right:8px;}
+#view-batches .bl-table td{font-size:11px;}
+#view-batches .bl-table .bl-mono{font-size:10.5px;}
+#view-batches .bl-id{font-size:11.5px;}
 @media(max-width:1300px){
- #view-batches .bl-table th:nth-child(1){width:126px;}
- #view-batches .bl-table th:nth-child(3){width:152px;}
- #view-batches .bl-table th:nth-child(4){width:112px;}
- #view-batches .bl-table th:nth-child(5){width:112px;}
- #view-batches .bl-table th:nth-child(6){width:136px;}
- #view-batches .bl-table th:nth-child(7){width:145px;}
+ #view-batches .bl-table th:nth-child(1){width:104px;}
+ #view-batches .bl-table th:nth-child(3){width:120px;}
+ #view-batches .bl-table th:nth-child(4){width:120px;}
+ #view-batches .bl-table th:nth-child(5){width:120px;}
+ #view-batches .bl-table th:nth-child(6){width:84px;}
+ #view-batches .bl-table th:nth-child(7){width:92px;}
+ #view-batches .bl-table th:nth-child(8){width:100px;}
+ #view-batches .bl-table th:nth-child(9){width:150px;}
+}
+
 }
 @media(max-width:1150px){
  #view-batches .bl-table th:nth-child(2),#view-batches .bl-table td:nth-child(2){display:none;}
@@ -1370,6 +1380,8 @@
 .gp-row .ct{font-size:11.5px;color:#33415C;font-variant-numeric:tabular-nums;}
 .gp-row .up{font-size:10.5px;color:#7C8798;font-variant-numeric:tabular-nums;}
 .gp-empty{padding:18px;text-align:center;font-size:11.5px;color:#96A2B4;}
+</style>
+<style id="batchColFix">#view-batches th.col-off,#view-batches td.col-off{display:none;}
 </style>
 </head>
 <body>
@@ -1725,12 +1737,13 @@
             <option value="成功">成功</option>
             <option value="失败">失败</option>
           </select>
+          <div class="col-picker"><button class="btn btn-sm" id="batchColBtn" type="button"><svg class="icon icon-sm"><use href="#i-sliders"/></svg>列设置</button><div class="col-panel hidden" id="batchColPanel"></div></div>
           <span class="bl-count" id="batchCount">共 0 条</span>
         </div>
 
         <div class="bl-table">
           <table>
-            <thead><tr><th>批次号</th><th>Task Name</th><th>生成时间</th><th>切片日期</th><th>核验状态</th><th>进行状态</th><th>操作</th></tr></thead>
+            <thead><tr><th data-bcol="id">批次号</th><th data-bcol="task">Task Name</th><th data-bcol="gen">生成时间</th><th data-bcol="start">开始时间</th><th data-bcol="end">结束时间</th><th data-bcol="slice">切片日期</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="actions">操作</th></tr></thead>
             <tbody id="batchTableBody"></tbody>
           </table>
         </div>
@@ -2281,8 +2294,8 @@
     const batches = [
       { id:'B20260627001', opco:'MTN Uganda', businessDate:'2026-06-27', expectedSliceDate:'2026-06-25', requestedAt:'2026-06-27 22:00', sliceAt:'2026-06-25 21:50', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,180' },
       { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
-      { id:'B20260623001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-23', expectedSliceDate:'2026-06-21', requestedAt:'2026-06-23 22:00', sliceAt:'2026-06-21 21:50', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, review:'已应用干预', reviewClass:'violet', downstream:'待发布', downstreamClass:'amber', report:'2 / 4', reportClass:'amber', people:'24,980' },
-      { id:'B20260622001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-22', expectedSliceDate:'2026-06-20', requestedAt:'2026-06-22 22:00', sliceAt:'2026-06-20 21:50', compareBatch:'B20260524001', run:'中断待续跑', runClass:'amber', progress:64, review:'中断', reviewClass:'amber', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,110', interruptionReason:'Doris BE 2/3 不可用，批处理调度整体暂停', checkpointAt:'2026-06-23 01:28', checkpointShards:6327 },
+      { id:'B20260623001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-23', expectedSliceDate:'2026-06-21', requestedAt:'2026-06-23 22:00', sliceAt:'2026-06-21 21:50', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, endedAt:'2026-06-24 06:40', review:'已应用干预', reviewClass:'violet', downstream:'待发布', downstreamClass:'amber', report:'2 / 4', reportClass:'amber', people:'24,980' },
+      { id:'B20260622001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-22', expectedSliceDate:'2026-06-20', requestedAt:'2026-06-22 22:00', sliceAt:'2026-06-20 21:50', compareBatch:'B20260524001', run:'中断待续跑', runClass:'amber', progress:64, review:'中断', reviewClass:'amber', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,110', interruptionReason:'Doris BE 2/3 不可用，批处理调度整体暂停', checkpointAt:'2026-06-23 01:28', endedAt:'2026-06-23 01:28', checkpointShards:6327 },
       { id:'B20260625001', opco:'MTN Uganda', businessDate:'2026-06-25', expectedSliceDate:'2026-06-23', requestedAt:'2026-06-25 00:10', sliceAt:'2026-06-23 21:50', compareBatch:'B20260624001', run:'运行中', runClass:'blue', progress:64, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,120' },
       { id:'B20260624001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-24', expectedSliceDate:'2026-06-22', requestedAt:'2026-06-24 22:00', sliceAt:'2026-06-22 21:50', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, review:'待提交包', reviewClass:'amber', downstream:'待发布', downstreamClass:'gray', report:'2 / 4', reportClass:'amber', people:'25,000' },
       { id:'B20260524001', opco:'MTN Uganda', businessDate:'2026-05-24', expectedSliceDate:'2026-05-22', requestedAt:'2026-05-24 21:30', sliceAt:'2026-05-22 21:20', compareBatch:'B20260424001', run:'已完成', runClass:'green', progress:100, review:'已完成', reviewClass:'green', downstream:'已对账', downstreamClass:'green', report:'4 / 4', reportClass:'green', people:'24,720' },
@@ -3330,6 +3343,9 @@
         const RUNCLS={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
         const runLabel=CANON[b.run]||b.run;
         const runClass=RUNCLS[runLabel]||'gray';
+        const STARTED_STATES=['运行中','已暂停','中断待续跑','已完成','部分失败','已停止'];
+        const startAt=b.startedAt || (STARTED_STATES.includes(b.run) ? b.requestedAt : '—');
+        const endAt=b.endedAt || '—';
         const taskName = (tasks.find(t=>t.id===b.taskId)||{}).name || b.taskId || '—';
         const verifyLabel = manifest.status==='FAILED' ? '核验失败'
           : ((mc.BLOCK||0)>0 || (mc.WARN||0)>0) ? '核验不通过'
@@ -3341,16 +3357,19 @@
           : verifyLabel==='核验中' ? 'blue'
           : verifyLabel==='待核验' ? 'gray' : 'green';
         return `<tr data-row-batch="${b.id}">
-          <td><div class="bl-id">${b.id}</div></td>
-          <td><div class="bl-task">${taskName}</div></td>
-          <td><div class="bl-mono">${b.requestedAt||"—"}</div></td>
-          <td><div class="bl-mono">${b.expectedSliceDate||'—'}</div></td>
-          <td><div>${badge(verifyLabel,verifyClass)}</div></td>
-          <td><div class="bl-state-cell">${badge(runLabel,runClass)}</div></td>
-          <td><div class="bl-acts">${actDetail}${actMonitor}${actPause}${actStop}${actReport}</div></td>
+          <td data-bcol="id"><div class="bl-id">${b.id}</div></td>
+          <td data-bcol="task"><div class="bl-task">${taskName}</div></td>
+          <td data-bcol="gen"><div class="bl-mono">${b.requestedAt||"—"}</div></td>
+          <td data-bcol="start"><div class="bl-mono">${startAt}</div></td>
+          <td data-bcol="end"><div class="bl-mono">${endAt}</div></td>
+          <td data-bcol="slice"><div class="bl-mono">${b.expectedSliceDate||'—'}</div></td>
+          <td data-bcol="verify"><div>${badge(verifyLabel,verifyClass)}</div></td>
+          <td data-bcol="run"><div class="bl-state-cell">${badge(runLabel,runClass)}</div></td>
+          <td data-bcol="actions"><div class="bl-acts">${actDetail}${actMonitor}${actPause}${actStop}${actReport}</div></td>
         </tr>`;
       }).join('');
       renderShardManagement();
+      if(typeof applyBatchCols==='function') applyBatchCols();
     }
 
     function renderShardManagement() {
@@ -4689,6 +4708,26 @@
   const st=document.getElementById('batchStatusFilter');
   if(q) q.addEventListener('input',function(){ state.batchQuery=this.value; renderBatches(); });
   if(st) st.addEventListener('change',function(){ state.batchStatus=this.value; renderBatches(); });
+
+  /* Batch 列表列设置 */
+  const BCOL_DEFS=[['task','Task Name'],['gen','生成时间'],['start','开始时间'],['end','结束时间'],['slice','切片日期'],['verify','核验状态'],['run','进行状态']];
+  const bcolState={}; BCOL_DEFS.forEach(([k])=>bcolState[k]=true);
+  function applyBatchCols(){
+    document.querySelectorAll('#view-batches [data-bcol]').forEach(el=>{
+      const k=el.dataset.bcol;
+      if(BCOL_DEFS.some(([kk])=>kk===k)) el.classList.toggle('col-off',!bcolState[k]);
+    });
+  }
+  function buildBatchColPanel(){
+    const panel=document.getElementById('batchColPanel'); if(!panel) return;
+    panel.innerHTML=BCOL_DEFS.map(([k,label])=>`<label><input type="checkbox" data-bcol-toggle="${k}" ${bcolState[k]?'checked':''}>${label}</label>`).join('')
+      +'<div class="col-foot"><span>勾选要显示的列</span><button type="button" id="bcolResetBtn">全部显示</button></div>';
+    panel.querySelectorAll('[data-bcol-toggle]').forEach(cb=>cb.addEventListener('change',()=>{bcolState[cb.dataset.bcolToggle]=cb.checked; applyBatchCols();}));
+    panel.querySelector('#bcolResetBtn')?.addEventListener('click',()=>{BCOL_DEFS.forEach(([k])=>bcolState[k]=true); panel.querySelectorAll('[data-bcol-toggle]').forEach(cb=>cb.checked=true); applyBatchCols();});
+  }
+  document.getElementById('batchColBtn')?.addEventListener('click',e=>{e.stopPropagation();document.getElementById('batchColPanel')?.classList.toggle('hidden');});
+  document.addEventListener('click',e=>{ if(!e.target.closest('#batchColBtn') && !e.target.closest('#batchColPanel')) document.getElementById('batchColPanel')?.classList.add('hidden'); });
+  buildBatchColPanel();
 
   document.body.insertAdjacentHTML('beforeend',
     '<div id="blConfirm" class="bl-pop hidden" role="dialog" aria-modal="false">'+
