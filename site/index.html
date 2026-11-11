@@ -4762,7 +4762,7 @@
     const rows=d.bad
       ? d.issues.map(([n,c])=>`<div class="hc-pop-row bad"><i></i><div><strong>${n}</strong>：${c}</div></div>`).join('')
       : '<div class="hc-pop-row"><i></i><div><strong>正常</strong></div></div>';
-    pop.innerHTML=`<div class="hc-pop-head"><strong>${d.key}</strong>${d.bad?badge('异常','red'):badge('正常','green')}</div><div class="hc-pop-list">${rows}</div>${d.bad?'<div class="hc-pop-foot">仅展示异常项 · 正常项不在此重复列出</div>':''}`;
+    pop.innerHTML=`<div class="hc-pop-head"><strong>${d.key}</strong>${d.bad?badge('异常','red'):badge('正常','green')}</div><div class="hc-pop-list">${rows}</div>`;
     pop.classList.add('show');
     const strip=document.getElementById('hcStrip'); if(!strip) return;
     const maxLeft=Math.max(8,strip.clientWidth-pop.offsetWidth-10);
