@@ -1942,11 +1942,10 @@
             <div class="form-field"><label>报告生成</label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             <div class="form-field"><label>Webhook 地址</label><input class="input" id="taskWebhook" placeholder="https://example.com/webhook/risk-batch" /></div>
             <div class="cohort-list" id="taskNotifyEvents">
-              <button class="cohort-pill active" data-task-notify="BATCH_DONE">跑批完成</button>
-              <button class="cohort-pill" data-task-notify="BATCH_RETRY">存在失败分片</button>
+              <button class="cohort-pill active" data-task-notify="SLICE_ANOMALY">切片异常</button>
               <button class="cohort-pill" data-task-notify="BATCH_FAILED">跑批中断/失败</button>
-              <button class="cohort-pill" data-task-notify="REPORT_DONE">报告生成完成</button>
-              <button class="cohort-pill" data-task-notify="REPORT_FAILED">报告生成失败</button>
+              <button class="cohort-pill" data-task-notify="BATCH_DONE">跑批完成汇总</button>
+              <button class="cohort-pill" data-task-notify="REPORT_RESULT">报告生成结果</button>
             </div>
           </div>
           <div class="form-section" style="display:none">
@@ -4715,14 +4714,14 @@
   const TASK_STRATEGIES = ['UG-OD-Monthly','UG-OD-Scoring','GH-BL-Marketing','UG-Tag-Daily','CDI-Limit-Adjust','GH-OD-RiskRefresh'];
   const TASK_VERSIONS = Array.from({length:30},(_,i)=>String(i+1));
   const TASK_NOTIFY_EVENTS = [
-    ['BATCH_DONE','跑批完成'], ['BATCH_RETRY','存在失败分片'], ['BATCH_FAILED','跑批中断/失败'],
-    ['REPORT_DONE','报告生成完成'], ['REPORT_FAILED','报告生成失败']
+    ['SLICE_ANOMALY','切片异常'], ['BATCH_FAILED','跑批中断/失败'],
+    ['BATCH_DONE','跑批完成汇总'], ['REPORT_RESULT','报告生成结果']
   ];
   const EXTRA = [
-    {strategyVersion:'12',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。',notifyEvents:['BATCH_DONE','BATCH_FAILED','REPORT_DONE'],createdBy:'胡唐',createdAt:'2026-03-12 10:24',updatedAt:'2026-11-09 18:42'},
-    {strategyVersion:'8',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'UG OD 客群风险评分月度刷新。',notifyEvents:['BATCH_DONE','BATCH_RETRY'],createdBy:'李敏',createdAt:'2026-04-02 14:08',updatedAt:'2026-11-08 09:15'},
+    {strategyVersion:'12',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE'],createdBy:'胡唐',createdAt:'2026-03-12 10:24',updatedAt:'2026-11-09 18:42'},
+    {strategyVersion:'8',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'UG OD 客群风险评分月度刷新。',notifyEvents:['BATCH_FAILED','BATCH_DONE'],createdBy:'李敏',createdAt:'2026-04-02 14:08',updatedAt:'2026-11-08 09:15'},
     {strategyVersion:'3',versionType:'测试',reportScene:'无报告',reportGen:'手动生成',description:'Ghana BL 营销策略试运行，暂不自动生成报告。',notifyEvents:['BATCH_FAILED'],createdBy:'王磊',createdAt:'2026-09-18 16:30',updatedAt:'2026-11-06 11:20'},
-    {strategyVersion:'21',versionType:'正式',reportScene:'贷中',reportGen:'自动生成',description:'Uganda 用户标签按日刷新。',notifyEvents:['BATCH_DONE','REPORT_DONE','REPORT_FAILED'],createdBy:'陈静',createdAt:'2026-05-27 09:05',updatedAt:'2026-11-10 08:36'}
+    {strategyVersion:'21',versionType:'正式',reportScene:'贷中',reportGen:'自动生成',description:'Uganda 用户标签按日刷新。',notifyEvents:['BATCH_DONE','REPORT_RESULT'],createdBy:'陈静',createdAt:'2026-05-27 09:05',updatedAt:'2026-11-10 08:36'}
   ];
   tasks.forEach((t,i)=>{ const e=EXTRA[i]||{}; Object.keys(e).forEach(k=>{ if(t[k]==null||t[k]==='') t[k]=e[k]; });
     if(t.strategyVersion==null) t.strategyVersion='1';
@@ -4730,6 +4729,8 @@
     if(!t.reportScene) t.reportScene='贷前';
     if(!t.reportGen) t.reportGen='自动生成';
     if(!t.notifyEvents) t.notifyEvents=[];
+    const VALID=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'];
+    t.notifyEvents=t.notifyEvents.map(c=>({BATCH_RETRY:'BATCH_FAILED',REPORT_DONE:'REPORT_RESULT',REPORT_FAILED:'REPORT_RESULT'}[c]||c)).filter(c=>VALID.includes(c));
     if(!t.createdBy) t.createdBy='胡唐';
     if(!t.businessId) t.businessId=(t.opco||'').includes('Ghana')?'MTN_Ghana':((t.opco||'').includes('CDI')?'MTN_CDI':'MTN_Uganda');
     if(!t.createdAt) t.createdAt='2026-06-01 09:00';
