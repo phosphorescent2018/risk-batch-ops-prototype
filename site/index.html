@@ -1387,6 +1387,12 @@
 </style>
 <style id="batchColFix">#view-batches th.col-off,#view-batches td.col-off{display:none;}
 </style>
+<style id="taskToolbarStyle">#view-tasks .toolbar{gap:10px;padding:14px 16px;align-items:center;}
+#view-tasks .toolbar .search-wrap .input{width:300px;height:36px;}
+#view-tasks .toolbar .select{min-width:150px;height:36px;}
+#view-tasks .toolbar .col-picker{margin-left:auto;}
+#view-tasks .table-card .toolbar{border-bottom:1px solid #EDF0F5;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1486,7 +1492,6 @@
               <button class="btn btn-sm" id="taskColBtn" type="button"><svg class="icon icon-sm"><use href="#i-sliders"/></svg>列设置</button>
               <div class="col-panel hidden" id="taskColPanel"></div>
             </div>
-            <span class="tiny muted" id="taskCount">0 个任务</span>
           </div>
           <div class="table-wrap">
             <table class="task-table">
@@ -3301,7 +3306,7 @@
           <td><button class="switch ${t.switchOn?'on':''}" data-task-switch="${t.id}" aria-label="${t.switchOn?'关闭':'启用'} Task"></button><div class="cell-sub">${t.scheduleMode||'手动'} · ${t.scheduleAt||'未设置'}</div><div class="cell-sub">${t.autoCheck?'数据就绪后自动核验':'手动核验'} · ${t.autoRun?'通过后自动启动':'人工启动'}</div></td>
           <td><div class="inline-actions"><button class="btn btn-sm primary" data-run-task="${t.id}">发起跑批</button><button class="btn btn-sm" data-open-task="${t.id}">查看 Batch</button></div></td>
         </tr>`).join('');
-      $('#taskCount').textContent = `${rows.length} 个任务`;
+      const taskCountEl=$('#taskCount'); if(taskCountEl) taskCountEl.textContent = `${rows.length} 个任务`;
     }
 
     function renderBatches() {
