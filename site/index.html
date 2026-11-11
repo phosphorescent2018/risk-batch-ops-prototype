@@ -1413,6 +1413,16 @@
 .bd-refresh:hover{background:#F7F9FC;border-color:#D8E0EA;}
 .bd-refresh .icon{width:13px;height:13px;}
 </style>
+<style id="bdAnimStyle">.bd-backdrop{animation:bdFadeIn .18s ease;}
+.bd-panel{animation:bdPop .22s ease;}
+.modal-backdrop{animation:bdFadeIn .18s ease;}
+.modal{animation:bdPop .2s ease;}
+.drawer-backdrop{animation:bdFadeIn .18s ease;}
+.drawer{animation:bdSlide .22s ease;}
+@keyframes bdFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes bdPop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes bdSlide{from{transform:translateX(40px);opacity:.6}to{transform:none;opacity:1}}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
