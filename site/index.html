@@ -1423,6 +1423,8 @@
 @keyframes bdPop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes bdSlide{from{transform:translateX(40px);opacity:.6}to{transform:none;opacity:1}}
 </style>
+<style id="bdPushStyle">.bd-log .lv.push{background:#EEF4FF;color:#2458C5;}
+.bd-log .r.pushc{color:#2458C5;}</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4630,7 +4632,7 @@
     clsOf=(i,prog)=>{ const d=Math.round(432*prog/100); if(failCells && prog>=100 && i>=432-failCells) return 'fail'; if(i<d) return (i%30===7)?'done retry':'done'; if(failCells && i<d+failCells) return 'fail'; return ''; };
     const cells=Array.from({length:432},(_,i)=>'<i class="'+clsOf(i,p)+'"></i>').join('');
     const fin=['已完成','部分失败','已停止'].includes(b.run);
-    const evts = fail ? [
+    let evts = fail ? [
         ['23:41','分片连接超时','重试 3 次仍失败','warn'],
         ['00:12','结果写入失败','重试 2 次仍失败','warn'],
         ['01:05','读取切片超时','重试 3 次仍失败','warn'],
@@ -4643,6 +4645,12 @@
         ['02:41','调度器心跳丢失','已自动续跑','ok'],
         ['03:10','BE 内存超限','降并发后恢复','ok'],
       ];
+      evts=evts.concat([
+        ['14:02','切片异常 · 已推送 Webhook','200 OK · 217ms','push'],
+        ['14:02','跑批完成汇总 · 已推送 Webhook','200 OK · 198ms','push'],
+        ['14:03','跑批中断/失败 · 已推送企微告警群','已送达','push'],
+        ['14:05','报告生成结果 · 已推送 Webhook','200 OK · 205ms','push'],
+      ]);
     return '<div class="bd-sec first"><div class="bd-overview">'+
         '<div class="bd-ring">'+ring(p)+'<div class="bd-ring-c"><b id="bdPct">'+p.toFixed(1)+'%</b><span id="bdPctLabel">'+(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')))+'</span></div></div>'+
         '<div class="bd-nums">'+
@@ -4655,7 +4663,7 @@
       
       '<div class="bd-sec bd-split">'+
         '<div><div class="bd-sh"><b>监控与告警</b><span>仅展示异常</span></div><div class="bd-log">'+
-          evts.map(e=>'<div class="lg"><span class="t">'+e[0]+'</span><span class="lv '+(e[3]==='warn'?'warn':'ok')+'">'+(e[3]==='warn'?'ERROR':'WARN')+'</span><span class="m">'+e[1]+'</span><span class="r">'+e[2]+'</span></div>').join('')+
+          evts.map(e=>'<div class="lg"><span class="t">'+e[0]+'</span><span class="lv '+(e[3]==='push'?'push':(e[3]==='warn'?'warn':'ok'))+'">'+(e[3]==='push'?'推送':(e[3]==='warn'?'ERROR':'WARN'))+'</span><span class="m">'+e[1]+'</span><span class="r">'+e[2]+'</span></div>').join('')+
         '</div></div>'+
         '<div><div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
           '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
