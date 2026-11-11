@@ -990,13 +990,13 @@
 .bd-tabs button:hover{color:#33415C;}
 
 .bd-body{padding:0 30px 18px;overflow:auto;min-height:520px;}
-.bd-sec{padding:11px 0;border-top:1px solid #EDF0F5;}
-.bd-sec.first{border-top:1px solid #EDF0F5;padding-top:11px;}
+.bd-sec{padding:6px 0;border-top:1px solid #EDF0F5;}
+.bd-sec.first{border-top:1px solid #EDF0F5;padding-top:6px;}
 .bd-sec:first-child{border-top:1px solid #EDF0F5;}
 
 .bd-overview{display:flex;align-items:center;gap:52px;}
-.bd-ring{position:relative;width:112px;height:112px;flex:none;}
-.bd-ring svg{width:112px;height:112px;display:block;}
+.bd-ring{position:relative;width:96px;height:96px;flex:none;}
+.bd-ring svg{width:96px;height:96px;display:block;}
 .bd-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .bd-ring-c b{font-size:23px;font-weight:650;letter-spacing:-.6px;color:#0F172A;line-height:1;}
 .bd-ring-c span{margin-top:6px;font-size:10.5px;color:#96A2B4;}
@@ -1012,16 +1012,16 @@
 .bd-split>*{min-width:0;}
 .bd-split>*+*{border-left:1px solid #EDF0F5;padding-left:26px;}
 .bd-split>*:first-child{padding-right:26px;}
-.bd-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:16px;}
+.bd-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px;}
 .bd-sh b{font-size:10px;letter-spacing:.08em;color:#96A2B4;font-weight:600;}
 .bd-sh span{font-size:10px;color:#B3BDCB;}
-.bd-chart{width:100%;height:142px;display:block;}
+.bd-chart{width:100%;height:auto;display:block;}
 
-.bd-dense{display:grid;grid-template-columns:repeat(36,1fr);gap:2px;margin-top:2px;}
-.bd-dense i{height:9px;border-radius:1.5px;background:#F0F3F8;display:block;}
+.bd-dense{display:grid;grid-template-columns:repeat(72,1fr);gap:2px;margin-top:2px;}
+.bd-dense i{height:8px;border-radius:1.5px;background:#F0F3F8;display:block;}
 .bd-dense i.done{background:#8ED3AC;}
 .bd-dense i.fail{background:#E38B8B;}
-.bd-shardfoot{display:flex;gap:26px;margin-top:14px;font-size:10.5px;color:#96A2B4;}
+.bd-shardfoot{display:flex;gap:26px;margin-top:10px;font-size:10.5px;color:#96A2B4;}
 .bd-shardfoot b{color:#0F172A;font-weight:600;margin-left:5px;}
 
 .bd-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px 0;font-size:11.5px;color:#7C8798;border-bottom:1px solid #F4F6FA;}
@@ -1029,7 +1029,7 @@
 .bd-row b{color:#0F172A;font-weight:600;}
 .bd-rows{margin-top:2px;}
 .bd-sublist{margin-top:14px;}
-.bd-sublist div{display:flex;align-items:center;gap:12px;padding:4px 0;font-size:10.5px;color:#96A2B4;}
+.bd-sublist div{display:flex;align-items:center;gap:12px;padding:3px 0;font-size:10.5px;color:#96A2B4;}
 .bd-sublist b{font-family:ui-monospace,Menlo,monospace;color:#5A6A80;font-weight:600;flex:0 0 44px;}
 .bd-sublist span{flex:1;}
 .bd-sublist em{font-style:normal;color:#0E9F6E;}
@@ -4501,13 +4501,15 @@
     return pts;
   }
   function chart(b){
-    const pts=speedPoints(b), W=460,H=150,pad=6,max=244,min=149;
-    const xy=pts.map((v,i)=>[pad+i*(W-2*pad)/(pts.length-1), pad+(max-v)/(max-min)*(H-2*pad)]);
+    const pts=speedPoints(b), W=1000, H=96, padL=30, padR=6, padT=6, padB=6, max=244, min=149;
+    const xAt=i=>padL+i*(W-padL-padR)/(pts.length-1);
+    const yAt=v=>padT+(max-v)/(max-min)*(H-padT-padB);
+    const xy=pts.map((v,i)=>[xAt(i), yAt(v)]);
     const line=xy.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
-    const area=line+' '+(W-pad)+','+H+' '+pad+','+H;
-    const grid=[244,197,149].map(v=>{const y=pad+(max-v)/(max-min)*(H-2*pad);return '<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="#F1F4F9"/><text x="0" y="'+(y+3.5)+'" font-size="8.5" fill="#B3BDCB">'+v+'</text>';}).join('');
+    const area=line+' '+(W-padR)+','+(H-padB)+' '+padL+','+(H-padB);
+    const grid=[244,197,149].map(v=>{const y=yAt(v);return '<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#F1F4F9"/><text x="0" y="'+(y+3.5)+'" font-size="9" fill="#B3BDCB">'+v+'</text>';}).join('');
     const last=xy[xy.length-1];
-    return '<svg class="bd-chart" viewBox="0 0 '+W+' '+(H+20)+'"><defs><linearGradient id="bdg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F6BFF" stop-opacity=".16"/><stop offset="1" stop-color="#2F6BFF" stop-opacity="0"/></linearGradient><clipPath id="bdClip"><rect id="bdClipRect" x="0" y="0" width="0" height="'+(H+2)+'"/></clipPath></defs>'+grid+'<g clip-path="url(#bdClip)"><polygon points="'+area+'" fill="url(#bdg2)"/><polyline points="'+line+'" fill="none" stroke="#2F6BFF" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+last[0]+'" cy="'+last[1]+'" r="3" fill="#fff" stroke="#2F6BFF" stroke-width="1.8"/></g><text x="'+pad+'" y="'+(H+16)+'" font-size="8.5" fill="#B3BDCB">60m</text><text x="'+(W/2-8)+'" y="'+(H+16)+'" font-size="8.5" fill="#B3BDCB">30m</text><text x="'+(W-pad-22)+'" y="'+(H+16)+'" font-size="8.5" fill="#B3BDCB">现在</text></svg>';
+    return '<svg class="bd-chart" viewBox="0 0 '+W+' '+(H+16)+'"><defs><linearGradient id="bdg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F6BFF" stop-opacity=".16"/><stop offset="1" stop-color="#2F6BFF" stop-opacity="0"/></linearGradient><clipPath id="bdClip"><rect id="bdClipRect" x="0" y="0" width="0" height="'+(H+2)+'"/></clipPath></defs>'+grid+'<g clip-path="url(#bdClip)"><polygon points="'+area+'" fill="url(#bdg2)"/><polyline points="'+line+'" fill="none" stroke="#2F6BFF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+last[0]+'" cy="'+last[1]+'" r="3.2" fill="#fff" stroke="#2F6BFF" stroke-width="2"/></g><text x="'+padL+'" y="'+(H+13)+'" font-size="9" fill="#B3BDCB">60m</text><text x="'+(W/2-10)+'" y="'+(H+13)+'" font-size="9" fill="#B3BDCB">30m</text><text x="'+(W-padR-24)+'" y="'+(H+13)+'" font-size="9" fill="#B3BDCB">现在</text></svg>';
   }
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/4000));
@@ -4543,11 +4545,9 @@
           '<div class="bd-num"><span>平均速度</span><b id="bdSpeed">'+speed+' 万/h</b><i>&nbsp;</i></div>'+
           '<div class="bd-num"><span>总耗时</span><b id="bdTotal">'+(p>=100?hhmm(totalMin):hhmm(totalMin*p/100))+'</b><i id="bdTotalSub">'+(p>=100?'&nbsp;':'计时中')+'</i></div>'+
         '</div></div></div>'+
-      '<div class="bd-sec bd-split">'+
-        '<div><div class="bd-sh"><b>跑批速度</b><span>万人 / 小时</span></div>'+chart(b)+'</div>'+
-        '<div><div class="bd-sh"><b>分片进度</b><span>按完成比例</span></div><div class="bd-dense" id="bdDense">'+cells+'</div>'+
-          '<div class="bd-shardfoot"><span>完成<b id="bdFootDone">'+fmtCount(done)+'</b></span><span>失败<b>'+fail+'</b></span><span>待处理<b id="bdFootWait">'+fmtCount(Math.max(0,shards-done-fail))+'</b></span><span>重试后成功<b id="bdFootRetry">'+(fail?0:1)+'</b></span></div></div>'+
-      '</div>'+
+      '<div class="bd-sec"><div class="bd-sh"><b>跑批速度</b><span>万人 / 小时</span></div>'+chart(b)+'</div>'+
+      '<div class="bd-sec"><div class="bd-sh"><b>分片进度</b><span>按完成比例</span></div><div class="bd-dense" id="bdDense">'+cells+'</div>'+
+        '<div class="bd-shardfoot"><span>完成<b id="bdFootDone">'+fmtCount(done)+'</b></span><span>失败<b>'+fail+'</b></span><span>待处理<b id="bdFootWait">'+fmtCount(Math.max(0,shards-done-fail))+'</b></span><span>重试后成功<b id="bdFootRetry">'+(fail?0:1)+'</b></span></div></div>'+
       '<div class="bd-sec bd-split">'+
         '<div><div class="bd-sh"><b>异常与重试</b></div><div class="bd-rows">'+
           '<div class="bd-row"><span>分片重试</span><b>'+(fail?fail*3:12)+' 次 · 已执行</b></div>'+
@@ -4607,7 +4607,7 @@
       if(el('bdTotalSub')) el('bdTotalSub').innerHTML=(p>=100?'&nbsp;':'计时中');
       if(el('bdFootDone')) el('bdFootDone').textContent=fmtCount(done);
       if(el('bdFootWait')) el('bdFootWait').textContent=fmtCount(Math.max(0,shards-done-failN));
-      const clip=el('bdClipRect'); if(clip) clip.setAttribute('width', String(462*k));
+      const clip=el('bdClipRect'); if(clip) clip.setAttribute('width', String(1000*k));
       const cells=el('bdDense'); if(cells){ const kids=cells.children; for(let i=0;i<432;i++){ const c=clsOf(i,p); if(kids[i].className!==c) kids[i].className=c; } }
       if(p>=100){
         if(el('bdReportState') && ['已完成','部分失败','已停止'].includes(b.run)) el('bdReportState').textContent='已生成';
