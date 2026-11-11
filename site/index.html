@@ -1409,6 +1409,10 @@
 .bd-status.green{background:#EDF9F3;color:#0E9F6E;border-color:#CDEEDD;}
 .bd-status.red{background:#FDEEEE;color:#C0392B;border-color:#F5CFCB;}
 </style>
+<style id="bdRefreshStyle">.bd-refresh{height:30px;padding:0 12px;border-radius:8px;border:1px solid #E2E8F1;background:#fff;font-size:11.5px;color:#33415C;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;}
+.bd-refresh:hover{background:#F7F9FC;border-color:#D8E0EA;}
+.bd-refresh .icon{width:13px;height:13px;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1946,8 +1950,8 @@
           <div class="section-title-row"><div><h3>策略配置</h3></div></div>
           <div class="form-grid">
             <div class="form-field full"><label>选择策略 <span class="req">*</span></label><select class="select" id="taskStrategySelect"></select></div>
-            <div class="form-field"><label>版本类型</label><select class="select" id="taskVersionType"><option>正式</option><option>测试</option></select></div>
-            <div class="form-field"><label>策略版本</label><select class="select mono" id="taskStrategyVersion"></select></div>
+            <div class="form-field"><label>版本类型 <span class="req">*</span></label><select class="select" id="taskVersionType"><option>正式</option><option>测试</option></select></div>
+            <div class="form-field"><label>策略版本 <span class="req">*</span></label><select class="select mono" id="taskStrategyVersion"></select></div>
           </div>
           </div>
           <div class="form-section type-impact" style="display:none">
@@ -1984,8 +1988,8 @@
           
           <div class="form-section">
             <div class="section-title-row"><div><h3>报告配置</h3><p>选择本 Task 默认生成的业务报告。</p></div></div>
-            <div class="form-field"><label>报告场景</label><select class="select" id="taskReportScene"><option>贷前</option><option>贷中</option><option>无报告</option></select></div>
-            <div class="form-field"><label>报告生成</label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
+            <div class="form-field"><label>报告场景 <span class="req">*</span></label><select class="select" id="taskReportScene"><option>贷前</option><option>贷中</option><option>无报告</option></select></div>
+            <div class="form-field"><label>报告生成 <span class="req">*</span></label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             </div>
           <div class="form-section">
             <div class="section-title-row"><div><h3>通知与告警</h3><p>关键节点回调到指定 Webhook；留空则不推送。</p></div><span class="badge gray">非必填</span></div>
@@ -4551,6 +4555,7 @@
         <div class="bd-meta" id="bdMeta"></div>
       </div>
       <div class="bd-actions">
+        <button class="bd-refresh" id="bdRefresh" title="手动刷新执行进度与监控告警"><svg class="icon icon-sm"><use href="#i-refresh"/></svg>刷新</button>
         <button class="bd-close" id="bdClose" aria-label="关闭">&#10005;</button>
       </div>
     </div>
@@ -4707,7 +4712,7 @@
     }
     raf=requestAnimationFrame(frame);
   }
-  function render(id){
+  function render(id, opts){
     const b=batches.find(x=>x.id===id); if(!b) return;
     curId=id;
     el('bdTitle').textContent=b.id;
@@ -4717,16 +4722,26 @@
     el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(b.run,b.runClass||'gray');}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    demoP = (tab==='run' && !preRunNow) ? 0 : null;
+    const animate = !(opts && opts.animate===false);
+    demoP = (tab==='run' && !preRunNow && animate) ? 0 : null;
     el('bdBody').innerHTML=bodyFor(b);
     el('bdTabs').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.dataset.bdTab===tab));
-    if(tab==='run' && !preRunNow) startDemo(b); else stopDemo();
+    if(tab==='run' && !preRunNow && animate) startDemo(b); else stopDemo();
+  }
+  function manualRefresh(){
+    const b=batches.find(x=>x.id===curId); if(!b) return;
+    if(b.run==='运行中') b.progress=Math.min(96,(Number(b.progress)||0)+3);
+    else if(b.run==='中断待续跑') b.progress=Math.min(96,(Number(b.progress)||0)+1);
+    render(curId,{animate:false});
+    if(typeof renderBatches==='function') renderBatches();
+    toast('已刷新','已重新拉取执行进度与监控告警。');
   }
   function open(id){ tab='run'; render(id); el('bdBackdrop').classList.remove('hidden'); document.body.style.overflow='hidden'; }
   function close(){ stopDemo(); el('bdBackdrop').classList.add('hidden'); document.body.style.overflow=''; }
   document.addEventListener('click',function(e){
     const trig=e.target.closest('[data-detail-modal]');
     if(trig){ e.preventDefault(); e.stopPropagation(); open(trig.dataset.detailModal); return; }
+    if(e.target.closest('#bdRefresh')){ e.preventDefault(); manualRefresh(); return; }
     if(e.target.closest('#bdClose')){ close(); return; }
     if(e.target.closest('[data-bd-tab]')){ tab=e.target.closest('[data-bd-tab]').dataset.bdTab; const b=batches.find(x=>x.id===curId); if(b) render(curId); return; }
     const ro=e.target.closest('[data-bd-report-open]');
