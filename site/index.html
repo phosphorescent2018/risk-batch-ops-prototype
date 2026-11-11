@@ -1217,7 +1217,7 @@
 .hc-legend .sum{color:#96A2B4;}
 .hc-cadence{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:6px;background:#F4F7FB;color:#5A6A80;font-size:10px;font-weight:600;border:1px solid #E8EDF4;}
 .hc-cadence .icon{width:12px;height:12px;color:#8C99AB;}
-.hc-days{display:grid;grid-template-columns:repeat(15,minmax(0,1fr));gap:6px;}
+.hc-days{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px;}
 .hc-day{border:1px solid #EDF0F5;background:#fff;border-radius:10px;min-height:66px;padding:10px 6px 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;transition:border-color .15s ease, background .15s ease, transform .15s ease;font-family:inherit;}
 .hc-day:hover{border-color:#D9E2F0;background:#FBFCFE;transform:translateY(-1px);}
 .hc-day.selected{box-shadow:0 0 0 3px rgba(47,107,255,.18);border-color:#2F6BFF;}
@@ -1228,6 +1228,10 @@
 .hc-day .s{font-size:10px;line-height:1;color:#96A2B4;}
 .hc-day.ok .s{color:#0E9F6E;}
 .hc-day.bad .s{color:#D64545;}
+.hc-day.pending{background:#FAFBFD;border-style:dashed;border-color:#E6EBF2;cursor:not-allowed;}
+.hc-day.pending .m{color:#B3BDCB;}
+.hc-day.pending .bar{background:#E9EDF3;}
+.hc-day.pending .s{color:#B3BDCB;}
 .hc-pop{position:absolute;z-index:30;width:270px;background:#fff;border:1px solid #E4E9F0;border-radius:12px;box-shadow:0 16px 40px rgba(8,16,31,.16);padding:14px 15px;display:none;}
 .hc-pop.show{display:block;}
 .hc-pop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
@@ -1463,7 +1467,7 @@
           <div class="hc-head">
             <div>
               <h2>数据健康日历</h2>
-              <p>最近 15 天 · 每日 <b>04:00</b>、<b>16:00</b>（北京时间）各扫描一次，每日更新 2 次数据；点击任意一天查看当日结果。</p>
+              <p>最近 14 天 · 每日 <b>04:00</b>、<b>16:00</b>（北京时间）各扫描一次，数据 T+2 就绪，今天与昨天显示为待出数。</p>
             </div>
             <div class="hc-legend"><span><i class="ok"></i>正常</span><span><i class="bad"></i>异常</span><span class="sum" id="hcSummary">—</span><span class="hc-cadence" id="hcLastScan" title="每日 04:00 / 16:00（北京时间）自动扫描"><svg class="icon icon-sm"><use href="#i-clock"/></svg>上次更新 —</span></div>
           </div>
@@ -4841,10 +4845,12 @@
   function hcDayData(){
     const out=[], today=new Date(), badIdx=new Set([2,6,11]);
     today.setHours(0,0,0,0); let k=0;
-    for(let i=14;i>=0;i--){
+    for(let i=13;i>=0;i--){
+      const idx=13-i;
       const d=new Date(today); d.setDate(today.getDate()-i);
-      const bad=badIdx.has(14-i);
-      out.push({key:fmtISODate(d),month:`${d.getMonth()+1}/${d.getDate()}`,day:d.getDate(),bad,
+      const pending=idx>=12;              // T+2：今天与昨天数据未到
+      const bad=!pending && badIdx.has(idx);
+      out.push({key:fmtISODate(d),month:`${d.getMonth()+1}/${d.getDate()}`,day:d.getDate(),bad,pending,
         issues:bad?HC_ISSUE_POOL[k++%HC_ISSUE_POOL.length]:[]});
     }
     return out;
@@ -4852,9 +4858,10 @@
   function renderHcStrip(){
     const wrap=document.getElementById('hcDays'); if(!wrap) return;
     hcDaysCache=hcDayData();
-    wrap.innerHTML=hcDaysCache.map((d,i)=>`<button type="button" class="hc-day ${d.bad?'bad':'ok'}" data-hc-day="${i}"><span class="m">${d.month}</span><span class="bar"></span><span class="s">${d.bad?'异常':'正常'}</span></button>`).join('');
+    wrap.innerHTML=hcDaysCache.map((d,i)=>`<button type="button" class="hc-day ${d.pending?'pending':(d.bad?'bad':'ok')}" data-hc-day="${i}" ${d.pending?'disabled title="T+2 数据尚未生成"':''}><span class="m">${d.month}</span><span class="bar"></span><span class="s">${d.pending?'待出数':(d.bad?'异常':'正常')}</span></button>`).join('');
     const bad=hcDaysCache.filter(d=>d.bad).length;
-    const sum=document.getElementById('hcSummary'); if(sum) sum.textContent=`${15-bad} 天正常 · ${bad} 天异常`;
+    const pendingN=hcDaysCache.filter(d=>d.pending).length;
+    const sum=document.getElementById('hcSummary'); if(sum) sum.textContent=`${14-bad-pendingN} 天正常 · ${bad} 天异常 · ${pendingN} 天待出数`;
     const last=document.getElementById('hcLastScan');
     if(last){
       const now=new Date(), h=now.getHours();
