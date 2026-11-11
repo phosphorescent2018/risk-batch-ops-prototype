@@ -1319,6 +1319,19 @@
 .task-drawer .wizard-step .form-grid{gap:12px;}
 .task-drawer .wizard-step > .form-section{margin-top:0;border:0;padding:0;}
 </style>
+<style id="runModalStyle">.req{color:#d13b48;font-weight:700;margin-left:2px;}
+#runTaskBackdrop .modal{width:min(680px,100%);}
+#runTaskBackdrop .modal-section{padding:16px 18px;border:1px solid var(--line-soft);border-radius:12px;background:#fbfdff;}
+#runTaskBackdrop .modal-section + .modal-section{margin-top:14px;}
+#runTaskBackdrop .modal-section-title{margin-bottom:14px;font-size:12px;}
+#runTaskBackdrop .form-field label{font-size:11.5px;color:var(--ink-600);}
+#runTaskBackdrop .input{height:36px;}
+#runTaskBackdrop .segmented{background:#eef3f9;padding:4px;}
+#runTaskBackdrop .segmented button{min-height:32px;padding:0 16px;font-size:11.5px;}
+#runTaskBackdrop .cmp-search .input{padding-left:12px;}
+#runTaskBackdrop .cmp-results{max-height:190px;}
+#runTaskBackdrop .modal-foot{background:#fff;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1970,7 +1983,7 @@
           <div class="form-grid">
             <input type="hidden" id="batchBusinessDate" value="2026-10-23" />
             <div class="form-field" id="batchScheduleField"><label>跑批时间</label><input class="input mono" type="datetime-local" id="batchScheduleAt" value="2026-10-23T22:00" step="60" /><small>精确到分钟，作为 Batch 的计划启动时间。</small></div>
-            <div class="form-field"><label>使用切片日期</label><input class="input mono" type="date" id="batchSliceDate" value="2026-10-21" /><small id="batchSliceRuleHint">精确到天；可指定任意已就绪切片，核验时会检查该日分区与完整性。</small></div>
+            <div class="form-field"><label>使用切片日期 <span class="req">*</span></label><input class="input mono" type="date" id="batchSliceDate" value="2026-10-21" /><small id="batchSliceRuleHint">精确到天；可指定任意已就绪切片，核验时会检查该日分区与完整性。</small></div>
             <div class="form-field full"><label>人群组</label><div class="group-picker compact" id="batchGroupPicker" role="listbox" aria-label="选择本次 Batch 人群组"></div><input type="hidden" id="batchGroupSelect" value="limitIncreaseGroupV1"><small id="batchGroupHint">可多选，按并集计算；创建后自动冻结版本和成员快照。</small></div>
             <div class="form-field"><label>运行数据源</label><div class="segmented" id="batchInputSourceModes"><button class="active" data-batch-input-source="latest">指定切片</button><button data-batch-input-source="batch">历史 Batch 结果</button></div><small id="batchInputSourceHint">使用指定切片日期，并校验对应同一日期的 8 张表。</small></div>
             <div class="form-field"><label>对比 Batch</label><select class="select" id="batchCompareSelect"><option>B20260820001 · 2026-08-20</option><option>B20260720001 · 2026-07-20</option><option>B20260524001 · 2026-05-24</option><option>B20260424001 · 2026-04-24</option><option>B20260228001 · 2026-02-28</option><option>B20260224001 · 2026-02-24</option><option>不对比</option></select><small>仅用于 Report 差异分析。</small></div>
@@ -2200,14 +2213,14 @@
             <div class="form-field full"><label>执行方式</label>
               <div class="segmented" id="runExecMode"><button class="active" type="button" data-run-exec="immediate">立即执行</button><button type="button" data-run-exec="scheduled">预约执行</button></div>
             </div>
-            <div class="form-field" id="runScheduleField" style="display:none"><label>计划启动时间</label><input class="input mono" type="datetime-local" id="runScheduleAt" step="60" /></div>
-            <div class="form-field"><label>使用切片日期</label><input class="input mono" type="date" id="runSliceDate" /></div>
+            <div class="form-field" id="runScheduleField" style="display:none"><label>计划启动时间 <span class="req">*</span></label><input class="input mono" type="datetime-local" id="runScheduleAt" step="60" /></div>
+            <div class="form-field"><label>使用切片日期 <span class="req">*</span></label><input class="input mono" type="date" id="runSliceDate" /></div>
           </div>
         </div>
         <div class="modal-section">
-          <div class="modal-section-title">对比批次 <span class="badge red" style="height:18px;font-size:9px">必选</span></div>
+          <div class="modal-section-title">对比批次 <span class="req">*</span></div>
           <div class="form-field full cmp-search">
-            <label>搜索并选中一条 Batch</label>
+            <label>搜索并选中一条 Batch <span class="req">*</span></label>
             <input class="input" id="cmpSearchInput" type="search" autocomplete="off" placeholder="输入 Batch ID 搜索（仅已完成批次）" />
             <div class="cmp-results" id="cmpResults"></div>
             <div class="cmp-picked" id="cmpPicked"><span id="cmpPickedText"></span><button type="button" id="cmpClearBtn">重新选择</button></div>
