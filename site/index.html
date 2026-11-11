@@ -1393,6 +1393,16 @@
 #view-tasks .toolbar .col-picker{margin-left:auto;}
 #view-tasks .table-card .toolbar{border-bottom:1px solid #EDF0F5;}
 </style>
+<style id="bdLogStyle">.bd-log{display:flex;flex-direction:column;margin-top:2px;}
+.bd-log .lg{display:grid;grid-template-columns:44px 44px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed #EEF2F6;font-size:11px;}
+.bd-log .lg:last-child{border-bottom:0;}
+.bd-log .t{font-family:ui-monospace,Menlo,monospace;color:#96A2B4;font-size:10.5px;}
+.bd-log .lv{font-size:9px;font-weight:700;letter-spacing:.3px;padding:2px 5px;border-radius:4px;text-align:center;}
+.bd-log .lv.warn{background:#FDECEC;color:#C0392B;}
+.bd-log .lv.ok{background:#FFF6E5;color:#9A5B00;}
+.bd-log .m{color:#33415C;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bd-log .r{color:#0E9F6E;font-size:10.5px;white-space:nowrap;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4615,12 +4625,9 @@
       '<div class="bd-sec"><div class="bd-sh"><b>跑批速度</b><span>万人 / 小时</span></div>'+chart(b)+'</div>'+
       
       '<div class="bd-sec bd-split">'+
-        '<div><div class="bd-sh"><b>异常与重试</b></div><div class="bd-rows">'+
-          '<div class="bd-row"><span>分片重试</span><b>'+retried+' 片 · 共 '+(retried*3)+' 次</b></div>'+
-          '<div class="bd-row"><span>整体重试</span><b>'+(fail?'失败分片 '+fail+'，已自动执行':'未触发')+'</b></div>'+
-          '<div class="bd-row"><span>跑批中断</span><b>'+(b.run==='中断待续跑'?'02:41 · 已续跑':'无')+'</b></div>'+
-          '<div class="bd-row"><span>其他异常</span><b>'+(fail?'结果写入失败 '+fail+' 片，已转人工':'调度器心跳丢失 1 次 · BE 内存超限 1 次')+'</b></div>'+
-        '</div><div class="bd-sublist">'+evts.map(e=>'<div><b>'+e[0]+'</b><span>'+e[1]+'</span><em class="'+e[3]+'">'+e[2]+'</em></div>').join('')+'</div></div>'+
+        '<div><div class="bd-sh"><b>日志</b><span>仅展示异常</span></div><div class="bd-log">'+
+          evts.map(e=>'<div class="lg"><span class="t">'+e[0]+'</span><span class="lv '+(e[3]==='warn'?'warn':'ok')+'">'+(e[3]==='warn'?'ERROR':'WARN')+'</span><span class="m">'+e[1]+'</span><span class="r">'+e[2]+'</span></div>').join('')+
+        '</div></div>'+
         '<div><div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
           '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
           '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.requestedAt||'').slice(0,10)+' 06:12':'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
