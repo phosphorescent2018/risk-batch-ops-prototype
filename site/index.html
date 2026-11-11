@@ -1359,6 +1359,18 @@
 </style>
 <style id="colPanelFix">#view-tasks .table-card{overflow:visible;}
 </style>
+<style id="gpStyle">.gp-panel{border:1px solid var(--line-soft);border-radius:10px;background:#fff;overflow:hidden;}
+.gp-sum{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border-bottom:1px solid #F2F5F9;background:#FBFCFE;}
+.gp-sum b{color:#0F172A;}
+.gp-sum span{font-size:11px;color:#7C8798;}
+.gp-head{display:grid;grid-template-columns:minmax(0,1fr) 78px 92px;gap:8px;padding:8px 12px;background:#FBFCFE;border-bottom:1px solid #F2F5F9;font-size:9.5px;color:#96A2B4;}
+.gp-row{display:grid;grid-template-columns:minmax(0,1fr) 78px 92px;gap:10px;padding:10px 13px;border-bottom:1px solid #F5F7FA;align-items:center;}
+.gp-row:last-child{border-bottom:0;}
+.gp-row .nm{font-size:11.5px;color:#0F172A;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gp-row .ct{font-size:11.5px;color:#33415C;font-variant-numeric:tabular-nums;}
+.gp-row .up{font-size:10.5px;color:#7C8798;font-variant-numeric:tabular-nums;}
+.gp-empty{padding:18px;text-align:center;font-size:11.5px;color:#96A2B4;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1881,11 +1893,7 @@
               </div>
               <div class="group-preview">
                 <div class="group-preview-head">Results</div>
-                <div class="group-profile">
-                  <div class="group-profile-mark"><svg class="icon"><use href="#i-users"/></svg></div>
-                  <div class="group-profile-main"><strong id="taskGroupName">已选择 1 个客户分组</strong><span id="taskGroupDescription">选择多个人群组时，按并集计算实际圈选人数。</span></div>
-                  <div class="group-profile-metrics"><div class="group-profile-metric"><span>并集人数</span><strong id="taskGroupCount">589,272</strong></div><div class="group-profile-metric"><span>最近更新</span><strong id="taskGroupUpdated">10-28 23:40</strong></div></div>
-                </div>
+                <div class="gp-panel" id="taskGroupPanel"></div>
                 
                 
                 
@@ -3764,8 +3772,17 @@
       syncBatchRunInput();
       updateBatchRequestMeta();
     }
+    function renderTaskGroupPanel(groups, g){
+      const box=document.getElementById('taskGroupPanel'); if(!box) return;
+      const list=groups.length?groups:[];
+      box.innerHTML=''
+        +'<div class="gp-sum"><span>已选 <b>'+list.length+'</b> 个客户分组</span><span>并集 <b>'+fmtCount(g.count)+'</b> 人</span></div>'
+        +(list.length?('<div class="gp-head"><span>客户分组</span><span>客户数</span><span>最近更新</span></div>'
+          +list.map(x=>`<div class="gp-row"><span class="nm" title="${x.name}">${x.name}</span><span class="ct">${fmtCount(x.count)}</span><span class="up">${x.updated}</span></div>`).join(''))
+          :'<div class="gp-empty">左侧选择客户分组后，这里显示各自的人数与最近更新时间</div>');
+    }
     function syncTaskRunInput(){
-      const groups=selectedGroupsFor('runGroupSelect'); const g=groupUnionStats(groups);
+      const groups=selectedGroupsFor('runGroupSelect'); const g=groupUnionStats(groups); renderTaskGroupPanel(groups,g);
       const sourceBatch=taskInputSource==='batch'?refreshSourceBatchOptions('taskSourceBatchSelect',groups):'';
       const v=runInputValidationForGroups(groups,taskInputSource,sourceBatch);
       const set=(sel,val)=>{const el=$(sel);if(el)el.textContent=val;};
@@ -4036,6 +4053,7 @@
       $$('.wizard-step').forEach(el=>el.classList.remove('hidden'));
       if($('#prevStepBtn')) $('#prevStepBtn').style.display='none';
       if($('#nextStepBtn')) $('#nextStepBtn').textContent='创建 Task';
+      syncTaskRunInput();
       const drawerBody=$('#taskDrawerBackdrop .drawer-body'); if(drawerBody) drawerBody.scrollTop=0;
     }
     function closeTaskDrawer() {
