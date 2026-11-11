@@ -1356,7 +1356,7 @@
 <style id="hcCadenceStyle">.hc-cadence{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;background:#eef4ff;color:#2458c5;font-size:10px;font-weight:600;border:1px solid #dbe7fb;}
 .hc-cadence .icon{width:12px;height:12px;}
 </style>
-<style id="blPopStyle">.bl-pop{position:fixed;z-index:230;width:264px;background:#fff;border:1px solid #e4e9f0;border-radius:12px;box-shadow:0 16px 40px rgba(8,16,31,.18);padding:14px 14px 12px;}
+<style id="blPopStyle">.bl-pop{position:fixed;z-index:230;width:220px;background:#fff;border:1px solid #e4e9f0;border-radius:12px;box-shadow:0 16px 40px rgba(8,16,31,.18);padding:14px 14px 12px;}
 .bl-pop.hidden{display:none !important;}
 .bl-pop-t{font-size:12.5px;font-weight:650;color:#0F172A;}
 .bl-pop-m{margin-top:7px;font-size:11px;line-height:1.6;color:#6B7A8F;}
@@ -4797,7 +4797,8 @@
   function openConfirm(conf, cb, anchor){
     blPending = cb; blAnchor = anchor || null;
     var t=document.getElementById('blConfirmT'), m=document.getElementById('blConfirmM'), ok=document.getElementById('blConfirmOk');
-    t.textContent = conf.t; m.textContent = conf.m; ok.textContent = conf.ok;
+    t.textContent = conf.t; ok.textContent = conf.ok;
+    m.textContent = conf.m || ''; m.style.display = conf.m ? '' : 'none';
     ok.className = 'bl-pop-btn ' + (conf.danger ? 'danger' : 'primary');
     var pop=document.getElementById('blConfirm');
     pop.classList.remove('hidden');
@@ -4829,9 +4830,9 @@
     e.preventDefault(); e.stopPropagation();
     const id=btn.dataset.batchId, act=btn.dataset.batchAct;
     const CONF={
-      pause:{t:'暂停跑批',m:'停止派发新分片，已运行分片保留 checkpoint，可随时恢复。',ok:'暂停',danger:false},
-      resume:{t:'恢复跑批',m:'从最近 checkpoint 继续，不重跑已完成分片。',ok:'恢复',danger:false},
-      stop:{t:'终止跑批',m:'不可恢复；未启动的不再跑，运行中的未完成分片停止执行。',ok:'终止',danger:true}
+      pause:{t:'暂停跑批',m:'',ok:'暂停',danger:false},
+      resume:{t:'恢复跑批',m:'',ok:'恢复',danger:false},
+      stop:{t:'终止跑批',m:'',ok:'终止',danger:true}
     }[act];
     if(!CONF) return;
     openConfirm(CONF, function(){
