@@ -1335,6 +1335,18 @@
 <style id="hcCadenceStyle">.hc-cadence{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;background:#eef4ff;color:#2458c5;font-size:10px;font-weight:600;border:1px solid #dbe7fb;}
 .hc-cadence .icon{width:12px;height:12px;}
 </style>
+<style id="blPopStyle">.bl-pop{position:fixed;z-index:230;width:264px;background:#fff;border:1px solid #e4e9f0;border-radius:12px;box-shadow:0 16px 40px rgba(8,16,31,.18);padding:14px 14px 12px;}
+.bl-pop.hidden{display:none !important;}
+.bl-pop-t{font-size:12.5px;font-weight:650;color:#0F172A;}
+.bl-pop-m{margin-top:7px;font-size:11px;line-height:1.6;color:#6B7A8F;}
+.bl-pop-a{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
+.bl-pop-btn{height:28px;padding:0 12px;border-radius:7px;border:1px solid #e2e8f1;background:#fff;font-size:11.5px;color:#33415C;cursor:pointer;font-family:inherit;}
+.bl-pop-btn:hover{background:#f7f9fc;}
+.bl-pop-btn.primary{background:#2f6bff;border-color:#2f6bff;color:#fff;}
+.bl-pop-btn.primary:hover{background:#245be0;}
+.bl-pop-btn.danger{background:#d64545;border-color:#d64545;color:#fff;}
+.bl-pop-btn.danger:hover{background:#c03a3a;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4643,29 +4655,35 @@
   if(st) st.addEventListener('change',function(){ state.batchStatus=this.value; renderBatches(); });
 
   document.body.insertAdjacentHTML('beforeend',
-    '<div id="blConfirm" class="bl-confirm hidden">'+
-      '<div class="bl-confirm-card">'+
-        '<div class="bl-confirm-t" id="blConfirmT">确认操作</div>'+
-        '<div class="bl-confirm-m" id="blConfirmM"></div>'+
-        '<div class="bl-confirm-a">'+
-          '<button class="bl-confirm-btn" id="blConfirmCancel">取消</button>'+
-          '<button class="bl-confirm-btn primary" id="blConfirmOk">确认</button>'+
-        '</div>'+
+    '<div id="blConfirm" class="bl-pop hidden" role="dialog" aria-modal="false">'+
+      '<div class="bl-pop-t" id="blConfirmT">确认操作</div>'+
+      '<div class="bl-pop-m" id="blConfirmM"></div>'+
+      '<div class="bl-pop-a">'+
+        '<button class="bl-pop-btn" id="blConfirmCancel" type="button">取消</button>'+
+        '<button class="bl-pop-btn primary" id="blConfirmOk" type="button">确认</button>'+
       '</div>'+
     '</div>');
-  var blPending = null;
-  function openConfirm(conf, cb){
-    blPending = cb;
+  var blPending = null, blAnchor = null;
+  function openConfirm(conf, cb, anchor){
+    blPending = cb; blAnchor = anchor || null;
     var t=document.getElementById('blConfirmT'), m=document.getElementById('blConfirmM'), ok=document.getElementById('blConfirmOk');
     t.textContent = conf.t; m.textContent = conf.m; ok.textContent = conf.ok;
-    ok.className = 'bl-confirm-btn ' + (conf.danger ? 'danger' : 'primary');
-    document.getElementById('blConfirm').classList.remove('hidden');
+    ok.className = 'bl-pop-btn ' + (conf.danger ? 'danger' : 'primary');
+    var pop=document.getElementById('blConfirm');
+    pop.classList.remove('hidden');
+    if(anchor){
+      var r=anchor.getBoundingClientRect(), w=pop.offsetWidth||260, h=pop.offsetHeight||120;
+      var left=Math.min(Math.max(8, r.right-w), window.innerWidth-w-8);
+      var top=r.bottom+8;
+      if(top+h>window.innerHeight-8) top=r.top-h-8;
+      pop.style.left=left+'px'; pop.style.top=Math.max(8,top)+'px';
+    }
   }
-  function closeConfirm(){ blPending=null; document.getElementById('blConfirm').classList.add('hidden'); }
+  function closeConfirm(){ blPending=null; blAnchor=null; document.getElementById('blConfirm').classList.add('hidden'); }
   document.addEventListener('click', function(e){
     if(e.target.closest('#blConfirmCancel')){ closeConfirm(); return; }
     if(e.target.closest('#blConfirmOk')){ var cb=blPending; closeConfirm(); if(cb) cb(); return; }
-    if(e.target.id==='blConfirm'){ closeConfirm(); }
+    if(!e.target.closest('#blConfirm') && !e.target.closest('[data-batch-act]')) closeConfirm();
   });
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeConfirm(); });
   document.addEventListener('click',function(e){
@@ -4681,16 +4699,16 @@
     e.preventDefault(); e.stopPropagation();
     const id=btn.dataset.batchId, act=btn.dataset.batchAct;
     const CONF={
-      pause:{t:'暂停跑批',m:'暂停后立即停止派发新分片，已运行分片完成后保留 checkpoint，可随时恢复。',ok:'确认暂停',danger:false},
-      resume:{t:'恢复跑批',m:'将从最近一次 checkpoint 继续执行，不重跑已完成分片。',ok:'确认恢复',danger:false},
-      stop:{t:'终止跑批',m:'终止后该批次不可恢复：未启动的不再进入跑批，运行中的未完成分片不再执行，已完成结果保留。请确认。',ok:'确认终止',danger:true}
+      pause:{t:'暂停跑批',m:'停止派发新分片，已运行分片保留 checkpoint，可随时恢复。',ok:'暂停',danger:false},
+      resume:{t:'恢复跑批',m:'从最近 checkpoint 继续，不重跑已完成分片。',ok:'恢复',danger:false},
+      stop:{t:'终止跑批',m:'不可恢复；未启动的不再跑，运行中的未完成分片停止执行。',ok:'终止',danger:true}
     }[act];
     if(!CONF) return;
     openConfirm(CONF, function(){
       if(act==='pause'&&typeof pauseBatch==='function') pauseBatch(id);
       else if(act==='resume'&&typeof resumeBatch==='function') resumeBatch(id);
       else if(act==='stop'&&typeof stopBatch==='function') stopBatch(id);
-    });
+    }, btn);
   });
 })();
 </script>
