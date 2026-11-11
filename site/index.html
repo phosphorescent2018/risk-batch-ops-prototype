@@ -1295,6 +1295,18 @@
 .task-actions{display:flex;align-items:center;gap:6px;white-space:nowrap;}
 </style>
 
+<style id="taskModalStyle">.task-modal{width:min(1080px,96vw);max-height:92vh;}
+.task-modal .modal-head{padding:22px 28px 16px;}
+.task-modal .modal-head h2{font-size:22px;letter-spacing:-.3px;}
+.task-modal .modal-body{padding:18px 28px 26px;background:#fbfcfe;}
+.task-modal .step-nav{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:20px;}
+.task-modal .step-chip{background:#fff;padding:12px 14px;border-radius:10px;font-size:11px;text-align:left;}
+.task-modal .step-chip strong{font-size:12.5px;margin-bottom:3px;}
+.task-modal .wizard-step{background:#fff;border:1px solid var(--line-soft);border-radius:12px;padding:16px 18px;}
+.task-modal .wizard-step + .wizard-step{margin-top:14px;}
+.task-modal .wizard-step .form-grid{gap:14px;}
+.task-modal .wizard-step > .form-section{margin-top:0;border:0;padding:0;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1793,10 +1805,10 @@
     </main>
   </div>
 
-  <div id="taskDrawerBackdrop" class="drawer-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="taskDrawerTitle">
-    <div class="drawer wide">
-      <div class="drawer-head"><div><h2 id="taskDrawerTitle">新建 Task 模板</h2><p>配置 Task 的默认数据、策略和执行参数。</p></div><button class="icon-button" data-close-task aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
-      <div class="drawer-body">
+  <div id="taskDrawerBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="taskDrawerTitle">
+    <div class="modal task-modal">
+      <div class="modal-head"><div><h2 id="taskDrawerTitle">新建 Task 模板</h2><p>配置 Task 的默认数据、策略和执行参数。</p></div><button class="icon-button" data-close-task aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
+      <div class="modal-body">
         <div class="step-nav" id="wizardNav">
           <button class="step-chip active" data-step="0"><strong>01 基础信息</strong>名称 / 归属 / 负责人</button>
           <button class="step-chip" data-step="1"><strong>02 运行输入</strong>人群组 / 数据源</button>
@@ -1814,7 +1826,7 @@
           </div>
         </div>
 
-        <div class="wizard-step hidden" data-wizard="1">
+        <div class="wizard-step" data-wizard="1">
           <div class="form-section task-group-section" style="margin-top:0">
             <div class="section-title-row"><div><div class="eyebrow">INPUT · 02</div><h3>选择人群组</h3><p>多选后按并集计算，右侧即时预览实际可运行人数。</p></div><span class="badge green" id="taskCoverageBadge">覆盖率 97.2%</span></div>
             <div class="group-workbench">
@@ -1862,7 +1874,7 @@
           </div>
         </div>
 
-        <div class="wizard-step hidden" data-wizard="2">
+        <div class="wizard-step" data-wizard="2">
           <div class="form-grid">
             <div class="form-field full"><label>选择策略</label><select class="select" id="taskStrategySelect"></select></div>
             <div class="form-field"><label>版本类型</label><select class="select" id="taskVersionType"><option>正式</option><option>测试</option></select></div>
@@ -1887,7 +1899,7 @@
           </div>
         </div>
 
-        <div class="wizard-step hidden" data-wizard="3">
+        <div class="wizard-step" data-wizard="3">
           <div class="form-section" style="margin-top:0">
             <div class="section-title-row"><div><h3>跑批时间</h3><p>Task 是基础配置，立即或预约后生成一条新的 Batch。</p></div><span class="badge blue" id="executionModeBadge">立即</span></div>
             <div class="toggle-row" style="display:none"><div><strong>启用 Task</strong><span>关闭后不再生成新 Batch，已运行 Batch 不受影响。</span></div><button class="switch on" id="taskEnableSwitch" aria-label="启用 Task"></button></div>
@@ -1942,7 +1954,7 @@
           </div>
         </div>
       </div>
-      <div class="drawer-foot"><button class="btn ghost">保存草稿</button><div class="right"><button class="btn" id="prevStepBtn" disabled>上一步</button><button class="btn primary" id="nextStepBtn">下一步</button></div></div>
+      <div class="modal-foot"><span class="tiny muted">四个区块一次填完，保存后立即生效</span><div class="right"><button class="btn" data-close-task>取消</button><button class="btn primary" id="nextStepBtn">保存并启用 Task</button></div></div>
     </div>
   </div>
 
@@ -4005,8 +4017,11 @@
       if($('#taskSliceDate')) $('#taskSliceDate').value=t?.sliceDate || '2026-10-21';
       $('#taskDrawerBackdrop').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
+      state.wizardStep=3;
       if($('#wizardNav')) $('#wizardNav').style.display='';
-      setWizardStep(0);
+      $$('.wizard-step').forEach(el=>el.classList.remove('hidden'));
+      if($('#prevStepBtn')) $('#prevStepBtn').style.display='none';
+      if($('#nextStepBtn')) $('#nextStepBtn').textContent='保存并启用 Task';
       const drawerBody=$('#taskDrawerBackdrop .drawer-body'); if(drawerBody) drawerBody.scrollTop=0;
     }
     function closeTaskDrawer() {
@@ -4320,7 +4335,7 @@
     $('#batchScheduleAt').addEventListener('change', () => { updateBatchRequestMeta(); syncBatchRunInput(); });
     $('#batchSliceDate').addEventListener('change', () => { updateBatchRequestMeta(); syncBatchRunInput(); });
     ['batchCheckMode','batchRunMode','batchAlertMode'].forEach(id=>{ $('#'+id)?.addEventListener('change', updateBatchRequestMeta); });
-    $('#prevStepBtn').addEventListener('click', () => setWizardStep(state.wizardStep - 1));
+    document.getElementById('prevStepBtn')?.addEventListener('click', () => setWizardStep(state.wizardStep - 1));
     $('#nextStepBtn').addEventListener('click', () => {
       if (state.wizardStep < 3) setWizardStep(state.wizardStep + 1);
       else {
@@ -4346,7 +4361,10 @@
         toast('Task 已创建',`${name} 已保存到 Task 列表，可通过「发起跑批」创建 Batch。`);
       }
     });
-    $$('.step-chip').forEach(chip => chip.addEventListener('click', () => setWizardStep(Number(chip.dataset.step))));
+    $$('.step-chip').forEach(chip => chip.addEventListener('click', () => {
+      const step=document.querySelector(`.wizard-step[data-wizard="${chip.dataset.step}"]`);
+      if(step) step.scrollIntoView({behavior:'smooth',block:'start'});
+    }));
     $('#publishBtn').addEventListener('click', openPushDrawer);
     $('#confirmPushBtn').addEventListener('click', confirmPush);
     $('#retryFailedPush').addEventListener('click', retryFailedPush);
