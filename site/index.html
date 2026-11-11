@@ -3337,7 +3337,10 @@
           :isPaused?ic('i-play','恢复',`data-batch-act="resume" data-batch-id="${b.id}"`)
           :isInterrupted?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
         const actStop=(isRunning||isPaused||isInterrupted||preRun)?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
-        const actReport=ic('i-report',finished?'查看报告':'跑批完成后可生成报告',`data-report-action="${b.id}"`,!finished);
+        const rowTask=tasks.find(t=>t.id===b.taskId);
+        const manualReport=rowTask && rowTask.reportGen==='手动生成';
+        const repLabel=!finished ? '跑批完成后可生成报告' : (bs.reportGenerated ? '查看报告' : (manualReport ? '生成报告' : '查看报告'));
+        const actReport=ic('i-report',repLabel,`data-report-action="${b.id}"`,!finished);
         const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isInterrupted ? `<span class="badge amber">批处理中断</span><div class="cell-sub">checkpoint ${fmtCount(b.checkpointShards||6327)} / 9,887</div>` : isPaused ? '<span class="badge amber">已暂停</span><div class="cell-sub">停止派发新分片，可恢复</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
         const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'};
         const RUNCLS={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
