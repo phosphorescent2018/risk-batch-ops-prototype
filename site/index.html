@@ -1826,14 +1826,13 @@
             <div class="form-field"><label>BusinessID</label><select class="select mono" id="taskBusinessId"><option value="MTN_Uganda">MTN_Uganda</option><option value="MTN_Ghana">MTN_Ghana</option><option value="MTN_CDI">MTN_CDI</option></select></div>
             <div class="form-field"><label>产品</label><select class="select" id="taskProduct"><option>MoMoAdvance</option><option>NuKash</option><option>BL</option></select></div>
             <div class="form-field"><label>Task 名称</label><input class="input" id="taskNameInput" value="Uganda OD 月度调额" /></div>
-            <div class="form-field"><label>Task 负责人</label><select class="select"><option>风险运营负责人</option><option>业务运营负责人</option><option>模型负责人</option></select></div>
             <div class="form-field full"><label>Task 描述</label><textarea id="taskDesc" placeholder="说明该 Task 的稳定业务目标、适用 OPCO 和默认产出">用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。</textarea></div>
           </div>
         </div>
 
         <div class="wizard-step" data-wizard="1">
           <div class="form-section task-group-section" style="margin-top:0">
-            <div class="section-title-row"><div><div class="eyebrow">INPUT · 02</div><h3>选择人群组</h3><p>多选后按并集计算，右侧即时预览实际可运行人数。</p></div><span class="badge green" id="taskCoverageBadge">覆盖率 97.2%</span></div>
+            <div class="section-title-row"><div><h3>选择人群组</h3><p>多选后按并集计算，右侧即时预览实际可运行人数。</p></div><span class="badge green" id="taskCoverageBadge">覆盖率 97.2%</span></div>
             <div class="group-workbench">
               <div class="group-picker-wrap">
                 <div class="system-picker-search"><svg class="icon icon-sm"><use href="#i-search"/></svg><input class="input" id="taskGroupSearch" type="search" placeholder="请输入关键词搜索" aria-label="搜索人群组"></div>
@@ -1887,23 +1886,7 @@
         </div>
 
         <div class="wizard-step" data-wizard="3">
-          <div class="form-section" style="margin-top:0">
-            <div class="section-title-row"><div><h3>跑批时间</h3><p>Task 是基础配置，立即或预约后生成一条新的 Batch。</p></div><span class="badge blue" id="executionModeBadge">立即</span></div>
-            <div class="toggle-row" style="display:none"><div><strong>启用 Task</strong><span>关闭后不再生成新 Batch，已运行 Batch 不受影响。</span></div><button class="switch on" id="taskEnableSwitch" aria-label="启用 Task"></button></div>
-            <div class="form-grid" style="margin-top:12px">
-              <div class="form-field full"><label>执行方式</label><div class="segmented" id="taskExecutionMode"><button class="active" data-task-execution="immediate">立即执行</button><button data-task-execution="scheduled">预约执行</button></div><small>Task 是基础配置；立即执行和预约执行都会生成一条新的 Batch。</small></div>
-              <div class="form-field" id="taskScheduleAtField" style="display:none"><label>首次执行时间</label><input class="input mono" type="datetime-local" id="taskScheduleAt" value="2026-06-20T22:00"></div>
-              <div class="form-field" style="display:none"><label>业务时区</label><input class="input mono" value="Asia/Shanghai" readonly></div>
-            </div>
-            <div class="toggle-row" style="display:none"><div><strong>收到数据就绪通知后自动核验</strong><span>大数据侧发送就绪请求后，系统自动执行 Manifest 全量检查。</span></div><button class="switch on" id="taskAutoCheckSwitch" aria-label="自动创建并检查"></button></div>
-            <div class="toggle-row" style="display:none"><div><strong>检查通过后自动跑批</strong><span>Manifest 100% PASS 后自动启动；存在 WARN 时仍按任务规则确认。</span></div><button class="switch on" id="taskAutoRunSwitch" aria-label="检查通过后自动跑批"></button></div>
-            <div class="input-freeze-note" style="display:none;margin-top:12px">
-              <span class="check-icon"><svg class="icon icon-sm"><use href="#i-calendar"/></svg></span>
-              <div><strong>数据就绪由大数据侧主动通知</strong><br><span>系统不再预启动轮询。收到切片就绪回调后自动进入核验，核验通过后按上述配置启动。</span></div>
-            </div>
-            <div class="toggle-row" style="display:none"><div><strong>提前通过允许立即开始</strong><span>例如 08:00 已 100% 通过，可在 10:00 计划时间前人工提前启动。</span></div><button class="switch on" id="taskEarlyStartSwitch" aria-label="允许提前开始"></button></div>
-            <div class="toggle-row" style="display:none"><div><strong>企业微信告警</strong><span>默认开启：P1/P0 推送企业微信告警群；关闭后 P1 仅进站内收件箱，P0 仍强制推送。</span></div><button class="switch on" id="taskWecomAlertSwitch" aria-label="启用企业微信告警"></button></div>
-          </div>
+          
           <div class="form-section" style="display:none">
             <div class="section-title-row"><div><h3>下游通道</h3><p>由跑批目的和输出结构决定。</p></div><span class="badge blue" id="targetCount">2 个通道</span></div>
             <div class="target-config" id="publishTargets"></div>
@@ -1914,18 +1897,14 @@
             <div class="toggle-row"><div><strong>自动重试</strong><span>最多重试 3 次；幂等键 = batch_id + customer_id。</span></div><button class="switch on" aria-label="启用失败重试"></button></div>
             <div class="toggle-row"><div><strong>关账前对账</strong><span>数量、金额和失败记录必须一致。</span></div><button class="switch on" aria-label="启用对账后关账"></button></div>
           </div>
+          
           <div class="form-section">
-            <div class="section-title-row"><div><h3>报告与对比</h3><p>选择本 Task 默认生成的业务报告；报告页仍可调整对比批次。</p></div><span class="badge violet" id="reportCount">4 份</span></div>
-            <div class="form-grid">
-              <div class="form-field"><label>对比批次</label><select class="select" id="taskCompareBatch"><option>自动选择最近一次成功 Batch</option><option>B20260624001 · 2026-06-24</option><option>B20260524001 · 2026-05-24</option><option>不对比</option></select></div>
-              <div class="form-field"><label>自动生成报告</label><select class="select" id="taskAutoReport"><option>跑批完成后自动生成</option><option>手动生成</option></select></div>
-            </div>
-            <div class="cohort-list" id="reportPills"></div>
-          </div>
-          <div class="form-section">
-            <div class="section-title-row"><div><h3>通知推送</h3><p>关键节点回调到指定 Webhook；留空则不推送。</p></div><span class="badge gray">非必填</span></div>
+            <div class="section-title-row"><div><h3>报告配置</h3><p>选择本 Task 默认生成的业务报告。</p></div></div>
             <div class="form-field"><label>报告场景</label><select class="select" id="taskReportScene"><option>贷前</option><option>贷中</option><option>无报告</option></select></div>
             <div class="form-field"><label>报告生成</label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
+            </div>
+          <div class="form-section">
+            <div class="section-title-row"><div><h3>通知推送</h3><p>关键节点回调到指定 Webhook；留空则不推送。</p></div><span class="badge gray">非必填</span></div>
             <div class="form-field"><label>Webhook 地址</label><input class="input" id="taskWebhook" placeholder="https://example.com/webhook/risk-batch" /></div>
             <div class="cohort-list" id="taskNotifyEvents">
               <button class="cohort-pill active" data-task-notify="SLICE_ANOMALY">切片异常</button>
@@ -1940,7 +1919,7 @@
           </div>
         </div>
       </div>
-      <div class="drawer-foot"><span class="tiny muted">四个区块一次填完，保存后立即生效</span><div class="right"><button class="btn" data-close-task>取消</button><button class="btn primary" id="nextStepBtn">保存并启用 Task</button></div></div>
+      <div class="drawer-foot"><div class="right"><button class="btn" data-close-task>取消</button><button class="btn primary" id="nextStepBtn">创建 Task</button></div></div>
     </div>
   </div>
 
@@ -3786,17 +3765,19 @@
 
     function applyTaskType(type) {
       const cfg = taskTypeConfigs[type] || taskTypeConfigs['风控调额'];
-      $('#typeImpactTitle').textContent = cfg.title;
-      $('#typeImpactTag').textContent = cfg.tag;
-      $('#typeImpactGrid').innerHTML = cfg.impact.map(([label,value]) => `<div class="impact-item"><span>${label}</span><strong>${value}</strong></div>`).join('');
-      $('#strategyDag').innerHTML = cfg.nodes.map((n,i) => `<span class="dag-node">${n}</span>${i<cfg.nodes.length-1?'<span class="dag-arrow">→</span>':''}`).join('');
-      $('#dagStageCount').textContent = `${cfg.nodes.length} 个阶段`;
-      $('#reviewRuleText').textContent = cfg.review;
-      $('#resultLayers').innerHTML = cfg.layers.map(([code,label]) => `<div class="summary-item"><span>${code}</span><strong>${label}</strong></div>`).join('');
-      $('#targetCount').textContent = `${cfg.targets.length} 个通道`;
-      $('#publishTargets').innerHTML = cfg.targets.map(([name,desc]) => `<div class="target-config-card active"><strong>${name}</strong><span>${desc}</span></div>`).join('');
-      $('#reportCount').textContent = `${cfg.reports.length} 份`;
-      $('#reportPills').innerHTML = cfg.reports.map(r => `<span class="cohort-pill active">${r}</span>`).join('') + '<span class="cohort-pill">+ 添加报告</span>';
+      const setT=(sel,v)=>{const el=$(sel); if(el) el.textContent=v;};
+      const setH=(sel,v)=>{const el=$(sel); if(el) el.innerHTML=v;};
+      setT('#typeImpactTitle', cfg.title);
+      setT('#typeImpactTag', cfg.tag);
+      setH('#typeImpactGrid', cfg.impact.map(([label,value]) => `<div class="impact-item"><span>${label}</span><strong>${value}</strong></div>`).join(''));
+      setH('#strategyDag', cfg.nodes.map((n,i) => `<span class="dag-node">${n}</span>${i<cfg.nodes.length-1?'<span class="dag-arrow">→</span>':''}`).join(''));
+      setT('#dagStageCount', `${cfg.nodes.length} 个阶段`);
+      setT('#reviewRuleText', cfg.review);
+      setH('#resultLayers', cfg.layers.map(([code,label]) => `<div class="summary-item"><span>${code}</span><strong>${label}</strong></div>`).join(''));
+      setT('#targetCount', `${cfg.targets.length} 个通道`);
+      setH('#publishTargets', cfg.targets.map(([name,desc]) => `<div class="target-config-card active"><strong>${name}</strong><span>${desc}</span></div>`).join(''));
+      setT('#reportCount', `${cfg.reports.length} 份`);
+      setH('#reportPills', cfg.reports.map(r => `<span class="cohort-pill active">${r}</span>`).join('') + '<span class="cohort-pill">+ 添加报告</span>');
       const summaryRows = [
         ['运行输入', dataScopeConfig.name],
         ['跑批目的', type],
@@ -3805,7 +3786,7 @@
         ['下游通道', cfg.targets.map(t=>t[0]).join(' / ')],
         ['Report 包', `${cfg.reports.length} 份`]
       ];
-      $('#summaryGrid').innerHTML = summaryRows.map(([label,value]) => `<div class="summary-item"><span>${label}</span><strong>${value}</strong></div>`).join('');
+      setH('#summaryGrid', summaryRows.map(([label,value]) => `<div class="summary-item"><span>${label}</span><strong>${value}</strong></div>`).join(''));
     }
 
     const DEMO_NOW_TEXT='2026-10-23 09:00';
@@ -4417,7 +4398,7 @@
         toast('消费已关闭',`${id} 已完成但不消费，最终结果和报告仍可查询。`);
       }
     });
-    $$('[data-task-execution]').forEach(btn=>btn.addEventListener('click',()=>{$$('#taskExecutionMode [data-task-execution]').forEach(b=>b.classList.toggle('active',b===btn));const scheduled=btn.dataset.taskExecution==='scheduled';$('#executionModeBadge').textContent=scheduled?'预约':'立即';if($('#taskScheduleAtField'))$('#taskScheduleAtField').style.display=scheduled?'':'none';}));
+    $$('[data-task-execution]').forEach(btn=>btn.addEventListener('click',()=>{$$('#taskExecutionMode [data-task-execution]').forEach(b=>b.classList.toggle('active',b===btn));const scheduled=btn.dataset.taskExecution==='scheduled';const badge=$('#executionModeBadge');if(badge)badge.textContent=scheduled?'预约':'立即';if($('#taskScheduleAtField'))$('#taskScheduleAtField').style.display=scheduled?'':'none';}));
     $$('[data-task-notify]').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
     $('#mobileMenu').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
     window.addEventListener('hashchange', routeFromHash);
