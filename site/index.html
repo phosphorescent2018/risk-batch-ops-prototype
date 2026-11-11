@@ -1274,8 +1274,20 @@
 .dt-notify{margin-top:2px;}
 .dt-notify .cohort-pill{cursor:pointer;}
 .dt-notify .cohort-pill:disabled{opacity:1;cursor:default;}
-.task-table{min-width:1040px;}
-.task-table th,.task-table td{padding-left:10px;padding-right:10px;}
+.task-table{min-width:0;table-layout:auto;}
+.task-table th,.task-table td{padding-left:8px;padding-right:8px;}
+.task-table thead th{font-size:9.5px;letter-spacing:.04em;}
+.task-table td{font-size:11.5px;}
+.task-table .mono{font-size:10.5px;}
+.task-table th[data-col].col-off,.task-table td[data-col].col-off{display:none;}
+.col-picker{position:relative;}
+.col-panel{position:absolute;right:0;top:calc(100% + 6px);z-index:40;width:180px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-md);padding:8px;}
+.col-panel.hidden{display:none;}
+.col-panel label{display:flex;align-items:center;gap:8px;padding:6px 6px;border-radius:6px;font-size:11px;color:var(--ink-600);cursor:pointer;}
+.col-panel label:hover{background:#f5f8fc;}
+.col-panel input{width:13px;height:13px;accent-color:var(--blue-600);}
+.col-panel .col-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line-soft);font-size:10px;color:var(--ink-400);}
+.col-panel .col-foot button{border:0;background:transparent;color:var(--blue-700);font-size:10px;cursor:pointer;font-family:inherit;}
 .task-table td .tag{font-size:9.5px;}
 .task-table .task-actions .btn-sm{min-height:29px;padding:0 9px;font-size:10.5px;}
 .task-table td{vertical-align:middle;}
@@ -1378,13 +1390,17 @@
             <select class="select" id="taskFilterVersionType" aria-label="版本类型"><option value="">全部版本类型</option><option>正式</option><option>测试</option></select>
             <select class="select" id="taskFilterReportScene" aria-label="报告场景"><option value="">全部报告场景</option><option>贷前</option><option>贷中</option><option>无报告</option></select>
             <div class="toolbar-spacer"></div>
+            <div class="col-picker">
+              <button class="btn btn-sm" id="taskColBtn" type="button"><svg class="icon icon-sm"><use href="#i-sliders"/></svg>列设置</button>
+              <div class="col-panel hidden" id="taskColPanel"></div>
+            </div>
             <span class="tiny muted" id="taskCount">0 个任务</span>
           </div>
           <div class="table-wrap">
             <table class="task-table">
               <thead>
                 <tr>
-                  <th>Task name</th><th>Task ID</th><th>策略</th><th>策略版本</th><th>版本类型</th><th>报告场景</th><th>报告生成</th><th>创建人</th><th>创建时间</th><th>最近更新时间</th><th>操作项</th>
+                  <th data-col="name">Task name</th><th data-col="id">Task ID</th><th data-col="strategy">策略</th><th data-col="version">策略版本</th><th data-col="versionType">版本类型</th><th data-col="reportScene">报告场景</th><th data-col="reportGen">报告生成</th><th data-col="createdBy">创建人</th><th data-col="createdAt">创建时间</th><th data-col="updatedAt">最近更新时间</th><th data-col="actions">操作项</th>
                 </tr>
               </thead>
               <tbody id="taskTableBody"></tbody>
@@ -4746,6 +4762,29 @@
   }
   function hideHcPop(){ const pop=document.getElementById('hcPop'); if(pop) pop.classList.remove('show'); document.querySelectorAll('.hc-day').forEach(el=>el.classList.remove('selected')); }
 
+  /* ---------------- 列设置 ---------------- */
+  const COL_DEFS=[['name','Task name',true],['id','Task ID',true],['strategy','策略',true],['version','策略版本',true],['versionType','版本类型',true],['reportScene','报告场景',true],['reportGen','报告生成',true],['createdBy','创建人',true],['createdAt','创建时间',true],['updatedAt','最近更新时间',true]];
+  const colState={}; COL_DEFS.forEach(([k,,on])=>colState[k]=on);
+  colState.reportGen=false; colState.createdBy=false;
+  function applyCols(){
+    document.querySelectorAll('#view-tasks .task-table [data-col]').forEach(el=>{
+      const k=el.dataset.col; if(COL_DEFS.some(([kk])=>kk===k)) el.classList.toggle('col-off',!colState[k]);
+    });
+  }
+  function buildColPanel(){
+    const panel=document.getElementById('taskColPanel'); if(!panel) return;
+    panel.innerHTML=COL_DEFS.map(([k,label])=>`<label><input type="checkbox" data-col-toggle="${k}" ${colState[k]?'checked':''}>${label}</label>`).join('')
+      +'<div class="col-foot"><span>勾选要显示的列</span><button type="button" id="colResetBtn">全部显示</button></div>';
+    panel.querySelectorAll('[data-col-toggle]').forEach(cb=>cb.addEventListener('change',()=>{
+      colState[cb.dataset.colToggle]=cb.checked; applyCols();
+    }));
+    panel.querySelector('#colResetBtn')?.addEventListener('click',()=>{
+      COL_DEFS.forEach(([k])=>colState[k]=true);
+      panel.querySelectorAll('[data-col-toggle]').forEach(cb=>cb.checked=true);
+      applyCols();
+    });
+  }
+
   /* ---------------- Task 列表 ---------------- */
   function renderTasks(filter=''){
     const box=document.getElementById('taskTableBody'); if(!box) return;
@@ -4757,23 +4796,24 @@
       &&(!fs||t.strategy===fs)&&(!fv||t.versionType===fv)&&(!fr||t.reportScene===fr));
     box.innerHTML=rows.length?rows.map(t=>`
       <tr>
-        <td><div class="task-name-cell">${t.name}</div></td>
-        <td><span class="mono" style="font-size:11px">${t.id}</span></td>
-        <td><span class="tag mono">${t.strategy||'—'}</span></td>
-        <td><span class="mono" style="font-weight:700;font-size:13px">${t.strategyVersion||'—'}</span></td>
-        <td>${t.versionType==='正式'?badge('正式','blue'):badge('测试','amber')}</td>
-        <td><span class="tag">${t.reportScene||'—'}</span></td>
-        <td><span class="tag">${t.reportGen||'—'}</span></td>
-        <td>${t.createdBy||'—'}</td>
-        <td><span class="mono" style="font-size:11px">${t.createdAt||'—'}</span></td>
-        <td><span class="mono" style="font-size:11px">${t.updatedAt||'—'}</span></td>
-        <td><div class="task-actions">
+        <td data-col="name"><div class="task-name-cell">${t.name}</div></td>
+        <td data-col="id"><span class="mono">${t.id}</span></td>
+        <td data-col="strategy"><span class="tag mono">${t.strategy||'—'}</span></td>
+        <td data-col="version"><span class="mono" style="font-weight:700;font-size:12.5px">${t.strategyVersion||'—'}</span></td>
+        <td data-col="versionType">${t.versionType==='正式'?badge('正式','blue'):badge('测试','amber')}</td>
+        <td data-col="reportScene"><span class="tag">${t.reportScene||'—'}</span></td>
+        <td data-col="reportGen"><span class="tag">${t.reportGen||'—'}</span></td>
+        <td data-col="createdBy">${t.createdBy||'—'}</td>
+        <td data-col="createdAt"><span class="mono">${t.createdAt||'—'}</span></td>
+        <td data-col="updatedAt"><span class="mono">${t.updatedAt||'—'}</span></td>
+        <td data-col="actions"><div class="task-actions">
           <button class="btn btn-sm primary" data-run-task-modal="${t.id}">发起跑批</button>
           <button class="btn btn-sm" data-detail-task="${t.id}">详情</button>
           <button class="btn btn-sm danger" data-delete-task="${t.id}">删除</button>
         </div></td>
       </tr>`).join(''):'<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--ink-400)">没有符合条件的 Task</td></tr>';
     const cnt=document.getElementById('taskCount'); if(cnt) cnt.textContent=`${rows.length} 个任务`;
+    if(typeof applyCols==='function') applyCols();
   }
 
   /* ---------------- Task 详情 ---------------- */
@@ -5003,9 +5043,16 @@
   window.fmtISODate=fmtISODate;
   window.renderHcStrip=renderHcStrip;
   window.openTaskDetail=openTaskDetail;
+  buildColPanel();
   renderHcStrip();
   initBindings();
   renderTasks();
+  applyCols();
+  document.getElementById('taskColBtn')?.addEventListener('click',e=>{
+    e.stopPropagation();
+    document.getElementById('taskColPanel')?.classList.toggle('hidden');
+  });
+  document.addEventListener('click',e=>{ if(!e.target.closest('.col-picker')) document.getElementById('taskColPanel')?.classList.add('hidden'); });
 })();
 </script>
 </body>
