@@ -2581,17 +2581,16 @@
       if (!manifestStates[id]) {
         const b = batches.find(x => x.id === id);
         const completed = b && (b.run === '已完成' || b.run === '部分失败');
-        const waived = id === 'B20260622001';
         manifestStates[id] = {
-          version: waived ? 'v3' : 'v2',
+          version:'v2',
           status:completed ? 'CLOSED' : 'FROZEN',
           gate:completed ? 'STARTED' : 'SCHEDULED',
           scheduledAt:b?.requestedAt || '--',
           sla:'06:00',
           expectedSliceDate:b?.expectedSliceDate||'',
-          checks:waived ? cloneManifestChecks().map((c,i)=> i===1 ? {...c,result:'WAIVED',observed:'D-8 数据量下降 19.2% · OA 例外已批准'} : c) : cloneManifestChecks(),
+          checks:cloneManifestChecks(),
           logs:[
-            {time:'21:55', title:'自动校验完成', detail:waived?'9 项通过 · 1 项已例外放行':'10 项检查全部通过'},
+            {time:'21:55', title:'自动校验完成', detail:'10 项检查全部通过'},
             {time:'21:52', title:'OA 审批同步', detail:'业务负责人、风险负责人审批通过'},
             {time:'21:50', title:'Manifest 已冻结', detail:'v2 · 已生成输入快照与版本哈希'}
           ]
@@ -2751,7 +2750,7 @@
         let dot='',state='',copy='',riskBtn='';
         if(['已完成','部分失败','运行中','已停止','已暂停'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
         else if(b.run==='中断待续跑'){dot='red';state='运行中断 · 等待续跑';copy='跑前扫描已通过；当前中断发生在运行阶段，已保留 checkpoint，续跑时只处理未完成分片。';}
-        else if(b.run==='门禁阻断'){dot='red';state='扫描未通过 · 自动启动失效';copy='计划启动时间前未达到 100% 通过，后续只能修复后人工启动；缺失数据运行需业务审批。';riskBtn=b.allowRiskStart?'<button class="btn btn-sm danger" id="riskStartBtn">申请缺失数据风险启动</button>':'';}
+        else if(b.run==='门禁阻断'){dot='red';state='扫描未通过 · 自动启动失效';copy='计划启动时间前未达到 100% 通过，后续只能修复后人工启动；缺失数据运行需业务审批。';riskBtn='';}
         else if(b.run==='待风险确认'){dot='warn';state='存在风险 · 等待确认';copy=`${pass}/${total} 通过，${warn} 个 WARN 需责任人确认；未达到 100% 通过前不自动启动。`;}
         else if(b.run==='已就绪'){dot='green';state='100% 通过 · 可提前开始';copy='已满足启动条件。计划时间前可人工立即开始；到计划时间仍未启动则按自动跑批配置执行。';}
         else if(b.autoCheckMode==='manual'){dot='warn';state='等待手动核验';copy='收到数据就绪通知后不会自动执行 Manifest，请任务负责人手动核验后再启动。';}
@@ -2814,11 +2813,11 @@
               ${manifestResultBadge(c.result)}
             </div>
             <div class="manifest-values"><div class="manifest-value"><span>观测值</span><strong>${c.observed}</strong></div><div class="manifest-value"><span>通过阈值</span><strong>${c.threshold}</strong></div></div>
-            <div class="manifest-check-foot"><span class="tiny muted">检查方式：${c.evidence}</span><div class="inline-actions"><button class="btn btn-sm" data-manifest-evidence="${c.code}">查看证据</button>${c.result==='BLOCK'?`<button class="btn btn-sm danger" data-recheck-check="${c.code}">手动核验</button>`:c.result==='WARN'?`<button class="btn btn-sm" data-waive-check="${c.code}">申请例外</button>`:''}</div></div>
+            <div class="manifest-check-foot"><span class="tiny muted">检查方式：${c.evidence}</span><div class="inline-actions"><button class="btn btn-sm" data-manifest-evidence="${c.code}">查看证据</button>${c.result==='BLOCK'||c.result==='WARN'?`<button class="btn btn-sm danger" data-recheck-check="${c.code}">手动核验</button>`:''}</div></div>
           </div>`).join('')}</div>`;
       }).join('');
       const gateButton=$('#waiveManifestBtn');
-      if (gateButton) { gateButton.disabled = block>0&&!b.allowRiskStart || (!block&&warn===0); gateButton.innerHTML = `${icon('file','icon icon-sm')}${block&&b.allowRiskStart?'申请缺失数据风险启动':warn?'处理风险项':'无需处理例外'}`; }
+      if (gateButton) { gateButton.style.display='none'; gateButton.disabled = true; gateButton.innerHTML = `${icon('file','icon icon-sm')}${block&&b.allowRiskStart?'申请缺失数据风险启动':warn?'处理风险项':'无需处理例外'}`; }
       const canRecheck=b && ['待启动','检查中','已就绪','待风险确认','门禁阻断'].includes(b.run);
       const recheckBtn=$('#recheckManifestBtn'); if(recheckBtn) recheckBtn.disabled=!canRecheck;
       const canEdit=b && isPreRunBatch(b) && b.run!=='已排期';
@@ -3302,16 +3301,12 @@
         const actReport=ic('i-report',finished?'查看报告':'跑批完成后可生成报告',`data-report-action="${b.id}"`,!finished);
         const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isInterrupted ? `<span class="badge amber">批处理中断</span><div class="cell-sub">checkpoint ${fmtCount(b.checkpointShards||6327)} / 9,887</div>` : isPaused ? '<span class="badge amber">已暂停</span><div class="cell-sub">停止派发新分片，可恢复</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
         const taskName = (tasks.find(t=>t.id===b.taskId)||{}).name || b.taskId || '—';
-        const verifyLabel = (mc.WAIVED||0)>0 ? '已例外放行'
-          : (mc.BLOCK||0)>0 ? '核验不通过'
+        const verifyLabel = ((mc.BLOCK||0)>0 || (mc.WARN||0)>0) ? '核验不通过'
           : manifest.status==='CHECKING' ? '核验中'
-          : (mc.WARN||0)>0 ? '有风险待确认'
           : ((mc.PENDING||0)>0 || manifest.status==='WAITING_CHECK') ? '待核验'
           : '核验通过';
         const verifyClass = verifyLabel==='核验不通过' ? 'red'
           : verifyLabel==='核验中' ? 'blue'
-          : verifyLabel==='有风险待确认' ? 'amber'
-          : verifyLabel==='已例外放行' ? 'violet'
           : verifyLabel==='待核验' ? 'gray' : 'green';
         return `<tr data-row-batch="${b.id}">
           <td><div class="bl-id">${b.id}</div></td>
