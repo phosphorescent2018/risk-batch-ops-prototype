@@ -1000,10 +1000,10 @@
 .bd-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .bd-ring-c b{font-size:23px;font-weight:650;letter-spacing:-.6px;color:#0F172A;line-height:1;}
 .bd-ring-c span{margin-top:6px;font-size:10.5px;color:#96A2B4;}
-.bd-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:34px;flex:1;}
+.bd-nums{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;flex:1;}
 .bd-num>span{display:block;font-size:10px;letter-spacing:.06em;color:#96A2B4;}
 .bd-num i span{display:inline;font-size:inherit;color:inherit;letter-spacing:0;}
-.bd-num>b{display:block;margin-top:8px;font-size:24px;font-weight:600;letter-spacing:-.5px;color:#0F172A;font-variant-numeric:tabular-nums;line-height:1.1;}
+.bd-num>b{display:block;margin-top:8px;font-size:20px;font-weight:600;letter-spacing:-.5px;color:#0F172A;font-variant-numeric:tabular-nums;line-height:1.1;}
 .bd-num>i{display:block;margin-top:8px;font-style:normal;font-size:10.5px;color:#96A2B4;}
 .bd-num i em{font-style:normal;font-weight:600;color:#0E9F6E;}
 .bd-num i em.bad{color:#D64545;}
@@ -4499,6 +4499,7 @@
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/4000));
     const fail=b.run==='部分失败'?Math.max(1,Math.round(shards*0.02)):0;
+    const retried=Math.max(1,Math.round(shards*0.03));
     const done=Math.max(0,Math.min(shards-fail,Math.round(shards*p/100)));
     const speed=Math.round(180+(people%37));
     const totalMin=Math.round(people/(speed*10000/60));
@@ -4526,7 +4527,9 @@
         '<div class="bd-ring">'+ring(p)+'<div class="bd-ring-c"><b id="bdPct">'+p.toFixed(1)+'%</b><span id="bdPctLabel">'+(p>=100?'已结束':(p>0?'进行中':'待开始'))+'</span></div></div>'+
         '<div class="bd-nums">'+
           '<div class="bd-num"><span>已处理</span><b id="bdDone">'+fmtCount(Math.round(people*p/100))+'</b><i id="bdRemain">'+(p>=100?'&nbsp;':'剩余 '+hhmm(totalMin*(1-p/100)))+'</i></div>'+
-          '<div class="bd-num"><span>完成分片</span><b id="bdShards">'+fmtCount(done)+'</b><i>共 <span id="bdShardTotal">'+fmtCount(shards)+'</span> · 失败 <em class="'+(fail?'bad':'')+'" id="bdFail">'+fail+'</em></i></div>'+
+          '<div class="bd-num"><span>完成分片</span><b id="bdShards">'+fmtCount(done)+'</b><i>共 <span id="bdShardTotal">'+fmtCount(shards)+'</span></i></div>'+
+          '<div class="bd-num"><span>重试分片</span><b id="bdRetried">'+fmtCount(retried)+'</b><i>发生过重试</i></div>'+
+          '<div class="bd-num"><span>失败分片</span><b id="bdFailed" style="color:'+(fail?'#D64545':'#0F172A')+'">'+fmtCount(fail)+'</b><i>最终仍失败</i></div>'+
           '<div class="bd-num"><span>平均速度</span><b id="bdSpeed">'+speed+' 万/h</b><i>&nbsp;</i></div>'+
           '<div class="bd-num"><span>总耗时</span><b id="bdTotal">'+(p>=100?hhmm(totalMin):hhmm(totalMin*p/100))+'</b><i id="bdTotalSub">'+(p>=100?'&nbsp;':'计时中')+'</i></div>'+
         '</div></div></div>'+
