@@ -1134,28 +1134,20 @@
 .bl-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
 #view-batches .bl-acts{display:flex;align-items:center;justify-content:flex-start;gap:5px;}
 #view-batches .bl-acts>*{flex:0 0 26px;}
-#view-batches .bl-table th:nth-child(1){width:118px;}
-#view-batches .bl-table th:nth-child(2){width:auto;}
-#view-batches .bl-table th:nth-child(3){width:132px;}
-#view-batches .bl-table th:nth-child(4){width:132px;}
-#view-batches .bl-table th:nth-child(5){width:132px;}
-#view-batches .bl-table th:nth-child(6){width:92px;}
-#view-batches .bl-table th:nth-child(7){width:104px;}
-#view-batches .bl-table th:nth-child(8){width:112px;}
-#view-batches .bl-table th:nth-child(9){width:170px;}
+#view-batches .bl-table th[data-bcol="id"]{width:112px;}
+#view-batches .bl-table th[data-bcol="task"]{width:auto;}
+#view-batches .bl-table th[data-bcol="gen"]{width:132px;}
+#view-batches .bl-table th[data-bcol="start"]{width:124px;}
+#view-batches .bl-table th[data-bcol="end"]{width:124px;}
+#view-batches .bl-table th[data-bcol="slice"]{width:88px;}
+#view-batches .bl-table th[data-bcol="verify"]{width:96px;}
+#view-batches .bl-table th[data-bcol="run"]{width:100px;}
+#view-batches .bl-table th[data-bcol="actions"]{width:160px;}
 #view-batches .bl-table td,#view-batches .bl-table th{padding-left:8px;padding-right:8px;}
 #view-batches .bl-table td{font-size:11px;}
 #view-batches .bl-table .bl-mono{font-size:10.5px;}
 #view-batches .bl-id{font-size:11.5px;}
-@media(max-width:1300px){
- #view-batches .bl-table th:nth-child(1){width:104px;}
- #view-batches .bl-table th:nth-child(3){width:120px;}
- #view-batches .bl-table th:nth-child(4){width:120px;}
- #view-batches .bl-table th:nth-child(5){width:120px;}
- #view-batches .bl-table th:nth-child(6){width:84px;}
- #view-batches .bl-table th:nth-child(7){width:92px;}
- #view-batches .bl-table th:nth-child(8){width:100px;}
- #view-batches .bl-table th:nth-child(9){width:150px;}
+
 }
 
 }
@@ -4743,6 +4735,7 @@
   /* Batch 列表列设置 */
   const BCOL_DEFS=[['task','Task Name'],['gen','生成时间'],['start','开始时间'],['end','结束时间'],['slice','切片日期'],['verify','核验状态'],['run','进行状态']];
   const bcolState={}; BCOL_DEFS.forEach(([k])=>bcolState[k]=true);
+  bcolState.start=false; bcolState.end=false;
   function applyBatchCols(){
     document.querySelectorAll('#view-batches [data-bcol]').forEach(el=>{
       const k=el.dataset.bcol;
@@ -4758,7 +4751,9 @@
   }
   document.getElementById('batchColBtn')?.addEventListener('click',e=>{e.stopPropagation();document.getElementById('batchColPanel')?.classList.toggle('hidden');});
   document.addEventListener('click',e=>{ if(!e.target.closest('#batchColBtn') && !e.target.closest('#batchColPanel')) document.getElementById('batchColPanel')?.classList.add('hidden'); });
+  window.applyBatchCols=applyBatchCols;
   buildBatchColPanel();
+  applyBatchCols();
 
   document.body.insertAdjacentHTML('beforeend',
     '<div id="blConfirm" class="bl-pop hidden" role="dialog" aria-modal="false">'+
