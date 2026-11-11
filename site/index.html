@@ -1000,10 +1000,10 @@
 .bd-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .bd-ring-c b{font-size:23px;font-weight:650;letter-spacing:-.6px;color:#0F172A;line-height:1;}
 .bd-ring-c span{margin-top:6px;font-size:10.5px;color:#96A2B4;}
-.bd-nums{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;flex:1;}
+.bd-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px;flex:1;}
 .bd-num>span{display:block;font-size:10px;letter-spacing:.06em;color:#96A2B4;}
 .bd-num i span{display:inline;font-size:inherit;color:inherit;letter-spacing:0;}
-.bd-num>b{display:block;margin-top:8px;font-size:20px;font-weight:600;letter-spacing:-.5px;color:#0F172A;font-variant-numeric:tabular-nums;line-height:1.1;}
+.bd-num>b{display:block;margin-top:8px;font-size:22px;font-weight:600;letter-spacing:-.5px;color:#0F172A;font-variant-numeric:tabular-nums;line-height:1.1;}
 .bd-num>i{display:block;margin-top:8px;font-style:normal;font-size:10.5px;color:#96A2B4;}
 .bd-num i em{font-style:normal;font-weight:600;color:#0E9F6E;}
 .bd-num i em.bad{color:#D64545;}
@@ -1911,9 +1911,9 @@
           <div class="form-section" style="margin-top:0;">
           <div class="section-title-row"><div><h3>基础信息</h3></div></div>
           <div class="form-grid">
-            <div class="form-field"><label>BusinessID</label><select class="select mono" id="taskBusinessId"><option value="MTN_Uganda">MTN_Uganda</option><option value="MTN_Ghana">MTN_Ghana</option><option value="MTN_CDI">MTN_CDI</option></select></div>
-            <div class="form-field"><label>产品</label><select class="select" id="taskProduct"><option>MoMoAdvance</option><option>NuKash</option><option>BL</option></select></div>
-            <div class="form-field"><label>Task 名称</label><input class="input" id="taskNameInput" value="Uganda OD 月度调额" /></div>
+            <div class="form-field"><label>BusinessID <span class="req">*</span></label><select class="select mono" id="taskBusinessId"><option value="MTN_Uganda">MTN_Uganda</option><option value="MTN_Ghana">MTN_Ghana</option><option value="MTN_CDI">MTN_CDI</option></select></div>
+            <div class="form-field"><label>产品 <span class="req">*</span></label><select class="select" id="taskProduct"><option>MoMoAdvance</option><option>NuKash</option><option>BL</option></select></div>
+            <div class="form-field"><label>Task 名称 <span class="req">*</span></label><input class="input" id="taskNameInput" value="Uganda OD 月度调额" /></div>
             <div class="form-field full"><label>Task 描述</label><textarea id="taskDesc" placeholder="说明该 Task 的稳定业务目标、适用 OPCO 和默认产出">用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。</textarea></div>
           </div>
         </div>
@@ -1921,7 +1921,7 @@
 
         <div class="wizard-step" data-wizard="1">
           <div class="form-section task-group-section" style="margin-top:0">
-            <div class="section-title-row"><div><h3>人群选择</h3><p>多选后按并集计算，右侧即时预览实际可运行人数。</p></div><span class="badge green" id="taskCoverageBadge">覆盖率 97.2%</span></div>
+            <div class="section-title-row"><div><h3>人群选择 <span class="req">*</span></h3><p>多选后按并集计算，右侧即时预览实际可运行人数。</p></div><span class="badge green" id="taskCoverageBadge">覆盖率 97.2%</span></div>
             <div class="group-workbench">
               <div class="group-picker-wrap">
                 <div class="system-picker-search"><svg class="icon icon-sm"><use href="#i-search"/></svg><input class="input" id="taskGroupSearch" type="search" placeholder="请输入关键词搜索" aria-label="搜索人群组"></div>
@@ -1945,7 +1945,7 @@
           <div class="form-section" style="margin-top:0;">
           <div class="section-title-row"><div><h3>策略配置</h3></div></div>
           <div class="form-grid">
-            <div class="form-field full"><label>选择策略</label><select class="select" id="taskStrategySelect"></select></div>
+            <div class="form-field full"><label>选择策略 <span class="req">*</span></label><select class="select" id="taskStrategySelect"></select></div>
             <div class="form-field"><label>版本类型</label><select class="select" id="taskVersionType"><option>正式</option><option>测试</option></select></div>
             <div class="form-field"><label>策略版本</label><select class="select mono" id="taskStrategyVersion"></select></div>
           </div>
@@ -4635,13 +4635,11 @@
           '<div class="bd-num"><span>完成分片</span><b id="bdShards">'+fmtCount(done)+'</b><i>共 <span id="bdShardTotal">'+fmtCount(shards)+'</span></i></div>'+
           '<div class="bd-num"><span>重试分片</span><b id="bdRetried">'+fmtCount(retried)+'</b><i>发生过重试</i></div>'+
           '<div class="bd-num"><span>失败分片</span><b id="bdFailed" style="color:'+(fail?'#D64545':'#0F172A')+'">'+fmtCount(fail)+'</b><i>最终仍失败</i></div>'+
-          '<div class="bd-num"><span>平均速度</span><b id="bdSpeed">'+speed+' 万/h</b><i>&nbsp;</i></div>'+
-          '<div class="bd-num"><span>总耗时</span><b id="bdTotal">'+(p>=100?hhmm(totalMin):hhmm(totalMin*p/100))+'</b><i id="bdTotalSub">'+(p>=100?'&nbsp;':'计时中')+'</i></div>'+
         '</div></div></div>'+
       '<div class="bd-sec"><div class="bd-sh"><b>跑批速度</b><span>万人 / 小时</span></div>'+chart(b)+'</div>'+
       
       '<div class="bd-sec bd-split">'+
-        '<div><div class="bd-sh"><b>日志</b><span>仅展示异常</span></div><div class="bd-log">'+
+        '<div><div class="bd-sh"><b>监控与告警</b><span>仅展示异常</span></div><div class="bd-log">'+
           evts.map(e=>'<div class="lg"><span class="t">'+e[0]+'</span><span class="lv '+(e[3]==='warn'?'warn':'ok')+'">'+(e[3]==='warn'?'ERROR':'WARN')+'</span><span class="m">'+e[1]+'</span><span class="r">'+e[2]+'</span></div>').join('')+
         '</div></div>'+
         '<div><div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
