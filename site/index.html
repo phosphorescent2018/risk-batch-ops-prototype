@@ -1136,12 +1136,16 @@
 #view-batches .bl-acts>*{flex:0 0 26px;}
 #view-batches .bl-table th[data-bcol="id"]{width:112px;}
 #view-batches .bl-table th[data-bcol="task"]{width:auto;}
-#view-batches .bl-table th[data-bcol="gen"]{width:132px;}
-#view-batches .bl-table th[data-bcol="start"]{width:124px;}
-#view-batches .bl-table th[data-bcol="end"]{width:124px;}
-#view-batches .bl-table th[data-bcol="slice"]{width:88px;}
+#view-batches .bl-table th[data-bcol="users"]{width:96px;}
+#view-batches .bl-table th[data-bcol="success"]{width:96px;}
+#view-batches .bl-table th[data-bcol="rate"]{width:80px;}
 #view-batches .bl-table th[data-bcol="verify"]{width:96px;}
-#view-batches .bl-table th[data-bcol="run"]{width:100px;}
+#view-batches .bl-table th[data-bcol="run"]{width:96px;}
+#view-batches .bl-table th[data-bcol="gen"]{width:132px;}
+#view-batches .bl-table th[data-bcol="started"]{width:132px;}
+#view-batches .bl-table th[data-bcol="ended"]{width:132px;}
+#view-batches .bl-table th[data-bcol="duration"]{width:88px;}
+#view-batches .bl-table th[data-bcol="slice"]{width:96px;}
 #view-batches .bl-table th[data-bcol="actions"]{width:160px;}
 #view-batches .bl-table td,#view-batches .bl-table th{padding-left:8px;padding-right:8px;}
 #view-batches .bl-table td{font-size:11px;}
@@ -1762,7 +1766,7 @@
 
         <div class="bl-table">
           <table>
-            <thead><tr><th data-bcol="id">批次号</th><th data-bcol="task">Task Name</th><th data-bcol="gen">生成时间</th><th data-bcol="start">开始时间</th><th data-bcol="end">结束时间</th><th data-bcol="slice">切片日期</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="actions">操作</th></tr></thead>
+            <thead><tr><th data-bcol="id">批次号</th><th data-bcol="task">Task Name</th><th data-bcol="users">批次人数</th><th data-bcol="success">成功人数</th><th data-bcol="rate">成功率</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="gen">生成时间</th><th data-bcol="started">执行开始时间</th><th data-bcol="ended">执行结束时间</th><th data-bcol="duration">总耗时</th><th data-bcol="slice">切片日期</th><th data-bcol="actions">操作</th></tr></thead>
             <tbody id="batchTableBody"></tbody>
           </table>
         </div>
@@ -3334,6 +3338,10 @@
         const bs = batchStates[b.id] || batchStates.B20260624001;
         const manifest = getManifest(b.id);
         const verifyFailed = manifest.status==='FAILED';
+        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'};
+        const RUNCLS={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
+        const runLabel=CANON[b.run]||b.run;
+        const runClass=RUNCLS[runLabel]||'gray';
         const mc = manifestCounts(manifest);
         const isRunning = b.run === '运行中';
         const isInterrupted = b.run === '中断待续跑';
@@ -3355,20 +3363,23 @@
         const actMonitor='';
         const actPause=isRunning?ic('i-pause','暂停',`data-batch-act="pause" data-batch-id="${b.id}"`)
           :isPaused?ic('i-play','恢复',`data-batch-act="resume" data-batch-id="${b.id}"`)
-          :(isInterrupted && !verifyFailed)?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
-        const actStop=(isRunning||isPaused||isInterrupted||preRun)?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
+          :(isInterrupted && !verifyFailed && runLabel!=='失败')?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
+        const actStop=((isRunning||isPaused||isInterrupted||preRun) && runLabel!=='失败')?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const rowTask=tasks.find(t=>t.id===b.taskId);
         const manualReport=rowTask && rowTask.reportGen==='手动生成';
         const repLabel=!finished ? '跑批完成后可生成报告' : (bs.reportGenerated ? '查看报告' : (manualReport ? '生成报告' : '查看报告'));
         const actReport=ic('i-report',repLabel,`data-report-action="${b.id}"`,!finished);
         const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isInterrupted ? `<span class="badge amber">批处理中断</span><div class="cell-sub">checkpoint ${fmtCount(b.checkpointShards||6327)} / 9,887</div>` : isPaused ? '<span class="badge amber">已暂停</span><div class="cell-sub">停止派发新分片，可恢复</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
-        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'};
-        const RUNCLS={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
-        const runLabel=CANON[b.run]||b.run;
-        const runClass=RUNCLS[runLabel]||'gray';
         const STARTED_STATES=['运行中','已暂停','中断待续跑','已完成','部分失败','已停止'];
-        const startAt=b.startedAt || (STARTED_STATES.includes(b.run) ? b.requestedAt : '—');
-        const endAt=b.endedAt || '—';
+        const userCount=Number(String(b.people||'').replace(/[^0-9]/g,''))||0;
+        const successCount = runLabel==='成功' ? userCount
+          : runLabel==='失败' ? Math.round(userCount*0.96)
+          : (runLabel==='运行中'||runLabel==='暂停') ? Math.round(userCount*(Number(b.progress)||0)/100)
+          : null;
+        const rateText = (successCount!=null && userCount) ? ((successCount/userCount*100).toFixed(1)+'%') : '—';
+        const execStart=b.startedAt || (STARTED_STATES.includes(b.run) ? b.requestedAt : '—');
+        const execEnd=b.endedAt || '—';
+        const durText=(execStart!=='—'&&execEnd!=='—')?(()=>{const a=new Date(execStart.replace(' ','T')),z=new Date(execEnd.replace(' ','T'));if(isNaN(a)||isNaN(z))return '—';const m=Math.max(0,Math.round((z-a)/60000));const h=Math.floor(m/60);return (h?h+'h':'')+((m%60)?(m%60)+'min':(h?'':'0min'));})():'—';
         const taskName = (tasks.find(t=>t.id===b.taskId)||{}).name || b.taskId || '—';
         const verifyLabel = manifest.status==='FAILED' ? '核验失败'
           : ((mc.BLOCK||0)>0 || (mc.WARN||0)>0) ? '核验不通过'
@@ -3382,12 +3393,16 @@
         return `<tr data-row-batch="${b.id}">
           <td data-bcol="id"><div class="bl-id">${b.id}</div></td>
           <td data-bcol="task"><div class="bl-task">${taskName}</div></td>
-          <td data-bcol="gen"><div class="bl-mono">${b.requestedAt||"—"}</div></td>
-          <td data-bcol="start"><div class="bl-mono">${startAt}</div></td>
-          <td data-bcol="end"><div class="bl-mono">${endAt}</div></td>
-          <td data-bcol="slice"><div class="bl-mono">${b.expectedSliceDate||'—'}</div></td>
+          <td data-bcol="users"><div class="bl-mono">${userCount?fmtCount(userCount):'—'}</div></td>
+          <td data-bcol="success"><div class="bl-mono">${successCount!=null?fmtCount(successCount):'—'}</div></td>
+          <td data-bcol="rate"><div class="bl-rate">${rateText}</div></td>
           <td data-bcol="verify"><div>${badge(verifyLabel,verifyClass)}</div></td>
           <td data-bcol="run"><div class="bl-state-cell">${badge(runLabel,runClass)}</div></td>
+          <td data-bcol="gen"><div class="bl-mono">${b.requestedAt||"—"}</div></td>
+          <td data-bcol="started"><div class="bl-mono">${execStart}</div></td>
+          <td data-bcol="ended"><div class="bl-mono">${execEnd}</div></td>
+          <td data-bcol="duration"><div class="bl-mono">${durText}</div></td>
+          <td data-bcol="slice"><div class="bl-mono">${b.expectedSliceDate||'—'}</div></td>
           <td data-bcol="actions"><div class="bl-acts">${actDetail}${actMonitor}${actPause}${actStop}${actReport}</div></td>
         </tr>`;
       }).join('');
@@ -4733,9 +4748,9 @@
   if(st) st.addEventListener('change',function(){ state.batchStatus=this.value; renderBatches(); });
 
   /* Batch 列表列设置 */
-  const BCOL_DEFS=[['task','Task Name'],['gen','生成时间'],['start','开始时间'],['end','结束时间'],['slice','切片日期'],['verify','核验状态'],['run','进行状态']];
+  const BCOL_DEFS=[['task','Task Name'],['users','批次人数'],['success','成功人数'],['rate','成功率'],['verify','核验状态'],['run','进行状态'],['gen','生成时间'],['started','执行开始时间'],['ended','执行结束时间'],['duration','总耗时'],['slice','切片日期']];
   const bcolState={}; BCOL_DEFS.forEach(([k])=>bcolState[k]=true);
-  bcolState.start=false; bcolState.end=false;
+  ['success','gen','started','ended','duration','slice'].forEach(k=>bcolState[k]=false);
   function applyBatchCols(){
     document.querySelectorAll('#view-batches [data-bcol]').forEach(el=>{
       const k=el.dataset.bcol;
