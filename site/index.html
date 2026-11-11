@@ -4544,7 +4544,7 @@
         ['03:10','BE 内存超限','降并发后恢复','ok'],
       ];
     return '<div class="bd-sec first"><div class="bd-overview">'+
-        '<div class="bd-ring">'+ring(p)+'<div class="bd-ring-c"><b id="bdPct">'+p.toFixed(1)+'%</b><span id="bdPctLabel">'+(p>=100?'已结束':(p>0?'进行中':'待开始'))+'</span></div></div>'+
+        '<div class="bd-ring">'+ring(p)+'<div class="bd-ring-c"><b id="bdPct">'+p.toFixed(1)+'%</b><span id="bdPctLabel">'+(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')))+'</span></div></div>'+
         '<div class="bd-nums">'+
           '<div class="bd-num"><span>已处理</span><b id="bdDone">'+fmtCount(Math.round(people*p/100))+'</b><i id="bdRemain">'+(p>=100?'&nbsp;':'剩余 '+hhmm(totalMin*(1-p/100)))+'</i></div>'+
           '<div class="bd-num"><span>完成分片</span><b id="bdShards">'+fmtCount(done)+'</b><i>共 <span id="bdShardTotal">'+fmtCount(shards)+'</span></i></div>'+
