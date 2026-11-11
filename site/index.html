@@ -1451,9 +1451,9 @@
           <div class="hc-head">
             <div>
               <h2>数据健康日历</h2>
-              <p>最近 15 天 · 每天 <b>04:00</b> 与 <b>16:00</b>（北京时间）各自动扫描一次，数据每日更新两次；点击任意一天查看当日结果。</p>
+              <p>最近 15 天 · 每日 <b>04:00</b>、<b>16:00</b>（北京时间）各扫描一次，每日更新 2 次数据；点击任意一天查看当日结果。</p>
             </div>
-            <div class="hc-legend"><span><i class="ok"></i>正常</span><span><i class="bad"></i>异常</span><span class="sum" id="hcSummary">—</span><span class="hc-cadence" title="每天 04:00 与 16:00（北京时间）自动扫描"><svg class="icon icon-sm"><use href="#i-clock"/></svg>每日 2 次 · 04:00 / 16:00</span></div>
+            <div class="hc-legend"><span><i class="ok"></i>正常</span><span><i class="bad"></i>异常</span><span class="sum" id="hcSummary">—</span><span class="hc-cadence" id="hcLastScan" title="每日 04:00 / 16:00（北京时间）自动扫描"><svg class="icon icon-sm"><use href="#i-clock"/></svg>上次更新 —</span></div>
           </div>
           <div class="hc-days" id="hcDays"></div>
           <div class="hc-pop" id="hcPop"></div>
@@ -4813,6 +4813,12 @@
     wrap.innerHTML=hcDaysCache.map((d,i)=>`<button type="button" class="hc-day ${d.bad?'bad':'ok'}" data-hc-day="${i}"><span class="m">${d.month}</span><span class="bar"></span><span class="s">${d.bad?'异常':'正常'}</span></button>`).join('');
     const bad=hcDaysCache.filter(d=>d.bad).length;
     const sum=document.getElementById('hcSummary'); if(sum) sum.textContent=`${15-bad} 天正常 · ${bad} 天异常`;
+    const last=document.getElementById('hcLastScan');
+    if(last){
+      const now=new Date(), h=now.getHours();
+      const at = h>=16 ? '今天 16:00' : (h>=4 ? '今天 04:00' : '昨天 16:00');
+      last.innerHTML='<svg class="icon icon-sm"><use href="#i-clock"/></svg>上次更新 '+at;
+    }
   }
   function showHcPop(idx,anchor){
     const pop=document.getElementById('hcPop'), d=hcDaysCache[idx];
