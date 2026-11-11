@@ -3323,6 +3323,7 @@
       $('#batchTableBody').innerHTML = filtered.map(b => {
         const bs = batchStates[b.id] || batchStates.B20260624001;
         const manifest = getManifest(b.id);
+        const verifyFailed = manifest.status==='FAILED';
         const mc = manifestCounts(manifest);
         const isRunning = b.run === '运行中';
         const isInterrupted = b.run === '中断待续跑';
@@ -3344,7 +3345,7 @@
         const actMonitor='';
         const actPause=isRunning?ic('i-pause','暂停',`data-batch-act="pause" data-batch-id="${b.id}"`)
           :isPaused?ic('i-play','恢复',`data-batch-act="resume" data-batch-id="${b.id}"`)
-          :isInterrupted?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
+          :(isInterrupted && !verifyFailed)?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
         const actStop=(isRunning||isPaused||isInterrupted||preRun)?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const rowTask=tasks.find(t=>t.id===b.taskId);
         const manualReport=rowTask && rowTask.reportGen==='手动生成';
