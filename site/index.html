@@ -4529,8 +4529,7 @@
           '<div class="bd-num"><span>总耗时</span><b id="bdTotal">'+(p>=100?hhmm(totalMin):hhmm(totalMin*p/100))+'</b><i id="bdTotalSub">'+(p>=100?'&nbsp;':'计时中')+'</i></div>'+
         '</div></div></div>'+
       '<div class="bd-sec"><div class="bd-sh"><b>跑批速度</b><span>万人 / 小时</span></div>'+chart(b)+'</div>'+
-      '<div class="bd-sec"><div class="bd-sh"><b>分片进度</b><span>按完成比例</span></div><div class="bd-dense" id="bdDense">'+cells+'</div>'+
-        '<div class="bd-shardfoot"><span>完成<b id="bdFootDone">'+fmtCount(done)+'</b></span><span>失败<b>'+fail+'</b></span><span>待处理<b id="bdFootWait">'+fmtCount(Math.max(0,shards-done-fail))+'</b></span><span>重试后成功<b id="bdFootRetry">'+(fail?0:1)+'</b></span></div></div>'+
+      
       '<div class="bd-sec bd-split">'+
         '<div><div class="bd-sh"><b>异常与重试</b></div><div class="bd-rows">'+
           '<div class="bd-row"><span>分片重试</span><b>'+(fail?fail*3:12)+' 次 · 已执行</b></div>'+
