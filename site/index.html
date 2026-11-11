@@ -3369,7 +3369,7 @@
         const actPause=isRunning?ic('i-pause','暂停',`data-batch-act="pause" data-batch-id="${b.id}"`)
           :isPaused?ic('i-play','恢复',`data-batch-act="resume" data-batch-id="${b.id}"`)
           :(isInterrupted && !verifyFailed && runLabel!=='失败')?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
-        const actStop=((isRunning||isPaused||isInterrupted||preRun) && runLabel!=='失败')?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
+        const actStop=((isRunning||isPaused||isInterrupted) && runLabel!=='失败')?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const rowTask=tasks.find(t=>t.id===b.taskId);
         const manualReport=rowTask && rowTask.reportGen==='手动生成';
         const repLabel=!finished ? '跑批完成后可生成报告' : (bs.reportGenerated ? '查看报告' : (manualReport ? '生成报告' : '查看报告'));
