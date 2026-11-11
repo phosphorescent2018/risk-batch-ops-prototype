@@ -1680,14 +1680,11 @@
           </div>
           <select class="bl-filter" id="batchStatusFilter" aria-label="批次状态">
             <option value="">全部状态</option>
-            <option value="运行中">运行中</option>
-            <option value="已完成">已完成</option>
-            <option value="部分失败">部分失败</option>
-            <option value="中断待续跑">中断待续跑</option>
-            <option value="已暂停">已暂停</option>
-            <option value="已停止">已停止</option>
             <option value="待启动">待启动</option>
-            <option value="已就绪">已就绪</option>
+            <option value="运行中">运行中</option>
+            <option value="暂停">暂停</option>
+            <option value="成功">成功</option>
+            <option value="失败">失败</option>
           </select>
           <span class="bl-count" id="batchCount">共 0 条</span>
         </div>
@@ -2244,7 +2241,7 @@
 
     const batches = [
       { id:'B20260627001', opco:'MTN Uganda', businessDate:'2026-06-27', expectedSliceDate:'2026-06-25', requestedAt:'2026-06-27 22:00', sliceAt:'2026-06-25 21:50', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,180' },
-      { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'检查中', runClass:'amber', progress:0, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
+      { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
       { id:'B20260623001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-23', expectedSliceDate:'2026-06-21', requestedAt:'2026-06-23 22:00', sliceAt:'2026-06-21 21:50', compareBatch:'B20260524001', run:'部分失败', runClass:'red', progress:96, review:'已应用干预', reviewClass:'violet', downstream:'待发布', downstreamClass:'amber', report:'2 / 4', reportClass:'amber', people:'24,980' },
       { id:'B20260622001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-22', expectedSliceDate:'2026-06-20', requestedAt:'2026-06-22 22:00', sliceAt:'2026-06-20 21:50', compareBatch:'B20260524001', run:'中断待续跑', runClass:'amber', progress:64, review:'中断', reviewClass:'amber', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,110', interruptionReason:'Doris BE 2/3 不可用，批处理调度整体暂停', checkpointAt:'2026-06-23 01:28', checkpointShards:6327 },
       { id:'B20260625001', opco:'MTN Uganda', businessDate:'2026-06-25', expectedSliceDate:'2026-06-23', requestedAt:'2026-06-25 00:10', sliceAt:'2026-06-23 21:50', compareBatch:'B20260624001', run:'运行中', runClass:'blue', progress:64, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,120' },
@@ -2570,9 +2567,10 @@
       if (!manifestStates[id]) {
         const b = batches.find(x => x.id === id);
         const completed = b && (b.run === '已完成' || b.run === '部分失败');
+        const failedCheck = id === 'B20260622001';
         manifestStates[id] = {
           version:'v2',
-          status:completed ? 'CLOSED' : 'FROZEN',
+          status: failedCheck ? 'FAILED' : (completed ? 'CLOSED' : 'FROZEN'),
           gate:completed ? 'STARTED' : 'SCHEDULED',
           scheduledAt:b?.requestedAt || '--',
           sla:'06:00',
@@ -3255,7 +3253,7 @@
       const st=state.batchStatus||'';
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
       if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q));
-      if(st) filtered = filtered.filter(b=>b.run===st);
+      if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
       filtered = filtered.slice(0,5);
       const count = $('#batchCount');
       if (count) count.textContent = `共 ${filtered.length} 条`;
@@ -3289,12 +3287,18 @@
         const actStop=(isRunning||isPaused||isInterrupted||preRun)?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const actReport=ic('i-report',finished?'查看报告':'跑批完成后可生成报告',`data-report-action="${b.id}"`,!finished);
         const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isInterrupted ? `<span class="badge amber">批处理中断</span><div class="cell-sub">checkpoint ${fmtCount(b.checkpointShards||6327)} / 9,887</div>` : isPaused ? '<span class="badge amber">已暂停</span><div class="cell-sub">停止派发新分片，可恢复</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
+        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'};
+        const RUNCLS={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
+        const runLabel=CANON[b.run]||b.run;
+        const runClass=RUNCLS[runLabel]||'gray';
         const taskName = (tasks.find(t=>t.id===b.taskId)||{}).name || b.taskId || '—';
-        const verifyLabel = ((mc.BLOCK||0)>0 || (mc.WARN||0)>0) ? '核验不通过'
+        const verifyLabel = manifest.status==='FAILED' ? '核验失败'
+          : ((mc.BLOCK||0)>0 || (mc.WARN||0)>0) ? '核验不通过'
           : manifest.status==='CHECKING' ? '核验中'
           : ((mc.PENDING||0)>0 || manifest.status==='WAITING_CHECK') ? '待核验'
           : '核验通过';
-        const verifyClass = verifyLabel==='核验不通过' ? 'red'
+        const verifyClass = verifyLabel==='核验失败' ? 'red'
+          : verifyLabel==='核验不通过' ? 'red'
           : verifyLabel==='核验中' ? 'blue'
           : verifyLabel==='待核验' ? 'gray' : 'green';
         return `<tr data-row-batch="${b.id}">
@@ -3303,7 +3307,7 @@
           <td><div class="bl-mono">${b.requestedAt||"—"}</div></td>
           <td><div class="bl-mono">${b.expectedSliceDate||'—'}</div></td>
           <td><div>${badge(verifyLabel,verifyClass)}</div></td>
-          <td><div class="bl-state-cell">${badge(b.run,b.runClass)}</div></td>
+          <td><div class="bl-state-cell">${badge(runLabel,runClass)}</div></td>
           <td><div class="bl-acts">${actDetail}${actMonitor}${actPause}${actStop}${actReport}</div></td>
         </tr>`;
       }).join('');
