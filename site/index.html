@@ -1194,32 +1194,39 @@
 </style>
 
 <style id="taskPageStyle">
-.hc-strip{background:#fff;border:1px solid var(--line-soft);border-radius:14px;padding:15px 18px 16px;box-shadow:var(--shadow-sm);margin-bottom:18px;position:relative;}
-.hc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
-.hc-head h2{font-size:14px;margin:0 0 3px;}
-.hc-head p{margin:0;font-size:11px;color:var(--ink-400);}
-.hc-legend{display:flex;align-items:center;gap:14px;font-size:10px;color:var(--ink-500);}
+.hc-strip{background:#fff;border:1px solid #EDF0F5;border-radius:14px;padding:18px 20px 20px;margin-bottom:18px;position:relative;}
+.hc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+.hc-head h2{font-size:14px;margin:0 0 4px;letter-spacing:-.1px;}
+.hc-head p{margin:0;font-size:11.5px;color:#96A2B4;line-height:1.6;}
+.hc-head p b{color:#5A6A80;font-weight:600;}
+.hc-legend{display:flex;align-items:center;gap:16px;font-size:10.5px;color:#7C8798;}
 .hc-legend span{display:inline-flex;align-items:center;gap:6px;}
-.hc-legend i{width:9px;height:9px;border-radius:3px;display:inline-block;}
-.hc-legend i.ok{background:var(--teal-600);}
-.hc-legend i.bad{background:var(--red-600);}
-.hc-days{display:grid;grid-template-columns:repeat(15,minmax(0,1fr));gap:7px;}
-.hc-day{position:relative;border:0;border-radius:9px;min-height:54px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#fff;transition:transform .14s ease, box-shadow .14s ease;font-family:inherit;}
-.hc-day:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.hc-day.ok{background:var(--teal-600);}
-.hc-day.bad{background:var(--red-600);}
-.hc-day.selected{box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--blue-500);}
-.hc-day .m{font-size:11px;font-weight:750;line-height:1.1;}
-.hc-day .s{font-size:9px;font-weight:650;line-height:1;background:rgba(255,255,255,.2);border-radius:4px;padding:2px 5px;}
-.hc-pop{position:absolute;z-index:30;width:262px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-md);padding:13px 14px;display:none;}
+.hc-legend i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.hc-legend i.ok{background:#34B27B;}
+.hc-legend i.bad{background:#E06B6B;}
+.hc-legend .sum{color:#96A2B4;}
+.hc-cadence{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:6px;background:#F4F7FB;color:#5A6A80;font-size:10px;font-weight:600;border:1px solid #E8EDF4;}
+.hc-cadence .icon{width:12px;height:12px;color:#8C99AB;}
+.hc-days{display:grid;grid-template-columns:repeat(15,minmax(0,1fr));gap:6px;}
+.hc-day{border:1px solid #EDF0F5;background:#fff;border-radius:10px;min-height:66px;padding:10px 6px 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;transition:border-color .15s ease, background .15s ease, transform .15s ease;font-family:inherit;}
+.hc-day:hover{border-color:#D9E2F0;background:#FBFCFE;transform:translateY(-1px);}
+.hc-day.selected{box-shadow:0 0 0 3px rgba(47,107,255,.18);border-color:#2F6BFF;}
+.hc-day .m{font-size:11px;font-weight:600;color:#5A6A80;line-height:1;letter-spacing:-.1px;}
+.hc-day .bar{width:64%;height:4px;border-radius:2px;background:#E9EDF3;}
+.hc-day.ok .bar{background:#34B27B;}
+.hc-day.bad .bar{background:#E06B6B;}
+.hc-day .s{font-size:10px;line-height:1;color:#96A2B4;}
+.hc-day.ok .s{color:#0E9F6E;}
+.hc-day.bad .s{color:#D64545;}
+.hc-pop{position:absolute;z-index:30;width:270px;background:#fff;border:1px solid #E4E9F0;border-radius:12px;box-shadow:0 16px 40px rgba(8,16,31,.16);padding:14px 15px;display:none;}
 .hc-pop.show{display:block;}
-.hc-pop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;}
-.hc-pop-head strong{font-size:12px;}
-.hc-pop-list{display:flex;flex-direction:column;gap:7px;}
-.hc-pop-row{display:flex;gap:8px;align-items:flex-start;font-size:10.5px;color:var(--ink-600);line-height:1.45;}
-.hc-pop-row i{flex:none;width:6px;height:6px;border-radius:50%;margin-top:5px;background:var(--teal-600);}
-.hc-pop-row.bad i{background:var(--red-600);}
-.hc-pop-foot{margin-top:10px;padding-top:9px;border-top:1px dashed var(--line-soft);font-size:10px;color:var(--ink-400);}
+.hc-pop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.hc-pop-head strong{font-size:12px;color:#0F172A;}
+.hc-pop-list{display:flex;flex-direction:column;gap:8px;}
+.hc-pop-row{display:flex;gap:8px;align-items:flex-start;font-size:11px;color:#5A6A80;line-height:1.5;}
+.hc-pop-row i{flex:none;width:6px;height:6px;border-radius:50%;margin-top:5px;background:#34B27B;}
+.hc-pop-row.bad i{background:#E06B6B;}
+.hc-pop-row strong{color:#33415C;font-weight:600;}
 @media (max-width:900px){ .hc-days{grid-template-columns:repeat(8,minmax(0,1fr));} }
 @media (max-width:560px){ .hc-days{grid-template-columns:repeat(5,minmax(0,1fr));} }
 
@@ -1429,7 +1436,7 @@
               <h2>数据健康日历</h2>
               <p>最近 15 天 · 每天 <b>04:00</b> 与 <b>16:00</b>（北京时间）各自动扫描一次，数据每日更新两次；点击任意一天查看当日结果。</p>
             </div>
-            <div class="hc-legend"><span><i class="ok"></i>正常</span><span><i class="bad"></i>异常</span><span class="mono" id="hcSummary">—</span><span class="hc-cadence" title="每天 04:00 与 16:00（北京时间）自动扫描"><svg class="icon icon-sm"><use href="#i-clock"/></svg>每日 2 次 · 04:00 / 16:00</span></div>
+            <div class="hc-legend"><span><i class="ok"></i>正常</span><span><i class="bad"></i>异常</span><span class="sum" id="hcSummary">—</span><span class="hc-cadence" title="每天 04:00 与 16:00（北京时间）自动扫描"><svg class="icon icon-sm"><use href="#i-clock"/></svg>每日 2 次 · 04:00 / 16:00</span></div>
           </div>
           <div class="hc-days" id="hcDays"></div>
           <div class="hc-pop" id="hcPop"></div>
@@ -4774,7 +4781,7 @@
   function renderHcStrip(){
     const wrap=document.getElementById('hcDays'); if(!wrap) return;
     hcDaysCache=hcDayData();
-    wrap.innerHTML=hcDaysCache.map((d,i)=>`<button type="button" class="hc-day ${d.bad?'bad':'ok'}" data-hc-day="${i}"><span class="m">${d.month}</span><span class="s">${d.bad?'异常':'正常'}</span></button>`).join('');
+    wrap.innerHTML=hcDaysCache.map((d,i)=>`<button type="button" class="hc-day ${d.bad?'bad':'ok'}" data-hc-day="${i}"><span class="m">${d.month}</span><span class="bar"></span><span class="s">${d.bad?'异常':'正常'}</span></button>`).join('');
     const bad=hcDaysCache.filter(d=>d.bad).length;
     const sum=document.getElementById('hcSummary'); if(sum) sum.textContent=`${15-bad} 天正常 · ${bad} 天异常`;
   }
