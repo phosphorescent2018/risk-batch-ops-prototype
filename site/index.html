@@ -1844,15 +1844,11 @@
                 <div class="group-profile">
                   <div class="group-profile-mark"><svg class="icon"><use href="#i-users"/></svg></div>
                   <div class="group-profile-main"><strong id="taskGroupName">已选择 1 个客户分组</strong><span id="taskGroupDescription">选择多个人群组时，按并集计算实际圈选人数。</span></div>
-                  <div class="group-profile-metrics"><div class="group-profile-metric"><span>并集人数</span><strong id="taskGroupCount">589,272</strong></div><div class="group-profile-metric"><span>最近更新</span><strong id="taskGroupUpdated">10-28 23:40</strong></div><div class="group-profile-metric"><span>规则版本</span><strong>自动冻结</strong></div></div>
+                  <div class="group-profile-metrics"><div class="group-profile-metric"><span>并集人数</span><strong id="taskGroupCount">589,272</strong></div><div class="group-profile-metric"><span>最近更新</span><strong id="taskGroupUpdated">10-28 23:40</strong></div></div>
                 </div>
-                <div class="preview-stat-grid">
-                  <div class="summary-item"><span>已选人群</span><strong id="taskCandidateCount">589,272</strong></div>
-                  <div class="summary-item"><span>数据可匹配</span><strong id="taskMatchedCount">572,481</strong></div>
-                  <div class="summary-item"><span>最终可运行</span><strong id="taskRunnableCount">568,902</strong></div>
-                </div>
-                <div class="input-validation pass" id="taskInputValidation"><span class="check-icon"><svg class="icon icon-sm"><use href="#i-check"/></svg></span><div><strong id="taskInputValidationTitle">可以使用</strong><span id="taskInputValidationCopy">所选人群组和当前数据来源匹配正常。</span></div><span class="badge green" id="taskInputValidationBadge">PASS</span></div>
-                <div id="taskInputRecoveryActions" style="display:none;justify-content:flex-end;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" id="taskUseLatestBtn">改用指定切片</button><button class="btn btn-sm" id="taskReselectGroupsBtn">重新选择人群组</button></div>
+                
+                
+                
               </div>
             </div>
           </div>
@@ -3726,7 +3722,7 @@
       set('#taskGroupCountBadge',`${fmtCount(g.count)} 人`); set('#taskGroupName',`已选择 ${groups.length} 个客户分组`); set('#taskGroupDescription',g.description);
       set('#taskGroupCount',fmtCount(g.count)); set('#taskGroupUpdated',g.updated); set('#taskCandidateCount',fmtCount(g.count));
       set('#taskMatchedCount',fmtCount(v.matched)); set('#taskRunnableCount',fmtCount(v.runnable)); set('#taskCoverageBadge',v.ok?'可以使用':'暂不可用');
-      $('#taskCoverageBadge').className=`badge ${v.ok?'green':'red'}`;
+      const cov=$('#taskCoverageBadge'); if(cov) cov.className=`badge ${v.ok?'green':'red'}`;
       set('#taskInputSummaryTitle',`${groups.length} 个客户分组 × ${taskInputSource==='latest'?'指定切片':sourceBatch||'历史 Batch 结果'}`);
       set('#taskInputSummaryCopy',v.ok?(taskInputSource==='latest'?'创建 Batch 时系统自动冻结人群规则版本、成员快照、指定切片日期和实际分区证据。':`创建 Batch 时系统自动使用 ${sourceBatch} 的最终结果，并冻结人群规则版本与匹配结果。`):v.copy);
       const flow=$('#taskMatchedCount')?.closest('.input-flow-node')?.querySelector('small');
@@ -3989,7 +3985,7 @@
       
       $$('.wizard-step').forEach(el=>el.classList.remove('hidden'));
       if($('#prevStepBtn')) $('#prevStepBtn').style.display='none';
-      if($('#nextStepBtn')) $('#nextStepBtn').textContent='保存并启用 Task';
+      if($('#nextStepBtn')) $('#nextStepBtn').textContent='创建 Task';
       const drawerBody=$('#taskDrawerBackdrop .drawer-body'); if(drawerBody) drawerBody.scrollTop=0;
     }
     function closeTaskDrawer() {
@@ -4985,6 +4981,8 @@
     if(document.getElementById('taskFilterStrategy')) document.getElementById('taskFilterStrategy').insertAdjacentHTML('afterbegin','<option value="">全部策略</option>');
     fillSelect(document.getElementById('dtStrategy'),TASK_STRATEGIES);
     fillSelect(document.getElementById('dtVersion'),TASK_VERSIONS,'12');
+    fillSelect(document.getElementById('taskStrategySelect'),TASK_STRATEGIES,'UG-OD-Monthly');
+    fillSelect(document.getElementById('taskStrategyVersion'),TASK_VERSIONS,'12');
 
     document.addEventListener('click',e=>{
       const hc=e.target.closest('[data-hc-day]');
