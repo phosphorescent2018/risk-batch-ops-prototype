@@ -1815,7 +1815,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
             <option value="">全部状态</option>
             <option value="待启动">待启动</option>
             <option value="运行中">运行中</option>
-            <option value="暂停">暂停</option>
+            
             <option value="成功">成功</option>
             <option value="失败">失败</option>
           </select>
@@ -2376,9 +2376,9 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 
     const batches = [
       { id:'B20260627001', opco:'MTN Uganda', businessDate:'2026-06-27', expectedSliceDate:'2026-06-25', requestedAt:'2026-06-27 22:00', sliceAt:'2026-06-25 21:50', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,180' },
-      { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'已暂停', runClass:'amber', progress:64, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
+      { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
       { id:'B20260623001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-23', expectedSliceDate:'2026-06-21', requestedAt:'2026-06-23 22:00', sliceAt:'2026-06-21 21:50', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, endedAt:'2026-06-24 06:40', review:'已应用干预', reviewClass:'violet', downstream:'待发布', downstreamClass:'amber', report:'2 / 4', reportClass:'amber', people:'24,980' },
-      { id:'B20260622001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-22', expectedSliceDate:'2026-06-20', requestedAt:'2026-06-22 22:00', sliceAt:'2026-06-20 21:50', compareBatch:'B20260524001', run:'中断待续跑', runClass:'amber', progress:64, review:'中断', reviewClass:'amber', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,110', interruptionReason:'Doris BE 2/3 不可用，批处理调度整体暂停', checkpointAt:'2026-06-23 01:28', endedAt:'2026-06-23 01:28', checkpointShards:6327 },
+      { id:'B20260622001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-22', expectedSliceDate:'2026-06-20', requestedAt:'2026-06-22 22:00', sliceAt:'2026-06-20 21:50', compareBatch:'B20260524001', run:'部分失败', runClass:'red', progress:100, review:'核验通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,110', endedAt:'2026-06-23 01:28' },
       { id:'B20260625001', opco:'MTN Uganda', businessDate:'2026-06-25', expectedSliceDate:'2026-06-23', requestedAt:'2026-06-25 00:10', sliceAt:'2026-06-23 21:50', compareBatch:'B20260624001', run:'运行中', runClass:'blue', progress:64, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,120' },
       { id:'B20260624001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-24', expectedSliceDate:'2026-06-22', requestedAt:'2026-06-24 22:00', sliceAt:'2026-06-22 21:50', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, review:'待提交包', reviewClass:'amber', downstream:'待发布', downstreamClass:'gray', report:'2 / 4', reportClass:'amber', people:'25,000' },
       { id:'B20260524001', opco:'MTN Uganda', businessDate:'2026-05-24', expectedSliceDate:'2026-05-22', requestedAt:'2026-05-24 21:30', sliceAt:'2026-05-22 21:20', compareBatch:'B20260424001', run:'已完成', runClass:'green', progress:100, review:'已完成', reviewClass:'green', downstream:'已对账', downstreamClass:'green', report:'4 / 4', reportClass:'green', people:'24,720' },
@@ -2776,7 +2776,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const runFinished=b?.run==='已完成'||b?.run==='部分失败';
       return {
         pre: block?['阻断','red']:warn?['有提示','amber']:pending?['待核验','gray']:['已通过','green'],
-        run: b?.run==='中断待续跑'?['已中断','red']:runStarted&&!runFinished?['运行中','amber']:runFinished?['已结束','green']:['未开始','gray'],
+        run: runStarted&&!runFinished?['运行中','amber']:runFinished?['已结束','green']:['未开始','gray'],
         post: runFinished?(b?.run==='部分失败'?['需处理','amber']:['已结束','green']):runStarted?['待结束','gray']:['未开始','gray']
       };
     }
@@ -2784,21 +2784,16 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const total=9887;
       if(b?.run==='部分失败') return {total,completed:9876,running:0,queued:0,retrying:0,retried:11,manual:11,permanent:11};
       if(b?.run==='已完成') return {total,completed:total,running:0,queued:0,retrying:0,retried:11,manual:0,permanent:0};
-      if(b?.run==='已暂停') return {total,completed:6327,running:0,queued:3541,retrying:10,retried:11,manual:1,permanent:1};
-      if(b?.run==='中断待续跑') return {total,completed:6327,running:0,queued:3541,retrying:0,retried:0,manual:0,permanent:0,interrupted:true};
       if(b?.run==='运行中') return {total,completed:6327,running:8,queued:3541,retrying:10,retried:11,manual:1,permanent:1};
       return {total,completed:0,running:0,queued:0,retrying:0,retried:0,manual:0,permanent:0};
     }
     function shardExceptionRows(b,compact=false){
-      if(b?.run==='中断待续跑'){
-        return `<div class="exception-row error"><code>BATCH PAUSED</code><div><strong>整批中断，等待续跑</strong><span>原因：${b.interruptionReason||'平台资源异常'} · 最后 checkpoint ${fmtCount(b.checkpointShards||6327)} / 9,887 · 不重跑已完成分片</span></div><span class="badge red">整批中断</span><div class="exception-actions"><button class="btn btn-sm primary" data-resume-batch="${b.id}">从断点继续</button><button class="btn btn-sm">查看中断日志</button></div></div>`;
-      }
       const finished=b?.run==='已完成';
       if(finished){
         return `<div class="exception-row retry"><code>自动恢复</code><div><strong>11 个分片已由系统自动重试恢复</strong><span>重试原因：网络超时 8 片 · Doris I/O 2 片 · 临时锁等待 1 片</span></div><span class="badge green">无需人工</span><div class="exception-actions"><button class="btn btn-sm" data-tab="shard">查看运行详情</button></div></div>`;
       }
       const partial=b?.run==='部分失败';
-      return `<div class="exception-row retry"><code>AUTO-RETRY</code><div><strong>网络 / I/O 异常 · 8 个分片</strong><span>${partial?'已重试 3/3 次，仍失败':'正在自动重试 2/3 · 下一次 30 秒后'}</span></div><span class="badge ${partial?'red':'amber'}">${partial?'P1 · 需人工':'自动重试中'}</span><div class="exception-actions">${partial?`<button class="btn btn-sm danger" data-retry-shard="${b.id}">一键重试失败片</button>`:'<button class="btn btn-sm" disabled>等待重试</button>'}</div></div><div class="exception-row retry"><code>AUTO-RETRY</code><div><strong>Doris 临时资源异常 · 2 个分片</strong><span>正在自动重试 1/3 · 使用断点续跑</span></div><span class="badge amber">自动重试中</span><div class="exception-actions"><button class="btn btn-sm" disabled>无需操作</button></div></div><div class="exception-row error"><code>MANUAL</code><div><strong>Schema / 分区异常 · 1 个分片</strong><span>错误类型不可自动恢复 · 重试 3/3 已耗尽 · 已触发 P0 预警</span></div><span class="badge red">P0 · 强干预</span><div class="exception-actions"><button class="btn btn-sm danger" data-retry-shard="${b.id}">重试该分片</button><button class="btn btn-sm">查看日志</button></div></div>`;
+      return `<div class="exception-row retry"><code>AUTO-RETRY</code><div><strong>网络 / I/O 异常 · 8 个分片</strong><span>${partial?'已重试 3/3 次，仍失败':'正在自动重试 2/3 · 下一次 30 秒后'}</span></div><span class="badge ${partial?'red':'amber'}">${partial?'P1 · 需人工':'自动重试中'}</span><div class="exception-actions">${partial?`<button class="btn btn-sm danger" data-retry-shard="${b.id}">一键重试失败片</button>`:'<button class="btn btn-sm" disabled>等待重试</button>'}</div></div><div class="exception-row retry"><code>AUTO-RETRY</code><div><strong>Doris 临时资源异常 · 2 个分片</strong><span>正在自动重试 1/3</span></div><span class="badge amber">自动重试中</span><div class="exception-actions"><button class="btn btn-sm" disabled>无需操作</button></div></div><div class="exception-row error"><code>MANUAL</code><div><strong>Schema / 分区异常 · 1 个分片</strong><span>错误类型不可自动恢复 · 重试 3/3 已耗尽 · 已触发 P0 预警</span></div><span class="badge red">P0 · 强干预</span><div class="exception-actions"><button class="btn btn-sm danger" data-retry-shard="${b.id}">重试该分片</button><button class="btn btn-sm">查看日志</button></div></div>`;
     }
     function renderManifestRunPanel(b) {
       const panel=$('#manifestPhaseRun'); if(!panel) return;
@@ -2810,28 +2805,26 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const s=getShardSummary(b);
       const partial=b.run==='部分失败';
       const finished=b.run==='已完成';
-      const interrupted=b.run==='中断待续跑';
       const resourceRows=finished?`<div class="evidence-row"><span>Doris 资源</span><strong style="color:var(--teal-700)">已恢复</strong></div><div class="evidence-row"><span>服务依赖</span><strong>2 / 2 可用</strong></div>`:`<div class="evidence-row"><span>Doris BE</span><strong style="color:var(--red-700)">2 / 3 可用</strong></div><div class="evidence-row"><span>Doris I/O</span><strong style="color:var(--red-700)">92%</strong></div><div class="evidence-row"><span>查询延迟 P95</span><strong>9.8s</strong></div>`;
-      panel.innerHTML=`${interrupted?`<div class="decision-note" style="background:#fff7f7;border-color:#f1c8ca;color:#7b2c34;margin-bottom:12px"><strong>整批中断：</strong>${b.interruptionReason||'平台资源异常'}。已完成分片保留，未完成分片从 checkpoint 续跑，不重跑整批。<div class="evidence-action-bar"><button class="btn btn-sm primary" data-resume-batch="${b.id}">从断点继续跑批</button></div></div>`:''}
+      panel.innerHTML=`
         <div class="shard-overview">
           <div class="shard-overview-card"><span>分片总数</span><strong>${fmtCount(s.total)}</strong><small>大分片只展示汇总</small></div>
           <div class="shard-overview-card"><span>已完成</span><strong>${fmtCount(s.completed)}</strong></div>
           <div class="shard-overview-card"><span>运行中 / 排队</span><strong>${s.running} / ${fmtCount(s.queued)}</strong><small>其他分片继续执行</small></div>
-          <div class="shard-overview-card"><span>自动重试中</span><strong style="color:var(--amber-700)">${s.retrying}</strong><small>最多 3 次 · 断点续跑</small></div>
+          <div class="shard-overview-card"><span>自动重试中</span><strong style="color:var(--amber-700)">${s.retrying}</strong><small>最多 3 次 · 自动重试</small></div>
           <div class="shard-overview-card"><span>待人工处理</span><strong style="color:${s.manual?'var(--red-700)':'var(--teal-700)'}">${s.manual}</strong><small>${s.manual?'已触发告警':'当前无异常'}</small></div>
         </div>
         <div class="manifest-run-grid">
-          <div class="card"><div class="card-head"><div><h2>异常分片与自动重试</h2><p>正常分片不逐片展示；只展示重试中、重试耗尽和待人工处理的异常。</p></div><span class="badge ${partial||interrupted?'red':finished?'green':'amber'}">${interrupted?'整批中断':partial?'部分失败':finished?'已恢复':'自动重试中'}</span></div><div class="card-body"><div class="exception-list">${shardExceptionRows(b)}</div><div class="retry-policy"><div><strong>重试策略</strong><span>最多 3 次，指数退避；使用 checkpoint 断点续跑</span></div><div><strong>告警分级</strong><span>P1：局部重试耗尽；P0：不可恢复或达到 Batch 阻断阈值</span></div><div><strong>动态修复调度</strong><span>复用当前空闲容量，不预留固定资源；资源紧张时自动延后</span></div></div><div class="decision-note" style="margin-top:10px">${interrupted?`<strong>当前为整批中断：</strong>已完成 6,327 片不再重跑；未完成 3,560 片保留 checkpoint，恢复后从未完成位置继续。`:`<strong>其他分片继续运行：</strong>当前已完成 6,327、运行中 8、排队 3,541；其余 9,876 片未进入最终失败状态。局部失败不中断整批；资源不足时立即重试自动延后到跑后统一修复。`}</div>${partial?`<div class="decision-note" style="margin-top:12px;background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>跑后存在 11 个失败分片：</strong>下游消费已阻断。可一键只重跑失败分片，不需要重跑全批。</div>`:''}</div></div>
+          <div class="card"><div class="card-head"><div><h2>异常分片与自动重试</h2><p>正常分片不逐片展示；只展示重试中、重试耗尽和待人工处理的异常。</p></div><span class="badge ${partial?'red':finished?'green':'amber'}">${partial?'部分失败':finished?'已恢复':'自动重试中'}</span></div><div class="card-body"><div class="exception-list">${shardExceptionRows(b)}</div><div class="retry-policy"><div><strong>重试策略</strong><span>最多 3 次，指数退避；使用指数退避自动重试</span></div><div><strong>告警分级</strong><span>P1：局部重试耗尽；P0：不可恢复或达到 Batch 阻断阈值</span></div><div><strong>动态修复调度</strong><span>复用当前空闲容量，不预留固定资源；资源紧张时自动延后</span></div></div><div class="decision-note" style="margin-top:10px"><strong>其他分片继续运行：</strong>当前已完成 6,327、运行中 8、排队 3,541；其余 9,876 片未进入最终失败状态。局部失败不中断整批；资源不足时立即重试自动延后到跑后统一修复。</div>${partial?`<div class="decision-note" style="margin-top:12px;background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>跑后存在 11 个失败分片：</strong>下游消费已阻断。可一键只重跑失败分片，不需要重跑全批。</div>`:''}</div></div>
           <div class="card"><div class="card-head"><div><h2>资源与依赖</h2><p>只在影响分片连续性时告警。</p></div><span class="badge ${finished?'green':'amber'}">${finished?'已恢复':'需关注'}</span></div><div class="card-body"><div class="evidence-list">${resourceRows}</div></div></div>
         </div>`;
     }
     function renderManifestPostPanel(b){
       const el=$('#manifestPostContent'); if(!el) return;
       const s=getShardSummary(b);
-      if(b.run==='中断待续跑'){el.innerHTML='<div class="card"><div class="card-body"><div class="manifest-post-placeholder"><strong>跑批尚未结束</strong>整批中断已保留 checkpoint，续跑完成后才进行完整性检查和消费门禁。</div></div></div>';return;}
       if(!['已完成','部分失败','已停止'].includes(b.run)){el.innerHTML=`<div class="card"><div class="card-body"><div class="manifest-post-placeholder"><strong>跑批结束后开放</strong>完成后检查结果完整性、失败分片、自动重试和消费门禁。</div></div></div>`;return;}
       const blocked=s.permanent>0||b.run==='已停止';
-      el.innerHTML=`<div class="shard-overview"><div class="shard-overview-card"><span>结果完整性</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'不完整':'完整'}</strong><small>${fmtCount(s.completed)} / ${fmtCount(s.total)} 分片完成</small></div><div class="shard-overview-card"><span>自动重试恢复</span><strong>${s.retried}</strong><small>正常运行无需人工</small></div><div class="shard-overview-card"><span>最终失败</span><strong style="color:${s.permanent?'var(--red-700)':'var(--teal-700)'}">${s.permanent}</strong><small>${s.permanent?'重试耗尽或不可恢复':'无失败分片'}</small></div><div class="shard-overview-card"><span>消费门禁</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'已阻断':'可消费'}</strong><small>${blocked?'请先处理失败分片':'结果完整，可进入处理'}</small></div></div><div class="card"><div class="card-head"><div><h2>跑后处理</h2><p>不展示全部 9,887 个分片，只展示阻断消费的失败项。</p></div><span class="badge ${blocked?'red':'green'}">${blocked?'需处理':'已通过'}</span></div><div class="card-body">${blocked?`<div class="decision-note" style="background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>${s.permanent} 个分片最终失败：</strong>可一键续跑失败分片，不重开整批；如业务接受部分结果，需要走风险豁免后才能消费。</div><div class="evidence-action-bar"><button class="btn btn-sm danger" data-retry-shard="${b.id}">一键重试失败分片</button><button class="btn btn-sm">查看失败明细</button><button class="btn btn-sm">申请部分结果消费</button></div>`:'<div class="decision-note"><strong>结果完整：</strong>自动重试与修复续跑已计入最终结果，可以进入结果处理与消费。</div>'}</div></div>`; }
+      el.innerHTML=`<div class="shard-overview"><div class="shard-overview-card"><span>结果完整性</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'不完整':'完整'}</strong><small>${fmtCount(s.completed)} / ${fmtCount(s.total)} 分片完成</small></div><div class="shard-overview-card"><span>自动重试恢复</span><strong>${s.retried}</strong><small>正常运行无需人工</small></div><div class="shard-overview-card"><span>最终失败</span><strong style="color:${s.permanent?'var(--red-700)':'var(--teal-700)'}">${s.permanent}</strong><small>${s.permanent?'重试耗尽或不可恢复':'无失败分片'}</small></div><div class="shard-overview-card"><span>消费门禁</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'已阻断':'可消费'}</strong><small>${blocked?'请先处理失败分片':'结果完整，可进入处理'}</small></div></div><div class="card"><div class="card-head"><div><h2>跑后处理</h2><p>不展示全部 9,887 个分片，只展示阻断消费的失败项。</p></div><span class="badge ${blocked?'red':'green'}">${blocked?'需处理':'已通过'}</span></div><div class="card-body">${blocked?`<div class="decision-note" style="background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>${s.permanent} 个分片最终失败：</strong>可一键重试失败分片，不重开整批；如业务接受部分结果，需要走风险豁免后才能消费。</div><div class="evidence-action-bar"><button class="btn btn-sm danger" data-retry-shard="${b.id}">一键重试失败分片</button><button class="btn btn-sm">查看失败明细</button><button class="btn btn-sm">申请部分结果消费</button></div>`:'<div class="decision-note"><strong>结果完整：</strong>自动重试结果已计入最终结果，可以进入结果处理与消费。</div>'}</div></div>`; }
     function selectManifestPhase(phase='pre') {
       manifestPhase=phase;
       $$('[data-manifest-phase]').forEach(btn=>{const active=btn.dataset.manifestPhase===phase;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));});
@@ -2870,8 +2863,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       if(scanStrip){
         const total=m.checks.length, pass=counts.PASS||0, pending=counts.PENDING||0;
         let dot='',state='',copy='',riskBtn='';
-        if(['已完成','部分失败','运行中','已停止','已暂停'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
-        else if(b.run==='中断待续跑'){dot='red';state='运行中断 · 等待续跑';copy='跑前扫描已通过；当前中断发生在运行阶段，已保留 checkpoint，续跑时只处理未完成分片。';}
+        if(['已完成','部分失败','运行中','已停止'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
         else if(b.run==='门禁阻断'){dot='red';state='扫描未通过 · 自动启动失效';copy='计划启动时间前未达到 100% 通过，后续只能修复后人工启动；缺失数据运行需业务审批。';riskBtn='';}
         else if(b.run==='待风险确认'){dot='warn';state='存在风险 · 等待确认';copy=`${pass}/${total} 通过，${warn} 个 WARN 需责任人确认；未达到 100% 通过前不自动启动。`;}
         else if(b.run==='已就绪'){dot='green';state='100% 通过 · 可提前开始';copy='已满足启动条件。计划时间前可人工立即开始；到计划时间仍未启动则按自动跑批配置执行。';}
@@ -3388,7 +3380,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const st=state.batchStatus||'';
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
       if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q));
-      if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
+      if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
       filtered = filtered.slice(0,5);
       const count = $('#batchCount');
       if (count) count.textContent = `共 ${filtered.length} 条`;
@@ -3398,17 +3390,14 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         const bs = batchStates[b.id] || batchStates.B20260624001;
         const manifest = getManifest(b.id);
         const verifyFailed = manifest.status==='FAILED';
-        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'};
-        const RUNCLS={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
+        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败'};
+        const RUNCLS={'待启动':'gray','运行中':'blue','成功':'green','失败':'red'};
         const runLabel=CANON[b.run]||b.run;
         const runClass=RUNCLS[runLabel]||'gray';
         const mc = manifestCounts(manifest);
         const isRunning = b.run === '运行中';
-        const isInterrupted = b.run === '中断待续跑';
-        const isPaused = b.run === '已暂停';
         const isStopped = b.run === '已停止';
         const preRun = isPreRunBatch(b);
-        const blocked = preRun || isRunning || isInterrupted || isPaused || isStopped;
         const interventionLabel = bs.interventionApplied ? '已应用干预' : '干预';
         const pushLabel = bs.published ? (bs.pushStatus === 'partial' ? '部分失败' : '已消费') : '消费';
         const reportLabel = bs.reportGenerated ? '查看报告' : '生成报告';
@@ -3416,15 +3405,11 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         const sopFlag=b.sopProfileId==='late'?' · 晚申请':b.sopProfileId==='adhoc'?' · 临时跑批':'';
         const manifestSummary = ((mc.BLOCK||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.BLOCK} 阻断` : (mc.WARN||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.WARN} 风险` : (mc.PENDING||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.PENDING} 待核验` : `${manifest.checks.length}/${manifest.checks.length} 通过`)+sopFlag;
         const finished=['已完成','部分失败'].includes(b.run);
-        const canMonitor=['运行中','已暂停','中断待续跑','已完成','部分失败','已停止'].includes(b.run);
         const ic=(iconId,title,attrs,disabled)=>`<button class="bl-ic" ${attrs||''} ${disabled?'disabled':''} title="${title}" aria-label="${title}"><svg class="icon icon-sm"><use href="#${iconId}"/></svg></button>`;
         const empty='';
         const actDetail=ic('i-eye','查看详情',`data-detail-modal="${b.id}"`);
         const actMonitor='';
-        const actPause=isRunning?ic('i-pause','暂停',`data-batch-act="pause" data-batch-id="${b.id}"`)
-          :isPaused?ic('i-play','恢复',`data-batch-act="resume" data-batch-id="${b.id}"`)
-          :(isInterrupted && !verifyFailed && runLabel!=='失败')?ic('i-play','续跑',`data-batch-act="resume" data-batch-id="${b.id}"`):empty;
-        const actStop=((isRunning||isPaused||isInterrupted) && runLabel!=='失败')?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
+        const actStop=(isRunning && runLabel!=='失败')?ic('i-stop','终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const rowTask=tasks.find(t=>t.id===b.taskId);
         const manualReport=rowTask && rowTask.reportGen==='手动生成';
         const noReport=!!rowTask && rowTask.reportScene==='无报告';
@@ -3434,12 +3419,12 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           actReport=ic('i-report',repLabel,`data-report-action="${b.id}"`,!finished);
           if(finished && bs.reportGenerated) actReport=actReport.replace('class="bl-ic"','class="bl-ic rep-done"');
         }
-        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isInterrupted ? `<span class="badge amber">批处理中断</span><div class="cell-sub">checkpoint ${fmtCount(b.checkpointShards||6327)} / 9,887</div>` : isPaused ? '<span class="badge amber">已暂停</span><div class="cell-sub">停止派发新分片，可恢复</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
-        const STARTED_STATES=['运行中','已暂停','中断待续跑','已完成','部分失败','已停止'];
+        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
+        const STARTED_STATES=['运行中','已完成','部分失败','已停止'];
         const userCount=Number(String(b.people||'').replace(/[^0-9]/g,''))||0;
         const successCount = runLabel==='成功' ? userCount
           : runLabel==='失败' ? Math.round(userCount*0.96)
-          : (runLabel==='运行中'||runLabel==='暂停') ? Math.round(userCount*(Number(b.progress)||0)/100)
+          : (runLabel==='运行中') ? Math.round(userCount*(Number(b.progress)||0)/100)
           : null;
         const rateText = (successCount!=null && userCount) ? ((successCount/userCount*100).toFixed(1)+'%') : '—';
         const execStart=b.startedAt || (STARTED_STATES.includes(b.run) ? b.requestedAt : '—');
@@ -3468,7 +3453,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           <td data-bcol="ended"><div class="bl-mono">${execEnd}</div></td>
           <td data-bcol="duration"><div class="bl-mono">${durText}</div></td>
           <td data-bcol="slice"><div class="bl-mono">${b.expectedSliceDate||'—'}</div></td>
-          <td data-bcol="actions"><div class="bl-acts">${actDetail}${actMonitor}${actPause}${actStop}${actReport}</div></td>
+          <td data-bcol="actions"><div class="bl-acts">${actDetail}${actMonitor}${actStop}${actReport}</div></td>
         </tr>`;
       }).join('');
       renderShardManagement();
@@ -3486,25 +3471,12 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       }
       const s=getShardSummary(b);
       const finished=b.run==='已完成'; const partial=b.run==='部分失败';
-      const interrupted=b.run==='中断待续跑'; const stateLabel=interrupted?'整批中断':partial?'部分失败':finished?'已完成':'运行中'; const stateClass=interrupted||partial?'red':finished?'green':'blue';
+      const stateLabel=partial?'部分失败':finished?'已完成':'运行中'; const stateClass=partial?'red':finished?'green':'blue';
       const badgeEl=$('#shardStatusBadge'); if(badgeEl){badgeEl.textContent=stateLabel;badgeEl.className=`badge ${stateClass}`;}
       grid.innerHTML=`<div class="kpi"><div class="kpi-label">分片总数</div><div class="kpi-value">${fmtCount(s.total)}</div><div class="kpi-delta">只展示汇总与异常</div></div><div class="kpi"><div class="kpi-label">已完成</div><div class="kpi-value">${fmtCount(s.completed)}</div><div class="kpi-delta">按分片统计</div></div><div class="kpi"><div class="kpi-label">运行中 / 排队</div><div class="kpi-value">${s.running} / ${fmtCount(s.queued)}</div><div class="kpi-delta">其他分片继续执行</div></div><div class="kpi"><div class="kpi-label">自动重试 / 人工</div><div class="kpi-value">${s.retrying} / ${s.manual}</div><div class="kpi-delta">重试耗尽后触发告警</div></div>`;
-      body.innerHTML=`<div class="card"><div class="card-head"><div><h2>异常分片</h2><p>只展示重试中、重试耗尽和不可恢复异常；成功分片不逐片展开。</p></div><span class="badge ${partial?'red':finished?'green':'amber'}">${partial?'需人工处理':finished?'自动恢复完成':'运行监控中'}</span></div><div class="card-body"><div class="exception-list">${shardExceptionRows(b)}</div><div class="retry-policy"><div><strong>自动重试</strong><span>网络、临时 I/O、锁等待最多重试 3 次</span></div><div><strong>告警分级</strong><span>P1：局部耗尽；P0：不可恢复或达到 Batch 阻断阈值</span></div><div><strong>动态修复调度</strong><span>复用当前批次空闲容量，不预占资源；资源紧张时延后</span></div></div><div class="decision-note" style="margin-top:10px"><strong>修复方式：</strong>只续跑失败分片，不重开整批；资源不足时延后到跑后统一处理。</div>${partial?'<div class="decision-note" style="margin-top:12px;background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>消费已阻断：</strong>可一键重试失败分片，或按业务审批走部分结果消费。</div>':''}</div></div>`;
-      const logEl=$('#shardLogPanel'); if(logEl) logEl.innerHTML=`<div><span class="t">06:49</span> <span class="ok">INFO</span> S001-S6327 已完成</div><div><span class="t">07:18</span> <span class="warn">RETRY</span> 网络超时 8 片进入自动重试</div><div><span class="t">07:19</span> <span class="warn">RETRY</span> Doris I/O 2 片使用断点续跑</div>${partial?'<div><span class="t">07:25</span> <span class="warn">ALERT</span> 11 个分片重试耗尽，转人工</div>':'<div><span class="t">07:25</span> <span class="ok">INFO</span> 自动重试恢复 11 片</div>'}`;
-      const evidenceEl=$('#shardEvidenceList'); if(evidenceEl) evidenceEl.innerHTML=`<div class="evidence-row"><span>Batch 状态</span><strong>${b.run}</strong></div><div class="evidence-row"><span>自动重试</span><strong>${s.retried} 片</strong></div><div class="evidence-row"><span>断点续跑</span><strong>已启用</strong></div><div class="evidence-row"><span>最终失败</span><strong>${s.permanent} 片</strong></div>`;
-    }
-    function pauseBatch(id) {
-      const b=batches.find(x=>x.id===id); if(!b || b.run!=='运行中') return;
-      b.run='已暂停'; b.runClass='amber'; b.progress=Math.max(1,b.progress);
-      renderBatches(); if(state.currentBatchId===id) applyBatchView(id);
-      toast('Batch 已暂停',`${id} 已停止派发新分片，当前分片完成 checkpoint 后可恢复。`);
-    }
-    function resumeBatch(id) {
-      const b=batches.find(x=>x.id===id); if(!b || !['已暂停','中断待续跑'].includes(b.run)) return;
-      const wasInterrupted=b.run==='中断待续跑';
-      b.run='运行中'; b.runClass='blue'; if(wasInterrupted){b.resumeAttempt=(b.resumeAttempt||0)+1;b.resumeAt='刚刚';}
-      renderBatches(); if(state.currentBatchId===id) applyBatchView(id);
-      toast(wasInterrupted?'Batch 已从中断点续跑':'Batch 已恢复',wasInterrupted?`${id} 从 ${b.checkpointShards||6327} / 9,887 分片 checkpoint 继续，不重跑已完成分片。`:`${id} 已恢复分片调度，继续按检查点运行。`);
+      body.innerHTML=`<div class="card"><div class="card-head"><div><h2>异常分片</h2><p>只展示重试中、重试耗尽和不可恢复异常；成功分片不逐片展开。</p></div><span class="badge ${partial?'red':finished?'green':'amber'}">${partial?'需人工处理':finished?'自动恢复完成':'运行监控中'}</span></div><div class="card-body"><div class="exception-list">${shardExceptionRows(b)}</div><div class="retry-policy"><div><strong>自动重试</strong><span>网络、临时 I/O、锁等待最多重试 3 次</span></div><div><strong>告警分级</strong><span>P1：局部耗尽；P0：不可恢复或达到 Batch 阻断阈值</span></div><div><strong>动态修复调度</strong><span>复用当前批次空闲容量，不预占资源；资源紧张时延后</span></div></div><div class="decision-note" style="margin-top:10px"><strong>修复方式：</strong>只重试失败分片，不重开整批；资源不足时延后到跑后统一处理。</div>${partial?'<div class="decision-note" style="margin-top:12px;background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>消费已阻断：</strong>可一键重试失败分片，或按业务审批走部分结果消费。</div>':''}</div></div>`;
+      const logEl=$('#shardLogPanel'); if(logEl) logEl.innerHTML=`<div><span class="t">06:49</span> <span class="ok">INFO</span> S001-S6327 已完成</div><div><span class="t">07:18</span> <span class="warn">RETRY</span> 网络超时 8 片进入自动重试</div><div><span class="t">07:19</span> <span class="warn">RETRY</span> Doris I/O 2 片触发自动重试</div>${partial?'<div><span class="t">07:25</span> <span class="warn">ALERT</span> 11 个分片重试耗尽，转人工</div>':'<div><span class="t">07:25</span> <span class="ok">INFO</span> 自动重试恢复 11 片</div>'}`;
+      const evidenceEl=$('#shardEvidenceList'); if(evidenceEl) evidenceEl.innerHTML=`<div class="evidence-row"><span>Batch 状态</span><strong>${b.run}</strong></div><div class="evidence-row"><span>自动重试</span><strong>${s.retried} 片</strong></div><div class="evidence-row"><span>自动重试</span><strong>已启用</strong></div><div class="evidence-row"><span>最终失败</span><strong>${s.permanent} 片</strong></div>`;
     }
     function closeConsumption(id) {
       const b=batches.find(x=>x.id===id); const bs=batchStates[id]; if(!b||!bs) return;
@@ -3517,7 +3489,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const b = batches.find(x => x.id === id);
       if (!b) return;
       const preRun = ['待启动','检查中','已就绪','待风险确认','门禁阻断','已排期'].includes(b.run);
-      if (!preRun && !['运行中','已暂停','中断待续跑'].includes(b.run)) return;
+      if (!preRun && b.run!=='运行中') return;
       b.run = '已停止';
       b.runClass = 'amber';
       renderBatches();
@@ -3540,7 +3512,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       b.reviewClass = 'amber';
       renderBatches();
       if (state.currentBatchId === id) applyBatchView(id);
-      toast('失败分片续跑完成', `${id} 仅续跑失败分片，未重开整批；结果版本 ${b.resultVersion} 已恢复，可重新进入消费门禁。`);
+      toast('失败分片重试完成', `${id} 仅重试失败分片，未重开整批；结果版本 ${b.resultVersion} 已恢复，可重新进入消费门禁。`);
     }
 
     const detailRows = [
@@ -3580,14 +3552,13 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const bs=batchStates[b.id]||batchStates.B20260624001;
       const m=currentManifest(); const mc=manifestCounts(m);
       let stage='运行中', next='完成后进入下一环节', gate=`${mc.PASS||0}/${m.checks.length} 通过`, owner='批处理 Owner', sla=m.sla||'06:00', note='状态由系统和监控自动更新';
-      if(b.run==='门禁阻断') { stage='门禁阻断'; next='修复数据切片后自动核验'; gate=`${mc.BLOCK||0} 个阻断`; owner='数据平台值班'; note='已暂停自动排期'; }
+      if(b.run==='门禁阻断') { stage='门禁阻断'; next='修复数据切片后自动核验'; gate=`${mc.BLOCK||0} 个阻断`; owner='数据平台值班'; note='已停止自动排期'; }
       else if(b.run==='待风险确认') { stage='等待风险确认'; next='责任人确认或提交 OA 例外'; gate=`${mc.WARN||0} 个风险`; owner='风险负责人 + 数据负责人'; note='Manifest 暂不冻结'; }
       else if(b.run==='检查中') { stage='Manifest 检查中'; next='检查完成后自动判断是否可启动'; gate=`${mc.PASS||0} 通过 · ${mc.PENDING||0} 待核验`; owner='批处理 Owner'; note='立即执行业务已创建'; }
       else if(b.run==='已就绪') { stage='跑前复检通过'; next='人工点击开始跑批'; gate='允许启动'; owner='批处理 Owner'; note='检查记录已冻结，等待人工确认'; }
       else if(b.run==='待启动') { stage='待跑前复检'; next='执行 14 天数据量、切片日期与质量检查'; gate=`${mc.PASS||0} 通过 · ${mc.PENDING||0} 待核验`; owner='批处理 Owner'; note='Manifest 已自动生成'; }
       else if(b.run==='已排期') { stage='等待人工启动'; next='确认后调用调度器'; gate='检查完成'; owner='批处理 Owner'; note='系统不自动启动'; }
-      else if(b.run==='中断待续跑') { stage='批处理中断'; next='从最近 checkpoint 继续跑批'; gate=`已完成 ${b.checkpointShards||6327} / 9,887`; owner='平台值班'; note=b.interruptionReason||'等待续跑'; }
-      else if(b.run==='运行中') { stage='策略执行中'; next='完成后确认最终结果'; gate='分片执行中'; owner='平台值班'; note='按分片 checkpoint 续跑'; }
+      else if(b.run==='运行中') { stage='策略执行中'; next='完成后确认最终结果'; gate='分片执行中'; owner='平台值班'; note='按分片顺序执行'; }
       else if(bs.pushStatus==='partial') { stage='下游部分失败'; next='查看失败明细并重试'; gate='已完成'; owner='下游集成值班'; note='保留失败证据与回执'; }
       else if(bs.published) { stage='下游已消费'; next=bs.reportGenerated?'Report 已生成':'生成并查看 Report'; gate='已对账'; owner='业务运营'; note='批次可进入关账'; }
       else if(bs.interventionApplied) { stage='等待下游推送'; next='确认推送下游'; gate='最终结果已冻结'; owner='业务运营'; note=bs.interventionSkipped?'系统结果已直接确认':'人工调整已应用'; }
@@ -3626,7 +3597,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       if ($('#finalInterventionCopy')) $('#finalInterventionCopy').textContent = bs.interventionApplied ? '最终结果已冻结，可推送下游。' : '推送前请确认系统结果或完成人工调整。';
       if ($('#funnelInterventionLabel')) $('#funnelInterventionLabel').textContent = bs.interventionApplied ? (bs.interventionSkipped?'系统结果已确认':'最终结果已冻结') : '待确认最终结果';
       if ($('#funnelInterventionValue')) $('#funnelInterventionValue').innerHTML = bs.interventionApplied ? (bs.interventionSkipped?'0 <small>人</small>':`${bs.interventionAffected||0} <small>人</small>`) : '1 <small>个 Batch</small>';
-      const preDecision = b.run === '运行中' || b.run === '中断待续跑' || b.run === '已停止' || b.run === '门禁阻断' || b.run === '待风险确认' || b.run === '待启动' || b.run === '检查中' || b.run === '已就绪' || b.run === '已排期';
+      const preDecision = b.run === '运行中' || b.run === '已停止' || b.run === '门禁阻断' || b.run === '待风险确认' || b.run === '待启动' || b.run === '检查中' || b.run === '已就绪' || b.run === '已排期';
       const lifeData = $('#lifeData');
       const lifeCohort = $('#lifeCohort');
       const lifeDecision = $('#lifeDecision');
@@ -3640,7 +3611,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       }
       if (lifeDecision) {
         lifeDecision.className = `life-step ${preDecision ? 'current' : 'done'}`;
-        $('#lifeDecisionDetail').textContent = b.run === '运行中' ? '分片执行中' : b.run === '中断待续跑' ? `批处理中断 · checkpoint ${b.checkpointShards||6327} / 9,887` : b.run === '已停止' ? '已停止' : b.run === '门禁阻断' ? '未开始' : b.run === '待风险确认' ? '等待风险确认' : b.run === '检查中' ? 'Manifest 检查中' : b.run === '已就绪' ? '预检通过，待启动' : b.run === '待启动' ? '等待计划时间' : b.run === '已排期' ? '等待自动启动' : '决策完成';
+        $('#lifeDecisionDetail').textContent = b.run === '运行中' ? '分片执行中' : b.run === '已停止' ? '已停止' : b.run === '门禁阻断' ? '未开始' : b.run === '待风险确认' ? '等待风险确认' : b.run === '检查中' ? 'Manifest 检查中' : b.run === '已就绪' ? '预检通过，待启动' : b.run === '待启动' ? '等待计划时间' : b.run === '已排期' ? '等待自动启动' : '决策完成';
       }
       const lifeIntervention = $('#lifeIntervention');
       const lifeDownstream = $('#lifeDownstream');
@@ -4223,7 +4194,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     function syncPublishGate() {
       const bs = currentBatch();
       const b = batches.find(x => x.id === state.currentBatchId) || batches[0];
-      const processing = b.run === '运行中' || b.run === '中断待续跑' || b.run === '已暂停' || b.run === '已停止' || b.run === '门禁阻断' || b.run === '待风险确认' || b.run === '待启动' || b.run === '检查中' || b.run === '已就绪' || b.run === '已排期';
+      const processing = b.run === '运行中' || b.run === '已停止' || b.run === '门禁阻断' || b.run === '待风险确认' || b.run === '待启动' || b.run === '检查中' || b.run === '已就绪' || b.run === '已排期';
       const waitingStart = b.run === '已排期';
       const warningReview = b.run === '待风险确认';
       const checkingManifest = b.run === '检查中';
@@ -4356,9 +4327,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       if(!stateSelect) return;
       const id=stateSelect.dataset.batchStateSelect; const action=stateSelect.value;
       stateSelect.value='';
-      if(action==='pause') pauseBatch(id);
-      else if(action==='resume') resumeBatch(id);
-      else if(action==='stop') stopBatch(id);
+      if(action==='stop') stopBatch(id);
     });
     document.addEventListener('click', (e) => {
       const groupOption=e.target.closest('[data-select-group]');
@@ -4403,10 +4372,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       if(editBatch){ openBatchEdit(editBatch.dataset.editBatch); return; }
       const deleteBatch=e.target.closest('[data-delete-batch]');
       if(deleteBatch){ openDeleteBatch(deleteBatch.dataset.deleteBatch); return; }
-      const pauseAction=e.target.closest('[data-pause-batch]');
-      if(pauseAction){pauseBatch(pauseAction.dataset.pauseBatch);return;}
-      const resumeAction=e.target.closest('[data-resume-batch]');
-      if(resumeAction){resumeBatch(resumeAction.dataset.resumeBatch);return;}
       const closeConsumptionAction=e.target.closest('[data-close-consumption]');
       if(closeConsumptionAction){closeConsumption(closeConsumptionAction.dataset.closeConsumption);return;}
       const stopAction = e.target.closest('[data-stop-batch]');
@@ -4652,8 +4617,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   const pctOf=b=>Math.max(0,Math.min(100,Number(b.progress)||0));
   const stateLabelOf=b=>{
     if(demoFinished||['已完成','成功'].includes(b.run)) return '成功';
-    if(['部分失败','失败','中断待续跑','已停止'].includes(b.run)) return '失败';
-    if(b.run==='已暂停') return '暂停';
+    if(['部分失败','失败','已停止'].includes(b.run)) return '失败';
     if(['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run)) return '待启动';
     return '运行中';
   };
@@ -4684,7 +4648,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/300));
     const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const paused=['已暂停','中断待续跑'].includes(b.run);
     const fin=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
     const abnormal=fin && !demoFinished && !['已完成','成功'].includes(b.run);
     const durationMin=Math.max(12,Math.round(people/900));
@@ -4704,9 +4667,8 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const waitBlock='<div class="bd-wait"><b>等待启动</b><span>计划启动 '+(b.scheduleAt||b.requestedAt||'—')+' · 切片 '+(b.expectedSliceDate||'—')+' · '+fmtCount(people)+' 人</span></div>';
     const right=preRunB?waitBlock:'<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+(fin?summary:live)+'</div>';
     const kicker=preRunB?'等待启动':(fin?'执行总结':'执行进度');
-    const pausedText=b.run==='已暂停'?'已停止派发新分片，可从当前进度恢复':'checkpoint 已保留，续跑不重跑已完成分片';
     const abnormalText=b.run==='部分失败'?failShards+' 个分片最终失败，已完成分片保留':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告');
-    const stateBar=paused?'<div class="bd-statebar info">'+pausedText+'</div>':(abnormal?'<div class="bd-statebar bad">'+abnormalText+'</div>':'');
+    const stateBar=abnormal?'<div class="bd-statebar bad">'+abnormalText+'</div>':'';
     const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
     const keyInfo = !fin ? '' :
       '<div class="bd-sec bd-keyinfo">'+
@@ -4799,10 +4761,10 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const b=batches.find(x=>x.id===id); if(!b) return;
     curId=id;
     el('bdTitle').textContent=b.id;
-    {const cls={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
+    {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red'};
      const st=el('bdStatus'); if(st){ st.textContent=stateLabelOf(b); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
     el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
-    {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
+    {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const finalNow=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
     const animate = !(opts && opts.animate===false) && b.run==='运行中' && !finalNow;
@@ -4814,7 +4776,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   function manualRefresh(){
     const b=batches.find(x=>x.id===curId); if(!b) return;
     if(b.run==='运行中') b.progress=Math.min(96,(Number(b.progress)||0)+3);
-    else if(b.run==='中断待续跑') b.progress=Math.min(96,(Number(b.progress)||0)+1);
     render(curId,{animate:false});
     if(typeof renderBatches==='function') renderBatches();
     toast('已刷新','已重新拉取执行进度与批次信息。');
@@ -4916,15 +4877,11 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     e.preventDefault(); e.stopPropagation();
     const id=btn.dataset.batchId, act=btn.dataset.batchAct;
     const CONF={
-      pause:{t:'暂停跑批',m:'',ok:'暂停',danger:false},
-      resume:{t:'恢复跑批',m:'',ok:'恢复',danger:false},
       stop:{t:'终止跑批',m:'',ok:'终止',danger:true}
     }[act];
     if(!CONF) return;
     openConfirm(CONF, function(){
-      if(act==='pause'&&typeof pauseBatch==='function') pauseBatch(id);
-      else if(act==='resume'&&typeof resumeBatch==='function') resumeBatch(id);
-      else if(act==='stop'&&typeof stopBatch==='function') stopBatch(id);
+      if(act==='stop'&&typeof stopBatch==='function') stopBatch(id);
     }, btn);
   });
 })();
