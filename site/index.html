@@ -140,7 +140,6 @@
     .top-avatar { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:#e9effa; color:#24446f; font-weight:750; font-size:11px; border:1px solid #dbe6f5; }
     .demo-badge { font-size:10px; color:#1d4ed8; background:#eaf1ff; border:1px solid #d6e2ff; border-radius:999px; padding:3px 8px; letter-spacing:.2px; }
 
-
     .workspace-tabs { height:39px; display:flex; align-items:flex-end; gap:6px; padding:0 20px; background:#f3f6fa; border-bottom:1px solid #dfe7f0; overflow:hidden; }
     .workspace-tab { height:30px; display:inline-flex; align-items:center; gap:7px; padding:0 12px; border:1px solid #dfe7f0; border-bottom-color:#fff; background:#fff; color:#324359; border-radius:5px 5px 0 0; font-size:10px; font-weight:650; }
     .workspace-tab.active { color:#1769d2; box-shadow:inset 0 2px 0 #1769d2; }
@@ -256,7 +255,6 @@
     .hero-actions .btn.primary { background:#fff; color:#15376f; border-color:#fff; box-shadow:none; }
     .hero-actions .btn.primary:hover { background:#f1f6ff; }
 
-
     .batch-state-strip { display:grid; grid-template-columns:1.15fr 1.35fr 1fr 1fr .85fr; gap:1px; border:1px solid var(--line-soft); border-radius:13px; background:var(--line-soft); overflow:hidden; margin-bottom:16px; box-shadow:var(--shadow-sm); }
     .batch-state-cell { background:#fff; padding:13px 15px; min-width:0; }
     .batch-state-cell.current { background:linear-gradient(135deg,#f7fbff,#eff6ff); }
@@ -285,7 +283,6 @@
     .tab.active::after { content:""; position:absolute; left:9px; right:9px; bottom:-1px; height:2px; border-radius:2px; background:var(--blue-600); }
     .tab .tab-count { display:inline-grid; place-items:center; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:#f2f5f8; color:var(--ink-500); font-size:9px; margin-left:5px; }
     .tab.active .tab-count { background:var(--amber-100); color:var(--amber-700); }
-
 
 
 
@@ -681,7 +678,6 @@
     .timeline-copy strong { display:block; font-size:11px; }
     .timeline-copy span { font-size:10px; color:var(--ink-400); }
 
-
     .task-summary-strip { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:13px; overflow:hidden; margin-bottom:14px; box-shadow:var(--shadow-sm); }
     .task-summary-item { background:#fff; padding:13px 15px; }
     .task-summary-item span { display:block; color:var(--ink-400); font-size:9px; letter-spacing:.35px; text-transform:uppercase; }
@@ -807,7 +803,6 @@
     .quality-legend i { width:7px; height:7px; border-radius:2px; display:inline-block; background:#2f6fd8; }
     .quality-legend i.warn { background:#dc8b10; }
     .quality-legend i.bad { background:#d13b48; }
-
 
     .notification-button { position:relative; }
     .notification-count { position:absolute; top:-5px; right:-5px; min-width:18px; height:18px; padding:0 5px; border-radius:999px; display:grid; place-items:center; background:var(--red-600); color:#fff; border:2px solid #fff; font-size:9px; font-weight:750; line-height:1; }
@@ -1743,7 +1738,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         </div>
       </section>
 
-
       <section class="page hidden" id="view-alerts" aria-labelledby="alertsTitle">
         <div class="page-head">
           <div><div class="eyebrow">ALERT INBOX</div><h1 id="alertsTitle">预警收件箱</h1><p class="page-subtitle">汇总 UG-OD 跑批全流程监控产生的预警。批中、批后信号按 Batch 归属；数据源和切片信号可先于 Batch 创建，进入待归属队列。</p></div>
@@ -1968,7 +1962,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 
         <div class="batch-state-strip" id="batchStateStrip" aria-label="Batch 当前状态与下一步动作"></div>
 
-
         <div id="tab-manifest" class="tab-panel batch-page-panel hidden" data-batch-page-panel="checklist">
           <div class="manifest-banner" id="manifestBanner">
             <div>
@@ -2018,7 +2011,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
             <div id="manifestPostContent"></div>
           </div>
         </div>
-
 
         <div id="tab-alerts" class="tab-panel hidden">
           <div class="card">
@@ -2284,7 +2276,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     </div>
   </div>
 
-
   <div id="alertDetailBackdrop" class="drawer-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="alertDetailTitle">
     <div class="drawer">
       <div class="drawer-head"><div><h2 id="alertDetailTitle">预警详情</h2><p id="alertDetailSubtitle">查看触发信号、责任人、阈值和原始证据。</p></div><button class="icon-button" data-close-alert-detail aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
@@ -2365,7 +2356,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       <div class="drawer-foot"><button class="btn" data-close-push>取消</button><div class="right"><button class="btn primary" id="confirmPushBtn" disabled>确认推送</button></div></div>
     </div>
   </div>
-
 
   <div id="taskDetailBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="tdTitle">
     <div class="modal td-modal">
@@ -2463,6 +2453,48 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         </div>
       </div>
       <div class="modal-foot"><div class="right" style="margin-left:auto"><button class="btn" data-close-run-task>取消</button><button class="btn primary" id="confirmRunTaskBtn">确认发起</button></div></div>
+    </div>
+  </div>
+
+    <div id="schDetailBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="schDetailTitle">
+    <div class="modal" style="width:min(860px,100%)">
+      <div class="modal-head"><div><h2 id="schDetailTitle">定时任务详情</h2></div><button class="icon-button" data-close-sch-detail aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
+      <div class="modal-body">
+        <div class="sch-detail-grid" id="schDetailSummary"></div>
+        <div id="schDetailForm" class="td-form readonly" style="margin-top:12px">
+          <div class="sch-sec">
+            <div class="sch-sec-title">引用 Task 模板</div>
+            <div class="form-grid">
+              <div class="form-field"><label>定时任务名称</label><input class="input" id="schName" placeholder="如：Uganda OD 月度调额 · 每日" /></div>
+              <div class="form-field"><label>关联 Task 模板</label><select class="select" id="schTaskId"></select></div>
+            </div>
+          </div>
+          <div class="sch-sec">
+            <div class="sch-sec-title">周期与跑批时间</div>
+            <div class="form-grid">
+              <div class="form-field"><label>周期</label><select class="select" id="schCycle"><option>每日</option><option>每周</option><option>每月</option></select></div>
+              <div class="form-field sch-cycle-extra hidden" id="schWeekdayField"><label>星期</label><select class="select" id="schWeekday"><option>周一</option><option>周二</option><option>周三</option><option>周四</option><option>周五</option><option>周六</option><option>周日</option></select></div>
+              <div class="form-field sch-cycle-extra hidden" id="schMonthdayField"><label>日期</label><select class="select" id="schMonthday"><option>1 日</option><option>2 日</option><option>3 日</option><option>4 日</option><option>5 日</option><option>6 日</option><option>7 日</option><option>8 日</option><option>9 日</option><option>10 日</option><option>11 日</option><option>12 日</option><option>13 日</option><option>14 日</option><option>15 日</option><option>16 日</option><option>17 日</option><option>18 日</option><option>19 日</option><option>20 日</option><option>21 日</option><option>22 日</option><option>23 日</option><option>24 日</option><option>25 日</option><option>26 日</option><option>27 日</option><option>28 日</option><option>29 日</option><option>30 日</option><option>31 日</option><option>月末</option></select></div>
+              <div class="form-field"><label>跑批时间</label><input class="input mono" type="time" id="schTime" value="22:00" /></div>
+            </div>
+          </div>
+          <div class="sch-sec">
+            <div class="sch-sec-title">切片规则</div>
+            <div class="form-grid">
+              <div class="form-field"><label>使用切片日期</label><select class="select" id="schSliceRule"><option>T-1</option><option>T-2</option><option>上个业务日</option></select></div>
+            </div>
+          </div>
+          <div class="sch-sec">
+            <div class="sch-sec-title">报告对比批次</div>
+            <div class="form-grid">
+              <div class="form-field"><label>对比批次</label><select class="select" id="schComparePolicy"><option>上一次成功</option><option>固定基线</option><option>不对比</option></select></div>
+              <div class="form-field" id="schFixedBaselineField"><label>固定基线 Batch</label><select class="select" id="schFixedBaseline"></select></div>
+            </div>
+          </div>
+        </div>
+        <div class="sch-runs" id="schDetailRuns"></div>
+      </div>
+      <div class="modal-foot"><div id="schDetailActs"></div></div>
     </div>
   </div>
 
@@ -2742,7 +2774,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     ];
 
 
-
     const manifestCheckTemplate = [
       { code:'DATA_SLICE_READY', name:'数据切片存在且日期正确', group:'数据输入', source:'system', sourceLabel:'系统自动', sourceDetail:'数据平台元数据 API', result:'PASS', observed:'实际切片 2026-10-21 · 与指定日期一致 · 状态 READY', threshold:'实际分区日期 = Batch 指定的切片日期，状态 READY，且更新时间不晚于数据准备截止时间', owner:'数据平台值班', checkedAt:'21:40', evidence:'data_partition_registry · 查询实际分区日期、状态、更新时间、数据量、Schema' },
       { code:'DQ_14D', name:'14 天数据量趋势', group:'数据输入', source:'monitor', sourceLabel:'监控', sourceDetail:'数据质量监控', result:'PASS', observed:'最近 14 天波动 ±4%', threshold:'较 14 天中位数偏差 ≤ 15%', owner:'数据质量', checkedAt:'21:42', evidence:'data_quality_monitor · 14-day volume trend' },
@@ -2870,7 +2901,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       $('#manifestEvidenceBackdrop').classList.remove('hidden'); document.body.style.overflow='hidden';
     }
     function closeManifestEvidence(){ $('#manifestEvidenceBackdrop').classList.add('hidden'); document.body.style.overflow=''; }
-
 
     function manifestPhaseState(b,m,counts) {
       const block=counts.BLOCK||0, warn=counts.WARN||0, pending=counts.PENDING||0;
@@ -3335,7 +3365,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       $('#sopResponsibilities').innerHTML=cfg.responsibilities.map(([role,desc])=>`<div class="sop-owner"><strong>${role}</strong><span>${desc}</span></div>`).join('');
       $('#sopRuleFacts').innerHTML=cfg.facts.map(([k,v])=>`<div class="evidence-row"><span>${k}</span><strong>${v}</strong></div>`).join('');
     }
-
 
     function alertStatusBadge(status) {
       const map={'待确认':['amber','amber'],'处理中':['blue','blue'],'已认领':['violet','violet'],'已确认':['green','green'],'已转事件':['red','red']};
@@ -5375,7 +5404,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const cmpPick=e.target.closest('[data-cmp-pick]');
       if(cmpPick){ pickCompareBatch(cmpPick.dataset.cmpPick); return; }
 
-
       if(e.target.closest('[data-close-task-detail]')){ closeTaskDetail(); return; }
       if(e.target.closest('[data-close-task-delete]')){ closeDeleteTask(); return; }
       if(e.target.closest('[data-close-run-task]')){ closeRunTaskModal(); return; }
@@ -5466,47 +5494,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 })();
 </script>
 
-  <div id="schDetailBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="schDetailTitle">
-    <div class="modal" style="width:min(860px,100%)">
-      <div class="modal-head"><div><h2 id="schDetailTitle">定时任务详情</h2></div><button class="icon-button" data-close-sch-detail aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
-      <div class="modal-body">
-        <div class="sch-detail-grid" id="schDetailSummary"></div>
-        <div id="schDetailForm" class="td-form readonly" style="margin-top:12px">
-          <div class="sch-sec">
-            <div class="sch-sec-title">引用 Task 模板</div>
-            <div class="form-grid">
-              <div class="form-field"><label>定时任务名称</label><input class="input" id="schName" placeholder="如：Uganda OD 月度调额 · 每日" /></div>
-              <div class="form-field"><label>关联 Task 模板</label><select class="select" id="schTaskId"></select></div>
-            </div>
-          </div>
-          <div class="sch-sec">
-            <div class="sch-sec-title">周期与跑批时间</div>
-            <div class="form-grid">
-              <div class="form-field"><label>周期</label><select class="select" id="schCycle"><option>每日</option><option>每周</option><option>每月</option></select></div>
-              <div class="form-field sch-cycle-extra hidden" id="schWeekdayField"><label>星期</label><select class="select" id="schWeekday"><option>周一</option><option>周二</option><option>周三</option><option>周四</option><option>周五</option><option>周六</option><option>周日</option></select></div>
-              <div class="form-field sch-cycle-extra hidden" id="schMonthdayField"><label>日期</label><select class="select" id="schMonthday"><option>1 日</option><option>2 日</option><option>3 日</option><option>4 日</option><option>5 日</option><option>6 日</option><option>7 日</option><option>8 日</option><option>9 日</option><option>10 日</option><option>11 日</option><option>12 日</option><option>13 日</option><option>14 日</option><option>15 日</option><option>16 日</option><option>17 日</option><option>18 日</option><option>19 日</option><option>20 日</option><option>21 日</option><option>22 日</option><option>23 日</option><option>24 日</option><option>25 日</option><option>26 日</option><option>27 日</option><option>28 日</option><option>29 日</option><option>30 日</option><option>31 日</option><option>月末</option></select></div>
-              <div class="form-field"><label>跑批时间</label><input class="input mono" type="time" id="schTime" value="22:00" /></div>
-            </div>
-          </div>
-          <div class="sch-sec">
-            <div class="sch-sec-title">切片规则</div>
-            <div class="form-grid">
-              <div class="form-field"><label>使用切片日期</label><select class="select" id="schSliceRule"><option>T-1</option><option>T-2</option><option>上个业务日</option></select></div>
-            </div>
-          </div>
-          <div class="sch-sec">
-            <div class="sch-sec-title">报告对比批次</div>
-            <div class="form-grid">
-              <div class="form-field"><label>对比批次</label><select class="select" id="schComparePolicy"><option>上一次成功</option><option>固定基线</option><option>不对比</option></select></div>
-              <div class="form-field" id="schFixedBaselineField"><label>固定基线 Batch</label><select class="select" id="schFixedBaseline"></select></div>
-            </div>
-          </div>
-        </div>
-        <div class="sch-runs" id="schDetailRuns"></div>
-      </div>
-      <div class="modal-foot"><div id="schDetailActs"></div></div>
-    </div>
-  </div>
+  
 
 <script>
 /* ================= 定时任务模块（增量移植） ================= */
