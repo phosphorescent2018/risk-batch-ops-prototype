@@ -1471,6 +1471,13 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-kv b.bad{color:#D64545;}
 @media(max-width:900px){.bd-kv-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 </style>
+<style id="bdStateStyle">.bd-wait{display:flex;flex-direction:column;gap:9px;padding-left:26px;border-left:1px solid #EDF0F5;}
+.bd-wait b{font-size:20px;font-weight:650;color:#0F172A;}
+.bd-wait span{font-size:12.5px;color:#8794A6;}
+.bd-statebar{margin-top:14px;padding:10px 13px;border-radius:8px;font-size:12.5px;line-height:1.5;}
+.bd-statebar.info{background:#F2F6FF;color:#2458C5;}
+.bd-statebar.bad{background:#FFF0F1;color:#B42318;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4670,22 +4677,34 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/300));
     const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
+    const paused=['已暂停','中断待续跑'].includes(b.run);
     const fin=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
+    const abnormal=fin && !demoFinished && !['已完成','成功'].includes(b.run);
     const durationMin=Math.max(12,Math.round(people/900));
     const avgSpeed=(people/10000/(durationMin/60)).toFixed(1);
     const pctTxt=p.toFixed(1)+'%';
-    const pctLabel=fin?((demoFinished||['已完成','成功'].includes(b.run))?'已完成':'已结束'):(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')));
-    const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
-    const metrics = fin
-      ? metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片')
-      : metric('处理速度',avgSpeed,'万人 / 小时');
+    const pctLabel=(demoFinished||['已完成','成功'].includes(b.run))?'已完成'
+      : ['部分失败','失败','已停止'].includes(b.run)?'已结束'
+      : b.run==='已暂停'?'已暂停'
+      : b.run==='中断待续跑'?'中断待续跑'
+      : preRunB?'待启动'
+      : (p>=100?'已结束':'进行中');
     const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     const startD=new Date(); startD.setHours(6,0,0,0);
     const endD=new Date(startD.getTime()+durationMin*60000);
     const failShards=['部分失败','失败'].includes(b.run)?Math.max(1,Math.round(shards*0.02)):(b.run==='已停止'?Math.max(1,Math.round(shards*0.01)):0);
     const okShards=Math.max(0,shards-failShards);
-    const resultTxt=(demoFinished||['已完成','成功'].includes(b.run))?'成功':(['部分失败','失败'].includes(b.run)?'失败':'已停止');
+    const resultTxt=(demoFinished||['已完成','成功'].includes(b.run))?'成功':(b.run==='部分失败'?'部分失败':(b.run==='失败'?'失败':'已停止'));
     const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
+    const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
+    const summary=metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片');
+    const live=metric('处理速度',avgSpeed,'万人 / 小时');
+    const waitBlock='<div class="bd-wait"><b>等待启动</b><span>计划启动 '+(b.scheduleAt||b.requestedAt||'—')+' · 切片 '+(b.expectedSliceDate||'—')+' · '+fmtCount(people)+' 人</span></div>';
+    const right=preRunB?waitBlock:'<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+(fin?summary:live)+'</div>';
+    const kicker=preRunB?'等待启动':(fin?'执行总结':'执行进度');
+    const pausedText=b.run==='已暂停'?'已暂停 · 已停止派发新分片，可从当前进度恢复':'中断待续跑 · checkpoint 已保留，续跑不重跑已完成分片';
+    const abnormalText=b.run==='部分失败'?'部分失败 · '+failShards+' 个分片最终失败，已完成分片保留':(b.run==='已停止'?'已停止 · 未完成分片已保留，需人工处理':'执行失败 · 请查看失败分片与事件报告');
+    const stateBar=paused?'<div class="bd-statebar info">'+pausedText+'</div>':(abnormal?'<div class="bd-statebar bad">'+abnormalText+'</div>':'');
     const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
     const keyInfo = !fin ? '' :
       '<div class="bd-sec bd-keyinfo">'+
@@ -4694,18 +4713,19 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':'bad')+
           kv('业务日期',b.businessDate||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
           kv('开始时间',(b.businessDate||'—')+' '+hm(startD))+kv('结束时间',(b.businessDate||'—')+' '+hm(endD))+kv('总耗时',durationMin+' 分钟')+
-          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+kv('报告状态',fin?'已生成':'未生成')+
+          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+kv('报告状态','已生成')+
         '</div>'+
       '</div>';
     return '<div class="bd-sec first bd-exec">'+
         '<div class="bd-exec-top">'+
           '<div class="bd-exec-progress">'+
-            '<div class="bd-exec-kicker">'+(fin?'执行总结':'执行进度')+'</div>'+
+            '<div class="bd-exec-kicker">'+kicker+'</div>'+
             '<div class="bd-exec-big"><b id="bdPct">'+pctTxt+'</b><span id="bdPctLabel">'+pctLabel+'</span></div>'+
             '<div class="bd-exec-bar"><i id="bdBar" style="width:'+p.toFixed(1)+'%"></i></div>'+
           '</div>'+
-          '<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+metrics+'</div>'+
+          right+
         '</div>'+
+        stateBar+
       '</div>'+
       keyInfo+
       '<div class="bd-sec bd-report-only">'+
@@ -4784,7 +4804,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(demoFinished?'成功':b.run,demoFinished?'green':(b.runClass||'gray'));}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const finalNow=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
-    const animate = !(opts && opts.animate===false) && !finalNow;
+    const animate = !(opts && opts.animate===false) && b.run==='运行中' && !finalNow;
     demoP = demoFinished ? 100 : ((tab==='run' && !preRunNow && animate) ? 0 : null);
     el('bdBody').innerHTML=bodyFor(b);
     el('bdTabs').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.dataset.bdTab===tab));
