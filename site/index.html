@@ -2288,26 +2288,11 @@
         <div class="modal-section">
           <div class="modal-section-title">执行配置</div>
           <div class="form-grid">
-            <div class="form-field full"><label>执行类型 <span class="req">*</span></label>
-              <select class="select" id="runExecType" aria-label="执行类型" style="height:38px;width:220px;max-width:220px;"><option value="once">单次执行</option><option value="repeat">重复执行</option></select>
-            </div>
-          </div>
-          <div class="form-grid" id="runOnceWrap" style="margin-top:14px">
             <div class="form-field full"><label>执行方式</label>
               <select class="select" id="runExecMode" aria-label="执行方式" style="height:38px;width:220px;max-width:220px;"><option value="immediate">立即执行</option><option value="scheduled">预约执行</option></select>
             </div>
             <div class="form-field" id="runScheduleField" style="display:none"><label>计划启动时间 <span class="req">*</span></label><input class="input mono" type="datetime-local" id="runScheduleAt" step="60" /></div>
             <div class="form-field"><label>使用切片日期 <span class="req">*</span></label><input class="input mono" type="date" id="runSliceDate" /></div>
-          </div>
-          <div class="form-grid" id="runRepeatWrap" style="display:none;margin-top:14px">
-            <div class="form-field full"><label>重复频率 <span class="req">*</span></label>
-              <select class="select" id="runRepeatFreq" aria-label="重复频率" style="height:38px;width:220px;max-width:220px;"><option value="daily">按天</option><option value="weekly">按周</option><option value="monthly">按月</option></select>
-            </div>
-            <div class="form-field" id="runRepeatWeekField" style="display:none"><label>重复星期</label><select class="select" id="runRepeatWeek"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="7">周日</option></select></div>
-            <div class="form-field" id="runRepeatMonthField" style="display:none"><label>每月执行日</label><select class="select" id="runRepeatMonth"></select></div>
-            <div class="form-field"><label>首次执行时间 <span class="req">*</span></label><input class="input mono" type="datetime-local" id="runRepeatFirstAt" step="60" /></div>
-            <div class="form-field"><label>后续固定执行时间 <span class="req">*</span></label><input class="input mono" type="time" id="runRepeatTime" value="02:00" /><small>之后的每次重复都在该时刻启动。</small></div>
-            <div class="form-field"><label>切片时间 <span class="req">*</span></label><select class="select" id="runSliceLag" aria-label="切片时间" style="height:38px;width:220px;max-width:220px;"><option value="2">T-2</option><option value="3">T-3</option><option value="4">T-4</option><option value="5">T-5</option></select><small>每次执行按所选偏移取对应日期的切片。</small></div>
           </div>
         </div>
         <div class="modal-section">
@@ -5103,24 +5088,8 @@
   }
 
   /* ---------------- 发起跑批 ---------------- */
-  let runTaskId=null, runExecMode='immediate', cmpSelectedId=null, runExecType='once', runRepeatFreq='daily';
+  let runTaskId=null, runExecMode='immediate', cmpSelectedId=null;
   window.setRunExecMode=setRunExecMode;
-  window.setRunRepeatFreq=setRunRepeatFreq;
-  function setRunExecType(type){
-    runExecType=type;
-    const sel=document.getElementById('runExecType'); if(sel) sel.value=type;
-    const once=document.getElementById('runOnceWrap'), rep=document.getElementById('runRepeatWrap');
-    if(once) once.style.display=type==='once'?'':'none';
-    if(rep) rep.style.display=type==='repeat'?'':'none';
-  }
-  function setRunRepeatFreq(freq){
-    runRepeatFreq=freq;
-    const sel=document.getElementById('runRepeatFreq'); if(sel) sel.value=freq;
-    const w=document.getElementById('runRepeatWeekField'), m=document.getElementById('runRepeatMonthField');
-    if(w) w.style.display=freq==='weekly'?'':'none';
-    if(m) m.style.display=freq==='monthly'?'':'none';
-  }
-  window.setRunExecType=setRunExecType;
   function setRunExecMode(mode){
     runExecMode=mode;
     const sel=document.getElementById('runExecMode'); if(sel) sel.value=mode;
@@ -5158,11 +5127,6 @@
     document.getElementById('cmpError')?.classList.remove('show');
     document.getElementById('cmpResults')?.classList.remove('show');
     setRunExecMode('immediate');
-    setRunExecType('once'); setRunRepeatFreq('daily');
-    const rp=document.getElementById('runRepeatMonth'); if(rp && !rp.options.length){ rp.innerHTML=Array.from({length:28},(_,i)=>`<option value="${i+1}">${i+1} 日</option>`).join(''); }
-    const lag=document.getElementById('runSliceLag'); if(lag) lag.value='2';
-    const rf=document.getElementById('runRepeatFirstAt');
-    if(rf){ const d=new Date(); d.setDate(d.getDate()+1); rf.value=`${fmtISODate(d)}T02:00`; }
     const slice=document.getElementById('runSliceDate');
     if(slice){ const d=new Date(); d.setDate(d.getDate()-1); slice.value=fmtISODate(d); }
     const schedule=document.getElementById('runScheduleAt');
@@ -5177,30 +5141,11 @@
   }
   function confirmRunTask(){
     const t=tasks.find(x=>x.id===runTaskId); if(!t) return;
-    let slice='', repeatText='';
-    if(runExecType==='repeat'){
-      const first=document.getElementById('runRepeatFirstAt')?.value||'';
-      const tm=document.getElementById('runRepeatTime')?.value||'';
-      if(!first){ toast('请选择首次执行时间','重复执行必须指定首次执行时间。'); document.getElementById('runRepeatFirstAt')?.focus(); return; }
-      if(!tm){ toast('请选择后续固定执行时间','重复执行必须指定每次重复的固定执行时间。'); document.getElementById('runRepeatTime')?.focus(); return; }
-      if(runRepeatFreq==='weekly'){
-        const wk=document.getElementById('runRepeatWeek');
-        repeatText=`每${wk.options[wk.selectedIndex].text}`;
-      } else if(runRepeatFreq==='monthly'){
-        const mo=document.getElementById('runRepeatMonth');
-        repeatText=`每月 ${mo.value} 日`;
-      } else repeatText='每天';
-      repeatText+=` ${tm} 执行`;
-      const lag=Number(document.getElementById('runSliceLag')?.value||2);
-      repeatText+=` · 切片 T-${lag}`;
-      const sd=new Date(); sd.setDate(sd.getDate()-lag); slice=fmtISODate(sd);
-    } else {
-      slice=document.getElementById('runSliceDate')?.value||'';
-      if(!slice){ toast('请选择切片日期','发起跑批前必须指定使用哪一天的切片。'); return; }
-      if(runExecMode==='scheduled'){
-        const at=document.getElementById('runScheduleAt')?.value||'';
-        if(!at){ toast('请选择计划启动时间','预约执行必须指定计划启动时间。'); document.getElementById('runScheduleAt')?.focus(); return; }
-      }
+    const slice=document.getElementById('runSliceDate')?.value||'';
+    if(!slice){ toast('请选择切片日期','发起跑批前必须指定使用哪一天的切片。'); return; }
+    if(runExecMode==='scheduled'){
+      const at=document.getElementById('runScheduleAt')?.value||'';
+      if(!at){ toast('请选择计划启动时间','预约执行必须指定计划启动时间。'); document.getElementById('runScheduleAt')?.focus(); return; }
     }
     if(!cmpSelectedId){
       document.getElementById('cmpError')?.classList.add('show');
@@ -5220,7 +5165,7 @@
     if(typeof batchStates!=='undefined' && batchStates){ batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,published:false,pushStatus:'pending'}; }
     closeRunTaskModal();
     if(typeof renderBatches==='function') renderBatches();
-    toast('跑批已发起',`${id} 已创建 · ${runExecType==='repeat'?'重复执行（'+repeatText+'，首次 '+document.getElementById('runRepeatFirstAt').value.replace('T',' ')+'）':(runExecMode==='scheduled'?'预约执行':'立即执行')} · 对比 ${cmpSelectedId}。`);
+    toast('跑批已发起',`${id} 已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice} · 对比 ${cmpSelectedId}。`);
   }
 
   /* ---------------- 绑定 ---------------- */
@@ -5250,12 +5195,7 @@
       if(runBtn){ state.currentTaskId=runBtn.dataset.runTaskModal; openRunTaskModal(runBtn.dataset.runTaskModal); return; }
       const cmpPick=e.target.closest('[data-cmp-pick]');
       if(cmpPick){ pickCompareBatch(cmpPick.dataset.cmpPick); return; }
-      const typeBtn=e.target.closest('[data-run-type]');
-      if(typeBtn){ setRunExecType(typeBtn.dataset.runType); return; }
-      const freqBtn=e.target.closest('[data-run-freq]');
-      if(freqBtn){ setRunRepeatFreq(freqBtn.dataset.runFreq); return; }
-      const execBtn=e.target.closest('[data-run-exec]');
-      if(execBtn){ setRunExecMode(execBtn.dataset.runExec); return; }
+
 
       if(e.target.closest('[data-close-task-detail]')){ closeTaskDetail(); return; }
       if(e.target.closest('[data-close-task-delete]')){ closeDeleteTask(); return; }
@@ -5307,19 +5247,7 @@
 })();
 
   document.addEventListener('change', e=>{
-    if(e.target && e.target.id==='runExecType'){ window.setRunExecType(e.target.value); return; }
     if(e.target && e.target.id==='runExecMode'){ window.setRunExecMode(e.target.value); return; }
-    if(e.target && e.target.id==='runRepeatFreq'){ window.setRunRepeatFreq(e.target.value); return; }
-    if(e.target && e.target.id==='runRepeatTime'){
-      const f=document.getElementById('runRepeatFirstAt');
-      if(f && f.value) f.value=f.value.split('T')[0]+'T'+e.target.value;
-    }
-  });
-  document.addEventListener('input', e=>{
-    if(e.target && e.target.id==='runRepeatFirstAt'){
-      const t=document.getElementById('runRepeatTime');
-      if(t && e.target.value) t.value=e.target.value.split('T')[1]||t.value;
-    }
   });
 </script>
 </body>
