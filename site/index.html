@@ -4562,11 +4562,12 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     });
     $$('[data-task-execution]').forEach(btn=>btn.addEventListener('click',()=>{$$('#taskExecutionMode [data-task-execution]').forEach(b=>b.classList.toggle('active',b===btn));const scheduled=btn.dataset.taskExecution==='scheduled';const badge=$('#executionModeBadge');if(badge)badge.textContent=scheduled?'预约':'立即';if($('#taskScheduleAtField'))$('#taskScheduleAtField').style.display=scheduled?'':'none';}));
     $$('[data-task-notify]').forEach(btn=>btn.addEventListener('click',()=>{
-       const on=!btn.classList.contains('active');
        const all=$$('[data-task-notify]');
-       if(btn.dataset.taskNotify==='NO_PUSH') all.forEach(x=>x.classList.remove('active'));
-       else all.forEach(x=>{if(x.dataset.taskNotify==='NO_PUSH') x.classList.remove('active');});
-       btn.classList.toggle('active',on);
+       if(btn.dataset.taskNotify==='NO_PUSH'){
+         all.forEach(x=>x.classList.remove('active')); btn.classList.add('active'); return;
+       }
+       all.forEach(x=>{if(x.dataset.taskNotify==='NO_PUSH') x.classList.remove('active');});
+       btn.classList.toggle('active');
      }));
     $('#mobileMenu').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
     window.addEventListener('hashchange', routeFromHash);
@@ -4895,7 +4896,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     if(!t.reportScene) t.reportScene='贷前';
     if(!t.reportGen) t.reportGen='自动生成';
     if(!t.notifyEvents) t.notifyEvents=[];
-    const VALID=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'];
+    const VALID=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT','NO_PUSH'];
     t.notifyEvents=t.notifyEvents.map(c=>({BATCH_RETRY:'BATCH_FAILED',REPORT_DONE:'REPORT_RESULT',REPORT_FAILED:'REPORT_RESULT'}[c]||c)).filter(c=>VALID.includes(c));
     if(!t.createdBy) t.createdBy='胡唐';
     if(!t.businessId) t.businessId=(t.opco||'').includes('Ghana')?'MTN_Ghana':((t.opco||'').includes('CDI')?'MTN_CDI':'MTN_Uganda');
@@ -5227,10 +5228,11 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const notify=e.target.closest('[data-dt-notify]');
       if(notify&&detailEditing){
         const box=document.getElementById('dtNotifyEvents'), all=box?[...box.querySelectorAll('[data-dt-notify]')]:[];
-        const on=!notify.classList.contains('active');
-        if(notify.dataset.dtNotify==='NO_PUSH') all.forEach(x=>x.classList.remove('active'));
-        else all.forEach(x=>{if(x.dataset.dtNotify==='NO_PUSH') x.classList.remove('active');});
-        notify.classList.toggle('active',on); return;
+        if(notify.dataset.dtNotify==='NO_PUSH'){
+          all.forEach(x=>x.classList.remove('active')); notify.classList.add('active'); return;
+        }
+        all.forEach(x=>{if(x.dataset.dtNotify==='NO_PUSH') x.classList.remove('active');});
+        notify.classList.toggle('active'); return;
       }
       if(e.target.closest('#tdEditBtn')){ setTaskDetailEditable(true); return; }
       if(e.target.closest('#tdCancelBtn')){ cancelTaskDetailEdit(); return; }
