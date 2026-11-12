@@ -4632,7 +4632,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 (function(){
   const el=id=>document.getElementById(id);
   let curId=null, tab='run';
-  let demoP=null, raf=null;
+  let demoP=null, raf=null, demoFinished=false;
   const DEMO_MS=5000;
   const REPORT_DEFS=[
     ['Pre-loan Operation Batch Report','贷前运营跑批报告'],
@@ -4670,11 +4670,11 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/300));
     const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const fin=['已完成','部分失败','已停止','成功','失败'].includes(b.run);
+    const fin=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
     const durationMin=Math.max(12,Math.round(people/900));
     const avgSpeed=(people/10000/(durationMin/60)).toFixed(1);
     const pctTxt=p.toFixed(1)+'%';
-    const pctLabel=fin?(['已完成','成功'].includes(b.run)?'已完成':'已结束'):(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')));
+    const pctLabel=fin?((demoFinished||['已完成','成功'].includes(b.run))?'已完成':'已结束'):(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')));
     const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
     const metrics = fin
       ? metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片')
@@ -4684,7 +4684,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const endD=new Date(startD.getTime()+durationMin*60000);
     const failShards=['部分失败','失败'].includes(b.run)?Math.max(1,Math.round(shards*0.02)):(b.run==='已停止'?Math.max(1,Math.round(shards*0.01)):0);
     const okShards=Math.max(0,shards-failShards);
-    const resultTxt=['已完成','成功'].includes(b.run)?'成功':(['部分失败','失败'].includes(b.run)?'失败':'已停止');
+    const resultTxt=(demoFinished||['已完成','成功'].includes(b.run))?'成功':(['部分失败','失败'].includes(b.run)?'失败':'已停止');
     const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
     const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
     const keyInfo = !fin ? '' :
@@ -4765,13 +4765,8 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const clip=el('bdClipRect'); if(clip) clip.setAttribute('width', String(1000*k));
       const cells=el('bdDense'); if(cells){ const kids=cells.children; for(let i=0;i<432;i++){ const c=clsOf(i,p); if(kids[i].className!==c) kids[i].className=c; } }
       if(p>=100){
-        if(el('bdReportState') && ['已完成','部分失败','已停止'].includes(b.run)) el('bdReportState').textContent='已生成';
-        demoP=null;
-        const real=pctOf(b);
-        if(el('bdPct')) el('bdPct').textContent=real.toFixed(1)+'%';
-        if(el('bdBar')) el('bdBar').style.width=real.toFixed(1)+'%';
-        if(el('bdPctLabel')) el('bdPctLabel').textContent=(b.run==='已暂停'?'已暂停':(b.run==='中断待续跑'?'中断待续跑':'进行中'));
-        const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(b.run,b.runClass||'gray');
+        demoFinished=true; demoP=100;
+        render(curId,{animate:false});
         raf=null; return;
       }
       raf=requestAnimationFrame(frame);
@@ -4784,13 +4779,13 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     el('bdTitle').textContent=b.id;
     {const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已暂停':'暂停','已完成':'成功','部分失败':'失败','中断待续跑':'失败','已停止':'失败'};
      const cls={'待启动':'gray','运行中':'blue','暂停':'amber','成功':'green','失败':'red'};
-     const st=el('bdStatus'); if(st){ st.textContent=C[b.run]||b.run; st.className='bd-status '+(cls[st.textContent]||'gray'); }}
+     const st=el('bdStatus'); if(st){ st.textContent=demoFinished?'成功':(C[b.run]||b.run); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
     el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
-    {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(b.run,b.runClass||'gray');}
+    {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(demoFinished?'成功':b.run,demoFinished?'green':(b.runClass||'gray'));}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const finalNow=['已完成','部分失败','已停止','成功','失败'].includes(b.run);
+    const finalNow=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
     const animate = !(opts && opts.animate===false) && !finalNow;
-    demoP = (tab==='run' && !preRunNow && animate) ? 0 : null;
+    demoP = demoFinished ? 100 : ((tab==='run' && !preRunNow && animate) ? 0 : null);
     el('bdBody').innerHTML=bodyFor(b);
     el('bdTabs').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.dataset.bdTab===tab));
     if(tab==='run' && !preRunNow && animate) startDemo(b); else stopDemo();
@@ -4801,9 +4796,9 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     else if(b.run==='中断待续跑') b.progress=Math.min(96,(Number(b.progress)||0)+1);
     render(curId,{animate:false});
     if(typeof renderBatches==='function') renderBatches();
-    toast('已刷新','已重新拉取执行进度与监控告警。');
+    toast('已刷新','已重新拉取执行进度与批次信息。');
   }
-  function open(id){ tab='run'; render(id); el('bdBackdrop').classList.remove('hidden'); document.body.style.overflow='hidden'; }
+  function open(id){ tab='run'; demoFinished=false; render(id); el('bdBackdrop').classList.remove('hidden'); document.body.style.overflow='hidden'; }
   function close(){ stopDemo(); el('bdBackdrop').classList.add('hidden'); document.body.style.overflow=''; }
   document.addEventListener('click',function(e){
     const trig=e.target.closest('[data-detail-modal]');
