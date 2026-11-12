@@ -989,7 +989,7 @@
 .bd-tabs button.active{color:#0F172A;border-bottom-color:#2F6BFF;}
 .bd-tabs button:hover{color:#33415C;}
 
-.bd-body{padding:0 30px 18px;overflow:auto;min-height:520px;}
+.bd-body{padding:0 30px 18px;overflow:auto;min-height:0;}
 .bd-sec{padding:6px 0;border-top:1px solid #EDF0F5;}
 .bd-sec.first{border-top:1px solid #EDF0F5;padding-top:6px;}
 .bd-sec:first-child{border-top:1px solid #EDF0F5;}
@@ -1448,6 +1448,9 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-metric span{display:block;font-size:10px;letter-spacing:.06em;color:#96A2B4;margin-bottom:10px;}
 .bd-metric b{display:block;font-size:23px;font-weight:680;line-height:1.1;color:#0F172A;font-variant-numeric:tabular-nums;white-space:nowrap;}
 .bd-metric i{display:block;font-style:normal;font-size:10px;color:#A7B1C0;margin-top:7px;}
+</style>
+<style id="bdReportOnlyStyle">.bd-report-only .bd-report-body{max-width:520px;}
+.bd-report-only .bd-report-head{margin-bottom:14px;}
 </style>
 </head>
 <body>
@@ -4652,26 +4655,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const avgSpeed=(people/10000/(durationMin/60)).toFixed(1);
     const pctTxt=p.toFixed(1)+'%';
     const pctLabel=fin?(['已完成','成功'].includes(b.run)?'已完成':'已结束'):(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')));
-    const fail=b.run==='部分失败';
-    let evts = fail ? [
-        ['23:41','分片连接超时','重试 3 次仍失败','warn'],
-        ['00:12','结果写入失败','重试 2 次仍失败','warn'],
-        ['01:05','读取切片超时','重试 3 次仍失败','warn'],
-        ['02:41','调度器心跳丢失','已自动续跑','ok'],
-        ['03:10','BE 内存超限','降并发后恢复','ok'],
-      ] : [
-        ['23:41','分片连接超时','重试 1 次成功','ok'],
-        ['23:58','结果写入失败','重试 1 次成功','ok'],
-        ['00:26','读取切片超时','重试 1 次成功','ok'],
-        ['02:41','调度器心跳丢失','已自动续跑','ok'],
-        ['03:10','BE 内存超限','降并发后恢复','ok'],
-      ];
-      evts=evts.concat([
-        ['14:02','切片异常 · 已推送 Webhook','200 OK · 217ms','push'],
-        ['14:02','跑批完成汇总 · 已推送 Webhook','200 OK · 198ms','push'],
-        ['14:03','跑批中断/失败 · 已推送企微告警群','已送达','push'],
-        ['14:05','报告生成结果 · 已推送 Webhook','200 OK · 205ms','push'],
-      ]);
     const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
     const metrics = fin
       ? metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片')
@@ -4686,14 +4669,11 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           '<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+metrics+'</div>'+
         '</div>'+
       '</div>'+
-      '<div class="bd-sec bd-split">'+
-        '<div><div class="bd-sh"><b>监控与告警</b></div><div class="bd-log">'+
-          evts.map(e=>'<div class="lg"><span class="t">'+e[0]+'</span><span class="lv '+(e[3]==='push'?'push':(e[3]==='warn'?'warn':'ok'))+'">'+(e[3]==='push'?'推送':(e[3]==='warn'?'ERROR':'WARN'))+'</span><span class="m">'+e[1]+'</span><span class="r">'+e[2]+'</span></div>').join('')+
-        '</div></div>'+
-        '<div><div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
-          '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
+      '<div class="bd-sec bd-report-only">'+
+        '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
+        '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
           '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.requestedAt||'').slice(0,10)+' 06:12':'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
-          '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div></div>'+
+          '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
       '</div>';
   }
   function reportPanel(b){
