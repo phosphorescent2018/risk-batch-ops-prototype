@@ -2281,7 +2281,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           <div class="summary-item"><span>Task ID</span><strong class="mono" id="taskDeleteId">—</strong></div>
         </div>
       </div>
-      <div class="modal-foot"><span class="tiny muted">历史 Batch 不受影响</span><div class="right"><button class="btn" data-close-task-delete>取消</button><button class="btn danger" id="confirmDeleteTaskBtn">确认删除</button></div></div>
+      <div class="modal-foot" style="justify-content:flex-end"><div class="right"><button class="btn" data-close-task-delete>取消</button><button class="btn danger" id="confirmDeleteTaskBtn">确认删除</button></div></div>
     </div>
   </div>
 
@@ -5096,7 +5096,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     if(state.batchTaskFilter===t.id) state.batchTaskFilter=null;
     renderTasks(document.getElementById('taskSearch')?.value||'');
     if(!document.getElementById('taskDetailBackdrop').classList.contains('hidden')) closeTaskDetail();
-    toast('Task 已删除',`${name} 已从 Task 列表移除，历史 Batch 不受影响。`);
+    toast('Task 已删除',`${name} 已从 Task 列表移除。`);
   }
 
   /* ---------------- 发起跑批 ---------------- */
