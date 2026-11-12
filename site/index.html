@@ -1461,6 +1461,16 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-report-only .bd-report-side .bd-row{font-size:12.5px;}
 .bd-report-only .bd-btn{font-size:12.5px;height:32px;}
 </style>
+<style id="bdKeyInfoStyle">.bd-keyinfo{padding-top:16px;padding-bottom:14px;}
+.bd-keyinfo-head{font-size:13px;font-weight:650;color:#0F172A;margin-bottom:12px;}
+.bd-kv-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 28px;}
+.bd-kv{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed #EDF0F5;}
+.bd-kv span{font-size:12.5px;color:#96A2B4;}
+.bd-kv b{font-size:13.5px;font-weight:650;color:#0F172A;font-variant-numeric:tabular-nums;text-align:right;}
+.bd-kv b.ok{color:#0F9F7A;}
+.bd-kv b.bad{color:#D64545;}
+@media(max-width:900px){.bd-kv-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4669,6 +4679,24 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const metrics = fin
       ? metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片')
       : metric('处理速度',avgSpeed,'万人 / 小时');
+    const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const startD=new Date(); startD.setHours(6,0,0,0);
+    const endD=new Date(startD.getTime()+durationMin*60000);
+    const failShards=['部分失败','失败'].includes(b.run)?Math.max(1,Math.round(shards*0.02)):(b.run==='已停止'?Math.max(1,Math.round(shards*0.01)):0);
+    const okShards=Math.max(0,shards-failShards);
+    const resultTxt=['已完成','成功'].includes(b.run)?'成功':(['部分失败','失败'].includes(b.run)?'失败':'已停止');
+    const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
+    const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
+    const keyInfo = !fin ? '' :
+      '<div class="bd-sec bd-keyinfo">'+
+        '<div class="bd-keyinfo-head">批次关键信息</div>'+
+        '<div class="bd-kv-grid">'+
+          kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':'bad')+
+          kv('业务日期',b.businessDate||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
+          kv('开始时间',(b.businessDate||'—')+' '+hm(startD))+kv('结束时间',(b.businessDate||'—')+' '+hm(endD))+kv('总耗时',durationMin+' 分钟')+
+          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+kv('报告状态',fin?'已生成':'未生成')+
+        '</div>'+
+      '</div>';
     return '<div class="bd-sec first bd-exec">'+
         '<div class="bd-exec-top">'+
           '<div class="bd-exec-progress">'+
@@ -4679,10 +4707,11 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           '<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+metrics+'</div>'+
         '</div>'+
       '</div>'+
+      keyInfo+
       '<div class="bd-sec bd-report-only">'+
         '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
         '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
-          '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.requestedAt||'').slice(0,10)+' 06:12':'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
+          '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.businessDate||'')+' '+hm(endD):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
           '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
       '</div>';
   }
