@@ -1425,6 +1425,7 @@
 </style>
 <style id="bdPushStyle">.bd-log .lv.push{background:#EEF4FF;color:#2458C5;}
 .bd-log .r.pushc{color:#2458C5;}</style>
+<style>#runRepeatFreq{max-width:320px;}</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -2294,7 +2295,7 @@
           </div>
           <div class="form-grid" id="runOnceWrap" style="margin-top:14px">
             <div class="form-field full"><label>执行方式</label>
-              <div class="segmented" id="runExecMode"><button class="active" type="button" data-run-exec="immediate">立即执行</button><button type="button" data-run-exec="scheduled">预约执行</button></div>
+              <select class="select" id="runExecMode" aria-label="执行方式" style="height:38px;width:220px;max-width:220px;"><option value="immediate">立即执行</option><option value="scheduled">预约执行</option></select>
             </div>
             <div class="form-field" id="runScheduleField" style="display:none"><label>计划启动时间 <span class="req">*</span></label><input class="input mono" type="datetime-local" id="runScheduleAt" step="60" /></div>
             <div class="form-field"><label>使用切片日期 <span class="req">*</span></label><input class="input mono" type="date" id="runSliceDate" /></div>
@@ -5104,6 +5105,7 @@
 
   /* ---------------- 发起跑批 ---------------- */
   let runTaskId=null, runExecMode='immediate', cmpSelectedId=null, runExecType='once', runRepeatFreq='daily';
+  window.setRunExecMode=setRunExecMode;
   function setRunExecType(type){
     runExecType=type;
     const sel=document.getElementById('runExecType'); if(sel) sel.value=type;
@@ -5121,7 +5123,7 @@
   window.setRunExecType=setRunExecType;
   function setRunExecMode(mode){
     runExecMode=mode;
-    document.querySelectorAll('#runExecMode [data-run-exec]').forEach(b=>b.classList.toggle('active',b.dataset.runExec===mode));
+    const sel=document.getElementById('runExecMode'); if(sel) sel.value=mode;
     const f=document.getElementById('runScheduleField'); if(f) f.style.display=mode==='scheduled'?'':'none';
   }
   function renderCompareResults(q=''){
@@ -5302,7 +5304,8 @@
 })();
 
   document.addEventListener('change', e=>{
-    if(e.target && e.target.id==='runExecType'){ setRunExecType(e.target.value); return; }
+    if(e.target && e.target.id==='runExecType'){ window.setRunExecType(e.target.value); return; }
+    if(e.target && e.target.id==='runExecMode'){ window.setRunExecMode(e.target.value); return; }
     if(e.target && e.target.id==='runRepeatTime'){
       const f=document.getElementById('runRepeatFirstAt');
       if(f && f.value) f.value=f.value.split('T')[0]+'T'+e.target.value;
