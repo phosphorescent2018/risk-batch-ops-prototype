@@ -1432,6 +1432,23 @@
 <style id="reportSceneStyle">body:has(#taskReportScene option[value="无报告"]:checked) #taskReportGenField,
 body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{display:none;}
 </style>
+<style id="bdExecStyle">.bd-exec{padding-bottom:2px;}
+.bd-exec-top{display:grid;grid-template-columns:minmax(210px,.85fr) 1.7fr;gap:34px;align-items:center;padding:4px 0 20px;}
+.bd-exec-kicker{font-size:10px;letter-spacing:.14em;color:#96A2B4;font-weight:600;}
+.bd-exec-big{display:flex;align-items:baseline;gap:12px;margin:10px 0 14px;}
+.bd-exec-big b{font-size:50px;line-height:1;font-weight:700;letter-spacing:-.045em;color:#0F172A;font-variant-numeric:tabular-nums;}
+.bd-exec-big span{font-size:11px;color:#5A6A80;padding:3px 9px;border:1px solid #E6EBF2;border-radius:99px;background:#FAFBFD;}
+.bd-exec-bar{height:6px;border-radius:99px;background:#EEF2F8;overflow:hidden;}
+.bd-exec-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2F6BFF,#6A97F6);transition:width .1s linear;}
+.bd-exec-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-left:1px solid #EDF0F5;padding-left:26px;}
+.bd-exec-metrics.solo{grid-template-columns:200px;}
+.bd-metric{padding:2px 16px;border-right:1px solid #EDF0F5;}
+.bd-metric:first-child{padding-left:0;}
+.bd-metric:last-child{border-right:0;}
+.bd-metric span{display:block;font-size:10px;letter-spacing:.06em;color:#96A2B4;margin-bottom:10px;}
+.bd-metric b{display:block;font-size:23px;font-weight:680;line-height:1.1;color:#0F172A;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.bd-metric i{display:block;font-style:normal;font-size:10px;color:#A7B1C0;margin-top:7px;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4619,20 +4636,14 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     return '<svg class="bd-chart" viewBox="0 0 '+W+' '+(H+16)+'"><defs><linearGradient id="bdg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F6BFF" stop-opacity=".16"/><stop offset="1" stop-color="#2F6BFF" stop-opacity="0"/></linearGradient><clipPath id="bdClip"><rect id="bdClipRect" x="0" y="0" width="0" height="'+(H+2)+'"/></clipPath></defs>'+grid+'<g clip-path="url(#bdClip)"><polygon points="'+area+'" fill="url(#bdg2)"/><polyline points="'+line+'" fill="none" stroke="#2F6BFF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+last[0]+'" cy="'+last[1]+'" r="3.2" fill="#fff" stroke="#2F6BFF" stroke-width="2"/></g><text x="'+padL+'" y="'+(H+13)+'" font-size="9" fill="#B3BDCB">60m</text><text x="'+(W/2-10)+'" y="'+(H+13)+'" font-size="9" fill="#B3BDCB">30m</text><text x="'+(W-padR-24)+'" y="'+(H+13)+'" font-size="9" fill="#B3BDCB">现在</text></svg>';
   }
   function runPanel(b){
-    const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/4000));
+    const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/300));
     const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const fail=b.run==='部分失败'?Math.max(1,Math.round(shards*0.02)):0;
-    const retried=Math.max(1,Math.round(shards*0.03));
-    const done=Math.max(0,Math.min(shards-fail,Math.round(shards*p/100)));
-    const speed=Math.round(180+(people%37));
-    const totalMin=Math.round(people/(speed*10000/60));
-    const stopped=b.run==='部分失败'||b.run==='已停止';
-    const dc=Math.round(432*p/100);
-    const failCells=fail?Math.min(24,Math.max(2,Math.round(432*fail/shards))):0;
-    const RETRY_CELLS=14;
-    clsOf=(i,prog)=>{ const d=Math.round(432*prog/100); if(failCells && prog>=100 && i>=432-failCells) return 'fail'; if(i<d) return (i%30===7)?'done retry':'done'; if(failCells && i<d+failCells) return 'fail'; return ''; };
-    const cells=Array.from({length:432},(_,i)=>'<i class="'+clsOf(i,p)+'"></i>').join('');
-    const fin=['已完成','部分失败','已停止'].includes(b.run);
+    const fin=['已完成','部分失败','已停止','成功','失败'].includes(b.run);
+    const durationMin=Math.max(12,Math.round(people/900));
+    const avgSpeed=(people/10000/(durationMin/60)).toFixed(1);
+    const pctTxt=p.toFixed(1)+'%';
+    const pctLabel=fin?(['已完成','成功'].includes(b.run)?'已完成':'已结束'):(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')));
+    const fail=b.run==='部分失败';
     let evts = fail ? [
         ['23:41','分片连接超时','重试 3 次仍失败','warn'],
         ['00:12','结果写入失败','重试 2 次仍失败','warn'],
@@ -4652,18 +4663,22 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         ['14:03','跑批中断/失败 · 已推送企微告警群','已送达','push'],
         ['14:05','报告生成结果 · 已推送 Webhook','200 OK · 205ms','push'],
       ]);
-    return '<div class="bd-sec first"><div class="bd-overview">'+
-        '<div class="bd-ring">'+ring(p)+'<div class="bd-ring-c"><b id="bdPct">'+p.toFixed(1)+'%</b><span id="bdPctLabel">'+(p>=100?'已结束':(p>0?'进行中':(preRunB?'待启动':'待开始')))+'</span></div></div>'+
-        '<div class="bd-nums">'+
-          '<div class="bd-num"><span>已处理</span><b id="bdDone">'+fmtCount(Math.round(people*p/100))+'</b><i id="bdRemain">'+(p>=100?'&nbsp;':'剩余 '+hhmm(totalMin*(1-p/100)))+'</i></div>'+
-          '<div class="bd-num"><span>完成分片</span><b id="bdShards">'+fmtCount(done)+'</b><i>共 <span id="bdShardTotal">'+fmtCount(shards)+'</span></i></div>'+
-          '<div class="bd-num"><span>重试分片</span><b id="bdRetried">'+fmtCount(retried)+'</b><i>发生过重试</i></div>'+
-          '<div class="bd-num"><span>失败分片</span><b id="bdFailed" style="color:'+(fail?'#D64545':'#0F172A')+'">'+fmtCount(fail)+'</b><i>最终仍失败</i></div>'+
-        '</div></div></div>'+
-      '<div class="bd-sec"><div class="bd-sh"><b>跑批速度</b><span>万人 / 小时</span></div>'+chart(b)+'</div>'+
-      
+    const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
+    const metrics = fin
+      ? metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片')
+      : metric('处理速度',avgSpeed,'万人 / 小时');
+    return '<div class="bd-sec first bd-exec">'+
+        '<div class="bd-exec-top">'+
+          '<div class="bd-exec-progress">'+
+            '<div class="bd-exec-kicker">'+(fin?'执行总结':'执行进度')+'</div>'+
+            '<div class="bd-exec-big"><b id="bdPct">'+pctTxt+'</b><span id="bdPctLabel">'+pctLabel+'</span></div>'+
+            '<div class="bd-exec-bar"><i id="bdBar" style="width:'+p.toFixed(1)+'%"></i></div>'+
+          '</div>'+
+          '<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+metrics+'</div>'+
+        '</div>'+
+      '</div>'+
       '<div class="bd-sec bd-split">'+
-        '<div><div class="bd-sh"><b>监控与告警</b><span>仅展示异常</span></div><div class="bd-log">'+
+        '<div><div class="bd-sh"><b>监控与告警</b></div><div class="bd-log">'+
           evts.map(e=>'<div class="lg"><span class="t">'+e[0]+'</span><span class="lv '+(e[3]==='push'?'push':(e[3]==='warn'?'warn':'ok'))+'">'+(e[3]==='push'?'推送':(e[3]==='warn'?'ERROR':'WARN'))+'</span><span class="m">'+e[1]+'</span><span class="r">'+e[2]+'</span></div>').join('')+
         '</div></div>'+
         '<div><div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
@@ -4710,6 +4725,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const done=Math.max(0,Math.min(shards-failN,Math.round(shards*p/100)));
       const ringEl=el('bdRing'); if(ringEl) ringEl.setAttribute('stroke-dashoffset', (C*(1-p/100)).toFixed(2));
       if(el('bdPct')) el('bdPct').textContent=p.toFixed(1)+'%';
+      if(el('bdBar')) el('bdBar').style.width=p.toFixed(1)+'%';
       if(el('bdPctLabel')) el('bdPctLabel').textContent=(p>=100?'已结束':(k>0?'进行中':'待开始'));
       if(el('bdDone')) el('bdDone').textContent=fmtCount(Math.round(people*p/100));
       if(el('bdRemain')) el('bdRemain').innerHTML=(p>=100?'&nbsp;':'剩余 '+hhmm(totalMin*(1-p/100)));
@@ -4722,9 +4738,12 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const cells=el('bdDense'); if(cells){ const kids=cells.children; for(let i=0;i<432;i++){ const c=clsOf(i,p); if(kids[i].className!==c) kids[i].className=c; } }
       if(p>=100){
         if(el('bdReportState') && ['已完成','部分失败','已停止'].includes(b.run)) el('bdReportState').textContent='已生成';
-        const endLabel = ['部分失败','已停止','中断待续跑'].includes(b.run) ? b.run : '已完成';
-        const endCls = endLabel==='部分失败' ? 'red' : endLabel==='已完成' ? 'green' : 'amber';
-        const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(endLabel,endCls);
+        demoP=null;
+        const real=pctOf(b);
+        if(el('bdPct')) el('bdPct').textContent=real.toFixed(1)+'%';
+        if(el('bdBar')) el('bdBar').style.width=real.toFixed(1)+'%';
+        if(el('bdPctLabel')) el('bdPctLabel').textContent=(b.run==='已暂停'?'已暂停':(b.run==='中断待续跑'?'中断待续跑':'进行中'));
+        const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(b.run,b.runClass||'gray');
         raf=null; return;
       }
       raf=requestAnimationFrame(frame);
@@ -4741,7 +4760,8 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge(b.run,b.runClass||'gray');}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const animate = !(opts && opts.animate===false);
+    const finalNow=['已完成','部分失败','已停止','成功','失败'].includes(b.run);
+    const animate = !(opts && opts.animate===false) && !finalNow;
     demoP = (tab==='run' && !preRunNow && animate) ? 0 : null;
     el('bdBody').innerHTML=bodyFor(b);
     el('bdTabs').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.dataset.bdTab===tab));
