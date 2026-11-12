@@ -2302,7 +2302,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
             <div class="form-field"><label>使用切片日期 <span class="req">*</span></label><input class="input mono" type="date" id="runSliceDate" /></div>
           </div>
         </div>
-        <div class="modal-section">
+        <div class="modal-section" id="cmpSection">
           <div class="modal-section-title">对比批次 <span class="req">*</span></div>
           <div class="form-field full cmp-search">
             <label>搜索并选中一条 Batch <span class="req">*</span></label>
@@ -5101,6 +5101,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 
   /* ---------------- 发起跑批 ---------------- */
   let runTaskId=null, runExecMode='immediate', cmpSelectedId=null;
+  const isNoReportTask=t=>!!t && t.reportScene==='无报告';
   window.setRunExecMode=setRunExecMode;
   function setRunExecMode(mode){
     runExecMode=mode;
@@ -5139,6 +5140,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     document.getElementById('cmpError')?.classList.remove('show');
     document.getElementById('cmpResults')?.classList.remove('show');
     setRunExecMode('immediate');
+    const cmpSec=document.getElementById('cmpSection'); if(cmpSec) cmpSec.style.display=isNoReportTask(t)?'none':'';
     const slice=document.getElementById('runSliceDate');
     if(slice){ const d=new Date(); d.setDate(d.getDate()-1); slice.value=fmtISODate(d); }
     const schedule=document.getElementById('runScheduleAt');
@@ -5159,7 +5161,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       const at=document.getElementById('runScheduleAt')?.value||'';
       if(!at){ toast('请选择计划启动时间','预约执行必须指定计划启动时间。'); document.getElementById('runScheduleAt')?.focus(); return; }
     }
-    if(!cmpSelectedId){
+    if(!isNoReportTask(t) && !cmpSelectedId){
       document.getElementById('cmpError')?.classList.add('show');
       document.getElementById('cmpResults')?.classList.remove('show');
       document.getElementById('cmpSearchInput')?.focus();
@@ -5171,13 +5173,13 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const scheduledAt=document.getElementById('runScheduleAt')?.value||'';
     batches.unshift({ id, taskId:t.id, opco:t.opco, businessDate:fmtISODate(now), expectedSliceDate:slice,
       requestedAt:runExecMode==='scheduled'&&scheduledAt?scheduledAt.replace('T',' '):requestedAt,
-      sliceAt:slice+' 21:50', compareBatch:cmpSelectedId, startMode:runExecMode,
+      sliceAt:slice+' 21:50', compareBatch:(isNoReportTask(t)?null:cmpSelectedId), startMode:runExecMode,
       run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray',
       downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--' });
     if(typeof batchStates!=='undefined' && batchStates){ batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,published:false,pushStatus:'pending'}; }
     closeRunTaskModal();
     if(typeof renderBatches==='function') renderBatches();
-    toast('跑批已发起',`${id} 已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice} · 对比 ${cmpSelectedId}。`);
+    toast('跑批已发起',`${id} 已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice}${isNoReportTask(t)?'':' · 对比 '+cmpSelectedId}。`);
   }
 
   /* ---------------- 绑定 ---------------- */
