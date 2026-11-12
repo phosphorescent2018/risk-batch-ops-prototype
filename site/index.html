@@ -2289,7 +2289,7 @@
           <div class="modal-section-title">执行配置</div>
           <div class="form-grid">
             <div class="form-field full"><label>执行类型 <span class="req">*</span></label>
-              <div class="segmented" id="runExecType"><button class="active" type="button" data-run-type="once">单次执行</button><button type="button" data-run-type="repeat">重复执行</button></div>
+              <select class="select" id="runExecType" aria-label="执行类型" style="height:38px;"><option value="once">单次执行</option><option value="repeat">重复执行</option></select>
             </div>
           </div>
           <div class="form-grid" id="runOnceWrap" style="margin-top:14px">
@@ -5106,7 +5106,7 @@
   let runTaskId=null, runExecMode='immediate', cmpSelectedId=null, runExecType='once', runRepeatFreq='daily';
   function setRunExecType(type){
     runExecType=type;
-    document.querySelectorAll('#runExecType [data-run-type]').forEach(b=>b.classList.toggle('active',b.dataset.runType===type));
+    const sel=document.getElementById('runExecType'); if(sel) sel.value=type;
     const once=document.getElementById('runOnceWrap'), rep=document.getElementById('runRepeatWrap');
     if(once) once.style.display=type==='once'?'':'none';
     if(rep) rep.style.display=type==='repeat'?'':'none';
@@ -5118,6 +5118,7 @@
     if(w) w.style.display=freq==='weekly'?'':'none';
     if(m) m.style.display=freq==='monthly'?'':'none';
   }
+  window.setRunExecType=setRunExecType;
   function setRunExecMode(mode){
     runExecMode=mode;
     document.querySelectorAll('#runExecMode [data-run-exec]').forEach(b=>b.classList.toggle('active',b.dataset.runExec===mode));
@@ -5301,6 +5302,7 @@
 })();
 
   document.addEventListener('change', e=>{
+    if(e.target && e.target.id==='runExecType'){ setRunExecType(e.target.value); return; }
     if(e.target && e.target.id==='runRepeatTime'){
       const f=document.getElementById('runRepeatFirstAt');
       if(f && f.value) f.value=f.value.split('T')[0]+'T'+e.target.value;
