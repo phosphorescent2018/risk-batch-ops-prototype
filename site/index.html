@@ -1478,6 +1478,30 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-statebar.info{background:#F2F6FF;color:#2458C5;}
 .bd-statebar.bad{background:#FFF0F1;color:#B42318;}
 </style>
+<style id="bdNotifyStyle">.bd-lower{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.bd-lower>*{min-width:0;}
+.bd-lower>div+div{border-left:1px solid #EDF0F5;padding-left:26px;}
+.bd-lower .bd-report-body{max-width:100%;}
+.bd-notify-list{display:flex;flex-direction:column;}
+.bd-note{display:grid;grid-template-columns:40px 8px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px dashed #EDF0F5;}
+.bd-note:last-child{border-bottom:0;}
+.bd-note-time{font-size:11.5px;color:#96A2B4;font-variant-numeric:tabular-nums;}
+.bd-note-dot{width:7px;height:7px;border-radius:50%;background:#0F9F7A;}
+.bd-note-dot.wait{background:#C9D2DE;}
+.bd-note-main{min-width:0;}
+.bd-note-main b{display:block;font-size:12.5px;color:#0F172A;font-weight:650;}
+.bd-note-main span{display:block;font-size:11.5px;color:#96A2B4;margin-top:3px;}
+.bd-note-state{font-size:11px;color:#0F9F7A;white-space:nowrap;}
+.bd-note-state.wait{color:#96A2B4;}
+.bd-notify-empty{padding:22px 16px;border:1px dashed #E2E8F1;border-radius:10px;background:#FAFBFD;text-align:center;}
+.bd-notify-empty b{display:block;font-size:13px;color:#5A6A80;font-weight:650;margin-bottom:6px;}
+.bd-notify-empty span{font-size:11.5px;color:#96A2B4;}
+@media(max-width:900px){.bd-lower{grid-template-columns:1fr;}.bd-lower>div+div{border-left:0;padding-left:0;border-top:1px solid #EDF0F5;padding-top:16px;margin-top:16px;}}
+</style>
+<style id="bdNotifyTight">.bd-lower .bd-report-side{flex:0 1 250px;}
+.bd-lower .bd-report-side .bd-row{justify-content:flex-start;gap:18px;}
+.bd-lower .bd-report-side .bd-row b{text-align:left;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4680,6 +4704,24 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+kv('报告状态','已生成')+
         '</div>'+
       '</div>';
+    const notifyEvents=(typeof tasks!=='undefined'?((tasks.find(t=>t.id===b.taskId)||{}).notifyEvents||[]):[]);
+    const EV={SLICE_ANOMALY:'切片异常',BATCH_FAILED:'跑批中断/失败',BATCH_DONE:'跑批完成汇总',REPORT_RESULT:'报告生成结果'};
+    const CH={SLICE_ANOMALY:'Webhook',BATCH_FAILED:'企微告警群',BATCH_DONE:'Webhook',REPORT_RESULT:'Webhook'};
+    const RS={SLICE_ANOMALY:'200 OK · 217ms',BATCH_FAILED:'已送达',BATCH_DONE:'200 OK · 198ms',REPORT_RESULT:'200 OK · 205ms'};
+    const TM={SLICE_ANOMALY:'14:02',BATCH_FAILED:'14:03',BATCH_DONE:'14:05',REPORT_RESULT:'14:06'};
+    const pickedEvents=notifyEvents.filter(k=>EV[k]);
+    const hasNotify=pickedEvents.length>0;
+    const waiting=preRunB;
+    const noteRows=pickedEvents.map(k=>
+      '<div class="bd-note">'+
+        '<span class="bd-note-time">'+(waiting?'—':TM[k])+'</span>'+
+        '<span class="bd-note-dot'+(waiting?' wait':'')+'"></span>'+
+        '<div class="bd-note-main"><b>'+EV[k]+'</b><span>'+CH[k]+' · '+(waiting?'等待事件触发':RS[k])+'</span></div>'+
+        '<span class="bd-note-state'+(waiting?' wait':'')+'">'+(waiting?'待触发':'已推送')+'</span>'+
+      '</div>').join('');
+    const notifyBlock=hasNotify
+      ? '<div class="bd-notify-list">'+noteRows+'</div>'
+      : '<div class="bd-notify-empty"><b>未配置告警通知</b><span>该 Task 未选择告警场景，本批次不会产生通知记录。</span></div>';
     return '<div class="bd-sec first bd-exec">'+
         '<div class="bd-exec-top">'+
           '<div class="bd-exec-progress">'+
@@ -4692,11 +4734,17 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         stateBar+
       '</div>'+
       keyInfo+
-      '<div class="bd-sec bd-report-only">'+
-        '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
-        '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
-          '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.businessDate||'')+' '+hm(endD):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
-          '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
+      '<div class="bd-sec bd-lower">'+
+        '<div class="bd-report-col">'+
+          '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
+          '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
+            '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.businessDate||'')+' '+hm(endD):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
+            '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
+        '</div>'+
+        '<div class="bd-notify-col">'+
+          '<div class="bd-report-head"><b>告警通知记录</b><span>'+(hasNotify?pickedEvents.length+' 条':'—')+'</span></div>'+
+          notifyBlock+
+        '</div>'+
       '</div>';
   }
   function reportPanel(b){
