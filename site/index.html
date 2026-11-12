@@ -1429,6 +1429,9 @@
 #tipFloat.show{opacity:1;}
 .bl-ic.rep-done{background:#EEF4FF;border-color:#C9DCFF;color:#2458C5;}
 </style>
+<style id="reportSceneStyle">.form-section:has(#taskReportScene option[value="无报告"]:checked) #taskReportGenField,
+.form-section:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{display:none;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1993,8 +1996,8 @@
           
           <div class="form-section">
             <div class="section-title-row"><div><h3>报告配置</h3><p>选择本 Task 默认生成的业务报告。</p></div></div>
-            <div class="form-field"><label>报告场景 <span class="req">*</span></label><select class="select" id="taskReportScene"><option>贷前</option><option>贷中</option><option>无报告</option></select></div>
-            <div class="form-field"><label>报告生成 <span class="req">*</span></label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
+            <div class="form-field"><label>报告场景 <span class="req">*</span></label><select class="select" id="taskReportScene"><option value="贷前">贷前</option><option value="贷中">贷中</option><option value="无报告">无报告</option></select></div>
+            <div class="form-field" id="taskReportGenField"><label>报告生成 <span class="req">*</span></label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             </div>
           <div class="form-section">
             <div class="section-title-row"><div><h3>通知与告警</h3><p>关键节点回调到指定 Webhook；留空则不推送。</p></div><span class="badge gray">非必填</span></div>
@@ -2243,8 +2246,8 @@
           <div class="card td-card">
             <div class="card-head"><div><h2>报告配置</h2></div></div>
             <div class="card-body"><div class="form-grid">
-              <div class="form-field"><label>报告场景</label><select class="select" id="dtReportScene"><option>贷前</option><option>贷中</option><option>无报告</option></select></div>
-              <div class="form-field"><label>报告生成</label><select class="select" id="dtReportGen"><option>自动生成</option><option>手动生成</option></select></div>
+              <div class="form-field"><label>报告场景</label><select class="select" id="dtReportScene"><option value="贷前">贷前</option><option value="贷中">贷中</option><option value="无报告">无报告</option></select></div>
+              <div class="form-field" id="dtReportGenField"><label>报告生成</label><select class="select" id="dtReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             </div></div>
           </div>
           <div class="card td-card">
@@ -4452,7 +4455,7 @@
           type:'风控调额', dataScope:$('#runGroupSelect')?.value||'limitIncreaseGroupV1',
           strategy:$('#taskStrategySelect')?.value||'UG-OD-Monthly', version:'v1.0',
           strategyVersion:$('#taskStrategyVersion')?.value||'1', versionType:$('#taskVersionType')?.value||'正式',
-          reportScene:$('#taskReportScene')?.value||'贷前', reportGen:$('#taskReportGen')?.value||'自动生成',
+          reportScene:$('#taskReportScene')?.value||'贷前', reportGen:($('#taskReportScene')?.value==='无报告'?'—':($('#taskReportGen')?.value||'自动生成')),
           description:$('#taskDesc')?.value||'', webhook:($('#taskWebhook')?.value||'').trim(),
           notifyEvents:[...document.querySelectorAll('#taskNotifyEvents .cohort-pill.active')].map(el=>el.dataset.taskNotify),
           createdBy:'胡唐', createdAt:nowStamp(), updatedAt:nowStamp(),
@@ -5065,7 +5068,7 @@
     t.versionType=document.getElementById('dtVersionType')?.value||t.versionType;
     t.strategyVersion=document.getElementById('dtVersion')?.value||t.strategyVersion;
     t.reportScene=document.getElementById('dtReportScene')?.value||t.reportScene;
-    t.reportGen=document.getElementById('dtReportGen')?.value||t.reportGen;
+    t.reportGen=(t.reportScene==='无报告')?'—':(document.getElementById('dtReportGen')?.value||t.reportGen);
     t.webhook=(document.getElementById('dtWebhook')?.value||'').trim();
     t.updatedAt=nowStamp();
     t.notifyEvents=[...document.querySelectorAll('#dtNotifyEvents [data-dt-notify].active')].map(el=>el.dataset.dtNotify);
