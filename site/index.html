@@ -1348,50 +1348,7 @@
 #runTaskBackdrop .cmp-results{max-height:190px;}
 #runTaskBackdrop .modal-foot{background:#fff;}
 </style>
-<style id="scheduleStyle">
-.sch-list-table{width:100%;min-width:1240px;border-collapse:collapse;font-size:11px;table-layout:fixed;}
-.sch-list-table th,.sch-list-table td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line-soft);vertical-align:middle;overflow-wrap:anywhere;}
-.sch-list-table th{font-size:10px;color:var(--ink-400);font-weight:600;background:#f7f9fc;white-space:nowrap;}
-.sch-name-cell{font-weight:650;color:var(--ink-800);font-size:11.5px;}
-.sch-list-table .cell-sub{font-size:9.5px;color:var(--ink-400);margin-top:2px;}
-.sch-list-table .task-actions{display:flex;gap:3px;flex-wrap:nowrap;}
-.sch-list-table .btn-sm{min-height:24px;padding:0 6px;font-size:10px;}
-.sch-detail-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;}
-.sch-detail-grid .summary-item{padding:7px 10px;border-radius:8px;}
-.sch-detail-grid .summary-item span{font-size:9.5px;}
-.sch-detail-grid .summary-item strong{font-size:10.5px;margin-top:2px;overflow-wrap:anywhere;}
-#schDetailBackdrop .modal-body{max-height:68vh;overflow-y:auto;overflow-x:hidden;}
-#schDetailBackdrop .sch-runs{margin-top:12px;}
-#schDetailBackdrop #schDetailForm .sch-sec{margin-bottom:10px;}
-#schDetailBackdrop #schDetailForm .sch-sec:last-child{margin-bottom:0;}
-#schDetailBackdrop #schDetailSummary{margin-bottom:2px;}
-#schDetailActs{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;align-items:center;}
-.sch-runs-title{font-size:10px;color:var(--ink-500);margin-bottom:5px;}
-.sch-run-table{width:100%;border-collapse:collapse;font-size:10px;table-layout:fixed;}
-.sch-run-table th,.sch-run-table td{text-align:left;padding:5px 7px;border-bottom:1px solid var(--line-soft);overflow-wrap:anywhere;}
-.sch-run-table th:nth-child(1){width:28%;}
-.sch-run-table th:nth-child(2){width:13%;}
-.sch-run-table th:nth-child(3){width:27%;}
-.sch-run-table th:nth-child(4){width:32%;}
-.sch-run-table th{font-size:9px;color:var(--ink-400);font-weight:600;background:#f7f9fc;}
-.sch-run-table td .mono{font-size:9.5px;}
-.sch-sec{background:#fff;border:1px solid var(--line-soft);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
-.sch-sec-title{font-size:11px;font-weight:650;color:var(--ink-700);margin:0 0 12px;padding-left:9px;border-left:3px solid var(--blue-500);}
-.sch-sec .form-grid{gap:12px;}
-.sch-empty{padding:14px;text-align:center;color:var(--ink-400);font-size:10.5px;}
-.sch-cycle-extra.hidden{display:none;}
-.sch-switch{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px 0 4px;border:1px solid var(--line-soft);border-radius:999px;background:#fff;cursor:pointer;font-family:inherit;font-size:10px;color:var(--ink-500);white-space:nowrap;vertical-align:middle;}
-.sch-switch .sw-track{position:relative;display:inline-block;width:26px;height:15px;border-radius:999px;background:#cbd5e1;}
-.sch-switch .sw-track::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#fff;}
-.sch-switch.on{border-color:#cfe0ff;background:#f5f9ff;color:#2458c5;}
-.sch-switch.on .sw-track{background:#2f6bff;}
-.sch-switch.on .sw-track::after{left:13px;}
-.btn:disabled,.btn.disabled{opacity:.45;cursor:not-allowed;}
-.sch-pager{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10px;color:var(--ink-400);}
-.sch-pager button{height:22px;padding:0 9px;border-radius:6px;border:1px solid var(--line-soft);background:#fff;font-size:10px;font-family:inherit;color:var(--ink-600);cursor:pointer;}
-.sch-pager button:disabled{opacity:.45;cursor:not-allowed;}
-.bl-table .cell-sub{font-size:9.5px;color:var(--ink-400);margin-top:2px;}
-</style>
+
 <style id="hcCadenceStyle">.hc-cadence{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;background:#eef4ff;color:#2458c5;font-size:10px;font-weight:600;border:1px solid #dbe7fb;}
 .hc-cadence .icon{width:12px;height:12px;}
 </style>
@@ -1558,6 +1515,8 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .td-modal .form-field textarea{min-height:64px;}
 .td-modal .modal-foot{padding:14px 24px;}
 </style>
+<style id="blCellSubKeep">.bl-table .cell-sub{font-size:9.5px;color:var(--ink-400);margin-top:2px;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1609,7 +1568,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         <div class="sub-nav">
           <button class="nav-item active" data-nav="tasks"><span class="nav-text">Task 列表</span></button>
           <button class="nav-item" data-nav="batchList"><span class="nav-text">Batch 列表</span></button>
-          <button class="nav-item" data-nav="schedules"><span class="nav-text">定时任务</span></button>
+          
         </div>
       </nav>
     </aside>
@@ -1660,34 +1619,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         </div>
       </section>
 
-      <section class="page hidden" id="view-schedules" aria-labelledby="schedulesTitle">
-        <div class="page-head">
-          <div>
-            <div class="eyebrow">跑批任务管理</div>
-            <h1 id="schedulesTitle">定时任务</h1>
-          </div>
-          <div class="actions">
-            <button class="btn primary" id="newScheduleBtn"><svg class="icon icon-sm"><use href="#i-plus"/></svg>新建定时任务</button>
-          </div>
-        </div>
-        <div class="card table-card">
-          <div class="toolbar">
-            <div class="search-wrap"><svg class="icon icon-sm"><use href="#i-search"/></svg><input class="input" id="schSearch" type="search" placeholder="搜索定时任务 / 调度 ID / Task ID" aria-label="搜索定时任务"></div>
-            <select class="select" id="schFilterStatus" aria-label="状态"><option value="">全部状态</option><option value="running">启用中</option><option value="stopped">已停用</option></select>
-            <select class="select" id="schFilterTask" aria-label="关联 Task"><option value="">全部 Task 模板</option></select>
-            <div class="toolbar-spacer"></div>
-            <span class="tiny muted" id="schCount"></span>
-          </div>
-          <div class="table-wrap">
-            <table class="sch-list-table">
-              <thead><tr>
-                <th style="width:16%">定时任务</th><th style="width:15%">关联 Task 模板</th><th style="width:11%">周期 / 跑批时间</th><th style="width:8%">切片规则</th><th style="width:10%">对比批次注入</th><th style="width:9%">启用 / 停用</th><th style="width:10%">下次跑批</th><th style="width:8%">最近触发</th><th style="width:13%">操作项</th>
-              </tr></thead>
-              <tbody id="schTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+      
 
       <section class="page hidden" id="view-health-calendar" aria-labelledby="healthCalendarTitle">
         <div class="page-head">
@@ -2469,47 +2401,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     </div>
   </div>
 
-    <div id="schDetailBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="schDetailTitle">
-    <div class="modal" style="width:min(860px,100%)">
-      <div class="modal-head"><div><h2 id="schDetailTitle">定时任务详情</h2></div><button class="icon-button" data-close-sch-detail aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button></div>
-      <div class="modal-body">
-        <div class="sch-detail-grid" id="schDetailSummary"></div>
-        <div id="schDetailForm" class="td-form readonly" style="margin-top:12px">
-          <div class="sch-sec">
-            <div class="sch-sec-title">引用 Task 模板</div>
-            <div class="form-grid">
-              <div class="form-field"><label>定时任务名称</label><input class="input" id="schName" placeholder="如：Uganda OD 月度调额 · 每日" /></div>
-              <div class="form-field"><label>关联 Task 模板</label><select class="select" id="schTaskId"></select></div>
-            </div>
-          </div>
-          <div class="sch-sec">
-            <div class="sch-sec-title">周期与跑批时间</div>
-            <div class="form-grid">
-              <div class="form-field"><label>周期</label><select class="select" id="schCycle"><option>每日</option><option>每周</option><option>每月</option></select></div>
-              <div class="form-field sch-cycle-extra hidden" id="schWeekdayField"><label>星期</label><select class="select" id="schWeekday"><option>周一</option><option>周二</option><option>周三</option><option>周四</option><option>周五</option><option>周六</option><option>周日</option></select></div>
-              <div class="form-field sch-cycle-extra hidden" id="schMonthdayField"><label>日期</label><select class="select" id="schMonthday"><option>1 日</option><option>2 日</option><option>3 日</option><option>4 日</option><option>5 日</option><option>6 日</option><option>7 日</option><option>8 日</option><option>9 日</option><option>10 日</option><option>11 日</option><option>12 日</option><option>13 日</option><option>14 日</option><option>15 日</option><option>16 日</option><option>17 日</option><option>18 日</option><option>19 日</option><option>20 日</option><option>21 日</option><option>22 日</option><option>23 日</option><option>24 日</option><option>25 日</option><option>26 日</option><option>27 日</option><option>28 日</option><option>29 日</option><option>30 日</option><option>31 日</option><option>月末</option></select></div>
-              <div class="form-field"><label>跑批时间</label><input class="input mono" type="time" id="schTime" value="22:00" /></div>
-            </div>
-          </div>
-          <div class="sch-sec">
-            <div class="sch-sec-title">切片规则</div>
-            <div class="form-grid">
-              <div class="form-field"><label>使用切片日期</label><select class="select" id="schSliceRule"><option>T-1</option><option>T-2</option><option>上个业务日</option></select></div>
-            </div>
-          </div>
-          <div class="sch-sec">
-            <div class="sch-sec-title">报告对比批次</div>
-            <div class="form-grid">
-              <div class="form-field"><label>对比批次</label><select class="select" id="schComparePolicy"><option>上一次成功</option><option>固定基线</option><option>不对比</option></select></div>
-              <div class="form-field" id="schFixedBaselineField"><label>固定基线 Batch</label><select class="select" id="schFixedBaseline"></select></div>
-            </div>
-          </div>
-        </div>
-        <div class="sch-runs" id="schDetailRuns"></div>
-      </div>
-      <div class="modal-foot"><div id="schDetailActs"></div></div>
-    </div>
-  </div>
+    
 
   <div class="toast" id="toast" role="status" aria-live="polite"><span class="check-icon"><svg class="icon icon-sm"><use href="#i-check"/></svg></span><div><strong id="toastTitle">操作成功</strong><span id="toastMessage">已完成。</span></div></div>
 
@@ -3806,7 +3698,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       else if (hash === 'batches') navigate('task', null, true);
       else if (hash.startsWith('batch-list/')) navigate('batchList', hash.split('/')[1], true);
       else if (hash === 'batch-list') navigate('batchList', null, true);
-      else if (hash === 'schedules') navigate('schedules', null, true);
+      
       else navigate('tasks', null, true);
     }
 
@@ -3821,12 +3713,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         qsNav('tasks');
         $('#breadcrumbs').innerHTML = '<span>任务管理</span><span class="sep">/</span><strong>Task 列表</strong>';
         if (!fromHash) history.replaceState(null,'','#tasks');
-      } else if (page === 'schedules') {
-        $('#view-schedules').classList.remove('hidden');
-        qsNav('schedules');
-        $('#breadcrumbs').innerHTML = '<span>任务管理</span><span class="sep">/</span><strong>定时任务</strong>';
-        if (typeof renderSchedules === 'function') renderSchedules();
-        if (!fromHash) history.replaceState(null,'','#schedules');
       } else if (page === 'batchList') {
         $('#view-batches').classList.remove('hidden');
         qsNav('batchList');
@@ -4488,7 +4374,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
         const name = nav.dataset.nav;
         if (name === 'tasks') navigate('tasks');
         else if (name === 'batchList') navigate('batchList');
-        else if (name === 'schedules') navigate('schedules');
+        
         else if (name === 'task') navigate('task');
         else if (name === 'alerts') navigate('alerts');
         else if (name === 'monitor') navigate('monitor');
@@ -5509,310 +5395,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 
   
 
-<script>
-/* ================= 定时任务模块（增量移植） ================= */
-(function(tasks, batches, badge, toast){
-  /* 最小依赖兼容：源文件最后一段 IIFE 内的日期工具，目标文件未暴露到全局 */
-  const pad=n=>String(n).padStart(2,'0');
-  const fmtISODate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  const nowStamp=()=>{const d=new Date();return `${fmtISODate(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;};
 
-  /* ---------------- 定时任务：独立调度对象，只引用 Task 模板 ---------------- */
-  const SCH_STATUS={running:'启用中',stopped:'已停用'};
-  /* 硬规则（写入 PRD，原型无感）：定时器按周期在约定跑批时间前 4h / 2h 生成 1 条 Batch，
-     生成即进入 Batch 列表并复用 ONCE 的跑前复检；启用 / 停用只决定后续是否生成，
-     绝不影响历史已生成的 Batch。 */
-  const SCH_DEFAULT={id:'',name:'',taskId:'',status:'stopped',cycle:'每日',weekday:'周一',monthday:'1 日',time:'22:00',
-    sliceRule:'T-1',comparePolicy:'上一次成功',fixedBaseline:'',
-    nextAt:'—',runs:[],createdBy:'',createdAt:''};
-  const schedules=[
-    {id:'SCH_101',name:'Uganda OD 月度调额 · 每日',taskId:'TRF_101',status:'running',cycle:'每日',weekday:'周一',monthday:'1 日',time:'22:00',sliceRule:'T-1',comparePolicy:'上一次成功',fixedBaseline:'',nextAt:'2026-11-13 22:00',createdBy:'HT',createdAt:'2026-06-01 09:00',runs:[
-      {at:'2026-11-12 22:00',result:'成功',batchId:'B20261112001',slice:'2026-11-11',compare:'B20260624001'},
-      {at:'2026-11-11 22:00',result:'成功',batchId:'B20260626001',slice:'2026-11-10',compare:'B20260623001'},
-      {at:'2026-11-10 22:00',result:'跳过',batchId:'—',slice:'2026-11-09',reason:'切片分区未就绪'},
-      {at:'2026-11-09 22:00',result:'成功',batchId:'B20260625001',slice:'2026-11-08',compare:'B20260624001'},
-      {at:'2026-11-08 22:00',result:'成功',batchId:'B20260624001',slice:'2026-11-07',compare:'B20260623001'},
-      {at:'2026-11-07 22:00',result:'排队',batchId:'B20261112002',slice:'2026-11-06',reason:'同时触发 · 队列 #2 · 待核验'},
-      {at:'2026-11-06 22:00',result:'成功',batchId:'B20260623001',slice:'2026-11-05',compare:'B20260524001'},
-      {at:'2026-11-05 22:00',result:'失败',batchId:'—',slice:'2026-11-04',reason:'跑前复检不通过'},
-      {at:'2026-11-04 22:00',result:'成功',batchId:'B20260622001',slice:'2026-11-03',compare:'B20260524001'}]},
-    {id:'SCH_102',name:'Uganda OD 月度调额 · 每周复核',taskId:'TRF_101',status:'running',cycle:'每周',weekday:'周一',monthday:'1 日',time:'10:00',sliceRule:'T-2',comparePolicy:'上一次成功',fixedBaseline:'',nextAt:'2026-11-16 10:00',createdBy:'HT',createdAt:'2026-07-01 10:20',runs:[
-      {at:'2026-11-09 10:00',result:'排队',batchId:'B20261112002',slice:'2026-11-07',reason:'与每日任务同时触发 · 待核验'},
-      {at:'2026-11-02 10:00',result:'成功',batchId:'B20260623001',slice:'2026-10-31',compare:'B20260524001'},
-      {at:'2026-10-26 10:00',result:'成功',batchId:'B20260622001',slice:'2026-10-24',compare:'B20260524001'}]},
-    {id:'SCH_301',name:'Uganda 用户标签刷新 · 每日',taskId:'TRF_301',status:'stopped',cycle:'每日',weekday:'周一',monthday:'1 日',time:'04:30',sliceRule:'T-1',comparePolicy:'不对比',fixedBaseline:'',nextAt:'—',createdBy:'HD',createdAt:'2026-08-01 14:05',runs:[
-      {at:'2026-11-08 04:30',result:'成功',batchId:'B20260624001',slice:'2026-11-07',compare:'—'}]},
-    {id:'SCH_401',name:'Ghana BL 营销策略 · 每月',taskId:'TRF_201',status:'stopped',cycle:'每月',weekday:'周一',monthday:'1 日',time:'02:00',sliceRule:'上个业务日',comparePolicy:'固定基线',fixedBaseline:'B20260524001',nextAt:'—',createdBy:'HT',createdAt:'2026-05-01 08:30',runs:[]}
-  ];
-  /* ---------------- 定时任务：独立列表 / 详情 / 配置 / 启停 ---------------- */
-  let schDetailId=null, schDetailIsNew=false, schDetailEditing=false, schRunsPage=1;
-  const schById=id=>schedules.find(s=>s.id===id);
-  const schTask=s=>tasks.find(t=>t.id===s.taskId);
-  const schStatusText=k=>SCH_STATUS[k]||'—';
-  const schRuleText=s=>s.cycle==='每周'?`每周${s.weekday||'周一'} ${s.time}`:s.cycle==='每月'?`每月 ${s.monthday||'1 日'} ${s.time}`:`每日 ${s.time}`;
-  function schResolvedSlice(s){
-    const d=new Date(); d.setDate(d.getDate()-(s.sliceRule==='T-2'?2:1));
-    return fmtISODate(d);
-  }
-  function schNextAt(s){
-    const time=(s&&s.time)||'22:00';
-    const d=new Date();
-    if(s&&s.cycle==='每周'){
-      const target=['周日','周一','周二','周三','周四','周五','周六'].indexOf(s.weekday||'周一');
-      let delta=(target-d.getDay()+7)%7; if(delta===0) delta=7;
-      d.setDate(d.getDate()+delta);
-    } else if(s&&s.cycle==='每月'){
-      const md=parseInt(s.monthday,10);
-      d.setDate(1); d.setMonth(d.getMonth()+1);
-      const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
-      d.setDate(isNaN(md)?last:Math.min(md,last));
-    } else {
-      d.setDate(d.getDate()+1);
-    }
-    return `${fmtISODate(d)} ${time}`;
-  }
-  function schLastRun(s){ const r=(s.runs||[])[0]; return r?`${r.at.slice(5)} · ${r.result}`:'—'; }
-  function schDeleteBtn(s){
-    const blocked=s.status==='running';
-    return `<button type="button" class="btn btn-sm danger" data-sch-act="delete" data-sch-id="${s.id}" ${blocked?'disabled title="停用后可删除"':''}>删除</button>`;
-  }
-  function schSwitch(s){
-    const on=s.status==='running';
-    return `<button type="button" class="sch-switch ${on?'on':''}" data-sch-act="toggle" data-sch-id="${s.id}" aria-label="${on?'停用':'启用'}"><span class="sw-track"></span>${on?'启用中':'已停用'}</button>`;
-  }
-  function renderSchedules(){
-    const box=document.getElementById('schTableBody'); if(!box) return;
-    const q=(document.getElementById('schSearch')?.value||'').trim().toLowerCase();
-    const st=document.getElementById('schFilterStatus')?.value||'';
-    const tk=document.getElementById('schFilterTask')?.value||'';
-    const rows=schedules.filter(s=>(!q||(s.name+' '+s.id+' '+s.taskId).toLowerCase().includes(q))
-      &&(!st||s.status===st)&&(!tk||s.taskId===tk));
-    box.innerHTML=rows.length?rows.map(s=>{
-      const t=schTask(s);
-      return `<tr>
-        <td><div class="sch-name-cell">${s.name}</div><div class="cell-sub mono">${s.id}</div></td>
-        <td><div>${t?t.name:'—'}</div><div class="cell-sub mono">${s.taskId}</div></td>
-        <td class="mono">${schRuleText(s)}</td>
-        <td class="mono">${s.sliceRule}</td>
-        <td class="mono">${s.comparePolicy}</td>
-        <td>${schSwitch(s)}</td>
-        <td class="mono">${s.nextAt||'—'}</td>
-        <td class="mono">${schLastRun(s)}</td>
-        <td><div class="task-actions"><button type="button" class="btn btn-sm" data-sch-act="detail" data-sch-id="${s.id}">详情</button>${schDeleteBtn(s)}</div></td>
-      </tr>`;}).join(''):'<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--ink-400)">没有符合条件的定时任务</td></tr>';
-    const cnt=document.getElementById('schCount'); if(cnt) cnt.textContent=`${rows.length} 个定时任务`;
-  }
-  function schSummaryItems(s){
-    return [
-      ['状态',schStatusText(s.status)],['下次跑批',s.nextAt||'—'],
-      ['创建人',s.createdBy||'—'],['创建时间',s.createdAt||'—']
-    ];
-  }
-  function schRunsHtml(s){
-    const all=s.runs||[], per=4, pages=Math.max(1,Math.ceil(all.length/per));
-    schRunsPage=Math.min(Math.max(1,schRunsPage),pages);
-    const list=all.slice((schRunsPage-1)*per,schRunsPage*per);
-    const cls=r=>r==='成功'?'green':(r==='跳过'?'amber':(r==='排队'?'blue':'red'));
-    const table=list.length
-      ? `<table class="sch-run-table"><thead><tr><th>计划时间</th><th>结果</th><th>关联 Batch</th><th>对比批次 / 备注</th></tr></thead><tbody>${list.map(r=>`<tr><td class="mono">${r.at}</td><td>${badge(r.result,cls(r.result))}</td><td class="mono">${r.batchId||'—'}</td><td class="mono">${r.reason||r.compare||'—'}</td></tr>`).join('')}</tbody></table>`
-      : '<div class="sch-empty">暂无触发记录</div>';
-    const pager=all.length>per?`<div class="sch-pager"><span>共 ${all.length} 条 · 第 ${schRunsPage}/${pages} 页</span><button type="button" data-sch-run-page="prev" ${schRunsPage<=1?'disabled':''}>上一页</button><button type="button" data-sch-run-page="next" ${schRunsPage>=pages?'disabled':''}>下一页</button></div>`:'';
-    return '<div class="sch-runs-title">最近触发</div>'+table+pager;
-  }
-  function openSchDetailRuns(id){
-    const s=schById(id); if(!s) return;
-    const runs=document.getElementById('schDetailRuns'); if(runs) runs.innerHTML=schRunsHtml(s);
-  }
-  /* 单一弹窗：新建直接可编辑；查看默认只读，停用态点「修改」才进入编辑态 */
-  function renderSchDetailActs(){
-    const acts=document.getElementById('schDetailActs'); if(!acts) return;
-    if(schDetailIsNew){
-      acts.innerHTML='<button class="btn" data-close-sch-detail>关闭</button>'
-        +'<button type="button" class="btn primary" id="schSaveBtn">创建</button>';
-      return;
-    }
-    const cur=schById(schDetailId), running=!!cur&&cur.status==='running';
-    if(!schDetailEditing){
-      acts.innerHTML='<button class="btn" data-close-sch-detail>关闭</button>'
-        +`<button type="button" class="btn primary" id="schEditBtn" ${running?'disabled title="停用后可编辑"':''}>修改</button>`;
-    } else {
-      acts.innerHTML='<button class="btn" id="schCancelBtn" type="button">取消编辑</button>'
-        +'<button type="button" class="btn primary" id="schSaveBtn">保存</button>';
-    }
-  }
-  function setSchDetailEditable(on){
-    if(on&&!schDetailIsNew){
-      const cur=schById(schDetailId);
-      if(cur&&cur.status==='running'){ toast('请先停用','启用中的定时任务不允许编辑。'); return; }
-    }
-    schDetailEditing=!!on;
-    const form=document.getElementById('schDetailForm');
-    if(form) form.classList.toggle('readonly',!schDetailEditing);
-    setSchFormDisabled(!schDetailEditing);
-    renderSchDetailActs();
-  }
-  function cancelSchDetailEdit(){
-    const cur=schById(schDetailId);
-    if(cur) fillSchForm(cur);
-    setSchDetailEditable(false);
-  }
-  function openSchDetail(id,isNew){
-    schDetailIsNew=!!isNew;
-    const s=isNew?null:schById(id);
-    if(!isNew&&!s) return;
-    schDetailId=isNew?null:id; schRunsPage=1;
-    const title=document.getElementById('schDetailTitle');
-    if(title) title.textContent=isNew?'新建定时任务':`定时任务详情 · ${s.name}`;
-    fillSchForm(s);
-    const sum=document.getElementById('schDetailSummary');
-    if(sum){
-      sum.style.display=isNew?'none':'';
-      sum.innerHTML=isNew?'':schSummaryItems(s).map(([k,v])=>`<div class="summary-item"><span>${k}</span><strong class="mono">${v}</strong></div>`).join('');
-    }
-    const runs=document.getElementById('schDetailRuns');
-    if(runs){ runs.style.display=isNew?'none':''; runs.innerHTML=isNew?'':schRunsHtml(s); }
-    setSchDetailEditable(isNew);
-    document.getElementById('schDetailBackdrop').classList.remove('hidden');
-    document.body.style.overflow='hidden';
-  }
-  function closeSchDetail(){
-    document.getElementById('schDetailBackdrop').classList.add('hidden');
-    document.body.style.overflow=''; schDetailId=null; schDetailIsNew=false; schDetailEditing=false;
-  }
-  function refreshSchViews(){
-    renderSchedules();
-    if(schDetailId&&schById(schDetailId)) openSchDetail(schDetailId);
-  }
-  const setVal=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v==null?'':v;};
-  function syncSchCycleFields(){
-    const c=document.getElementById('schCycle')?.value||'每日';
-    const w=document.getElementById('schWeekdayField'), m=document.getElementById('schMonthdayField');
-    if(w) w.classList.toggle('hidden',c!=='每周');
-    if(m) m.classList.toggle('hidden',c!=='每月');
-  }
-  function syncSchCompareField(){
-    const p=document.getElementById('schComparePolicy')?.value;
-    const f=document.getElementById('schFixedBaselineField'); if(f) f.style.display=p==='固定基线'?'':'none';
-  }
-  function setSchFormDisabled(locked){
-    ['schName','schTaskId','schCycle','schWeekday','schMonthday','schTime','schSliceRule','schComparePolicy','schFixedBaseline'].forEach(id=>{
-      const el=document.getElementById(id); if(!el) return;
-      el.disabled=id==='schTaskId'?(locked||!schDetailIsNew):locked;
-    });
-  }
-  function fillSchForm(s){
-    const d=s||SCH_DEFAULT;
-    setVal('schName',d.name);
-    const sel=document.getElementById('schTaskId');
-    if(sel){
-      sel.innerHTML=tasks.map(t=>`<option value="${t.id}">${t.name} · ${t.id}</option>`).join('');
-      sel.value=d.taskId||tasks[0]?.id||'';
-    }
-    setVal('schCycle',d.cycle); setVal('schWeekday',d.weekday); setVal('schMonthday',d.monthday); setVal('schTime',d.time);
-    setVal('schSliceRule',d.sliceRule);
-    setVal('schComparePolicy',d.comparePolicy);
-    const fb=document.getElementById('schFixedBaseline');
-    if(fb) fb.innerHTML='<option value="">选择已完成 Batch</option>'+batches.filter(b=>b.run==='已完成').map(b=>`<option value="${b.id}">${b.id} · ${b.businessDate||''}</option>`).join('');
-    setVal('schFixedBaseline',d.fixedBaseline);
-    syncSchCycleFields(); syncSchCompareField();
-  }
-  function saveSchDetail(){
-    const g=id=>document.getElementById(id)?.value||'';
-    const isNew=schDetailIsNew;
-    if(!isNew){
-      const cur=schById(schDetailId);
-      if(cur&&cur.status==='running'){ toast('请先停用','启用中的定时任务不允许编辑。'); return; }
-      if(!schDetailEditing) return;
-    }
-    const name=(g('schName')||'').trim();
-    if(!name){ toast('名称不能为空','请填写定时任务名称后再保存。'); document.getElementById('schName')?.focus(); return; }
-    const taskId=g('schTaskId');
-    if(!taskId){ toast('缺少 Task 模板','请选择要引用的 Task 模板。'); return; }
-    const s=isNew?Object.assign({},SCH_DEFAULT,{id:'SCH_'+String(schedules.length+101),createdBy:'HT',createdAt:nowStamp(),runs:[]}):schById(schDetailId);
-    if(!s) return;
-    s.name=name; s.taskId=taskId;
-    s.status=isNew?'running':s.status;
-    Object.assign(s,{
-      cycle:g('schCycle'),weekday:g('schWeekday'),monthday:g('schMonthday'),time:g('schTime'),
-      sliceRule:g('schSliceRule'),
-      comparePolicy:g('schComparePolicy'),fixedBaseline:g('schFixedBaseline')
-    });
-    s.nextAt=s.status==='running'?schNextAt(s):'—';
-    if(isNew){
-      schedules.unshift(s);
-      closeSchDetail(); renderSchedules();
-    } else {
-      fillSchForm(s); setSchDetailEditable(false); renderSchedules();
-    }
-    const n=batches.filter(b=>b.taskId===s.taskId).length;
-    toast(isNew?'定时任务已创建':'定时任务已更新',`${s.name} · 下一触发起生效；Task 模板未改动，已生成 ${n} 条 Batch 不受影响。`);
-  }
-  /* 删除定时任务定义：仅停止后续生成，历史 Batch 一律保留（BR-04） */
-  function schDelete(id){
-    const s=schById(id); if(!s) return;
-    if(s.status==='running'){ toast('请先停用','启用中的定时任务不允许删除，请先在列表停用。'); return; }
-    const idx=schedules.findIndex(x=>x.id===id); if(idx<0) return;
-    const name=s.name;
-    schedules.splice(idx,1);
-    if(schDetailId===id) closeSchDetail();
-    renderSchedules();
-    toast('定时任务已删除',`${name} · 仅停止后续生成，已生成的 Batch 不受影响。`);
-  }
-  function schSetStatus(id,status){
-    const s=schById(id); if(!s) return;
-    s.status=status;
-    s.nextAt=status==='running'?schNextAt(s):'—';
-    refreshSchViews();
-    const MSG={running:'定时任务已启用',stopped:'定时任务已停用'};
-    const COPY={running:'按周期继续生成后续 Batch。',stopped:'仅停止后续生成，已生成的 Batch 不受影响。'};
-    toast(MSG[status]||'状态已更新',COPY[status]||'');
-  }
-  document.getElementById('newScheduleBtn')?.addEventListener('click',()=>openSchDetail(null,true));
-  ['schSearch'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderSchedules));
-  ['schFilterStatus','schFilterTask'].forEach(id=>document.getElementById(id)?.addEventListener('change',renderSchedules));
-  const schTaskFilter=document.getElementById('schFilterTask');
-  if(schTaskFilter) schTaskFilter.innerHTML='<option value="">全部 Task 模板</option>'+tasks.map(t=>`<option value="${t.id}">${t.name} · ${t.id}</option>`).join('');
-  document.getElementById('schDetailBackdrop')?.addEventListener('click',e=>{
-    if(e.target.id==='schDetailBackdrop') closeSchDetail();
-  });
-  ['schTaskId','schCycle','schWeekday','schMonthday','schTime','schSliceRule','schComparePolicy','schFixedBaseline'].forEach(id=>{
-    document.getElementById(id)?.addEventListener('change',()=>{ syncSchCycleFields(); syncSchCompareField(); });
-  });
-
-  /* 定时任务详情/列表点击委托（源文件 initBindings 同名分支，独立挂载） */
-  document.addEventListener('click', (e) => {
-      if(e.target.closest('[data-close-sch-detail]')){ closeSchDetail(); return; }
-      if(e.target.closest('#schEditBtn')){ setSchDetailEditable(true); return; }
-      if(e.target.closest('#schCancelBtn')){ cancelSchDetailEdit(); return; }
-      const schRunPage=e.target.closest('[data-sch-run-page]');
-      if(schRunPage){ schRunsPage=Math.max(1,schRunsPage+(schRunPage.dataset.schRunPage==='next'?1:-1)); if(schDetailId) openSchDetailRuns(schDetailId); return; }
-      const schAct=e.target.closest('[data-sch-act]');
-      if(schAct){
-        const sid=schAct.dataset.schId, a=schAct.dataset.schAct;
-        if(a==='detail') openSchDetail(sid);
-        else if(a==='toggle'){ const s=schById(sid); if(s) schSetStatus(sid, s.status==='running'?'stopped':'running'); }
-        else if(a==='delete') schDelete(sid);
-        return;
-      }
-      if(e.target.closest('#schSaveBtn')){ saveSchDetail(); return; }
-  });
-
-  window.renderSchedules=renderSchedules;
-  window.openSchDetail=openSchDetail;
-  window.openSchNew=()=>openSchDetail(null,true);
-  window.saveSchDetail=saveSchDetail;
-  window.setSchDetailEditable=setSchDetailEditable;
-  window.cancelSchDetailEdit=cancelSchDetailEdit;
-  window.renderSchDetailActs=renderSchDetailActs;
-  window.schedules=schedules;
-  window.schSetStatus=schSetStatus;
-  window.schDelete=schDelete;
-  window.schRuleText=schRuleText;
-  window.schNextAt=schNextAt;
-  window.syncSchCycleFields=syncSchCycleFields;
-  window.schRunsHtml=schRunsHtml;
-  renderSchedules();
-})(typeof tasks!=='undefined'?tasks:(window.tasks||[]), typeof batches!=='undefined'?batches:(window.batches||[]), typeof badge!=='undefined'?badge:(x=>String(x)), typeof toast!=='undefined'?toast:(()=>{}));
-</script>
 </body>
 </html>
